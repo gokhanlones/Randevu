@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -6,7 +7,6 @@
 <title>Randevu AI</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
 <script>
 emailjs.init("bUqxAYFWuXWTy5nKT");
 </script>
@@ -89,6 +89,7 @@ color:white;
 
 <div class="modal" id="bookingModal">
 <div class="modal-content">
+
 <h3 id="selectedSalonTitle"></h3>
 
 <input type="date" id="date">
@@ -105,64 +106,48 @@ color:white;
 
 <script>
 
-/* =========================
-   CONFIG
-========================= */
+/* ===== CONFIG ===== */
 
-const CONFIG = {
-serviceID: "service_8qoocwi",
-adminTemplateID: "template_03obhwb",
-customerTemplateID: "template_MUSTERIID", // buraya yaz
-salons: [
+const SERVICE_ID = "service_8qoocwi";
+const ADMIN_TEMPLATE_ID = "template_03obhwb";
+const CUSTOMER_TEMPLATE_ID = "template_08wno98";
+
+const SALONS = [
 "Urban Barber",
 "Gold Salon",
 "Royal Hair",
 "Elite Barber",
 "Diamond Hair"
-]
-};
-
-/* =========================
-   STATE
-========================= */
+];
 
 let selectedSalon = "";
 
-/* =========================
-   INIT
-========================= */
+/* ===== INIT ===== */
 
 document.addEventListener("DOMContentLoaded", () => {
 renderSalons();
-bindUI();
+bindEvents();
 });
 
-/* =========================
-   UI RENDER
-========================= */
+/* ===== RENDER ===== */
 
 function renderSalons(){
 const container = document.getElementById("salons");
 container.innerHTML = "";
 
-CONFIG.salons.forEach(salon=>{
-const card = document.createElement("div");
-card.className = "salon-card";
-
-card.innerHTML = `
+SALONS.forEach(salon=>{
+container.innerHTML += `
+<div class="salon-card">
 <h3>${salon}</h3>
 <button data-salon="${salon}">Randevu Al</button>
+</div>
 `;
-
-container.appendChild(card);
 });
 }
 
-/* =========================
-   UI EVENTS
-========================= */
+/* ===== EVENTS ===== */
 
-function bindUI(){
+function bindEvents(){
 
 document.getElementById("salons").addEventListener("click", e=>{
 if(e.target.tagName === "BUTTON"){
@@ -171,13 +156,11 @@ openModal(e.target.dataset.salon);
 });
 
 document.getElementById("cancelBtn").addEventListener("click", closeModal);
-document.getElementById("confirmBtn").addEventListener("click", handleBooking);
+document.getElementById("confirmBtn").addEventListener("click", sendBooking);
 
 }
 
-/* =========================
-   MODAL
-========================= */
+/* ===== MODAL ===== */
 
 function openModal(salon){
 selectedSalon = salon;
@@ -189,54 +172,44 @@ function closeModal(){
 document.getElementById("bookingModal").style.display = "none";
 }
 
-/* =========================
-   FORM
-========================= */
+/* ===== BOOKING ===== */
 
-function getFormData(){
+async function sendBooking(){
 
-return {
-salon: selectedSalon,
-date: document.getElementById("date").value,
-time: document.getElementById("time").value,
-name: document.getElementById("fullname").value,
-phone: document.getElementById("phone").value,
-email: document.getElementById("email").value
-};
+const date = document.getElementById("date").value;
+const time = document.getElementById("time").value;
+const name = document.getElementById("fullname").value;
+const phone = document.getElementById("phone").value;
+const email = document.getElementById("email").value;
 
-}
-
-function validateForm(data){
-return data.date && data.time && data.name && data.phone && data.email;
-}
-
-/* =========================
-   BOOKING FLOW
-========================= */
-
-async function handleBooking(){
-
-const data = getFormData();
-
-if(!validateForm(data)){
+if(!date || !time || !name || !phone || !email){
 alert("Lütfen tüm alanları doldurun");
 return;
 }
 
+const params = {
+salon: selectedSalon,
+date,
+time,
+name,
+phone,
+email
+};
+
 try{
 
 // 1️⃣ Admin mail
-await emailjs.send(CONFIG.serviceID, CONFIG.adminTemplateID, data);
+await emailjs.send(SERVICE_ID, ADMIN_TEMPLATE_ID, params);
 
 // 2️⃣ Customer mail
-await emailjs.send(CONFIG.serviceID, CONFIG.customerTemplateID, data);
+await emailjs.send(SERVICE_ID, CUSTOMER_TEMPLATE_ID, params);
 
 alert("Randevu başarıyla oluşturuldu!");
 closeModal();
 
 }catch(error){
-console.error(error);
-alert("Mail gönderilemedi!");
+console.error("Mail Error:", error);
+alert("Mail gönderilirken hata oluştu!");
 }
 
 }
