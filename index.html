@@ -48,6 +48,7 @@ border-radius:10px;
 font-weight:bold;
 background:linear-gradient(90deg,var(--gold),var(--gold-light));
 cursor:pointer;
+margin-top:10px;
 }
 
 .modal{
@@ -70,25 +71,41 @@ max-width:400px;
 input{
 width:100%;
 padding:10px;
-margin-bottom:10px;
+margin-bottom:12px;
 border-radius:8px;
 border:none;
 }
 
 .services{
 background:#111;
-padding:10px;
-border-radius:8px;
-margin-bottom:10px;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
 }
 
-.services label{
-display:block;
-margin-bottom:5px;
+.services h4{
+margin:0 0 12px 0;
+color:var(--gold);
+font-weight:600;
+}
+
+.service-item{
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:10px;
+font-size:14px;
+cursor:pointer;
+}
+
+.service-item input{
+width:18px;
+height:18px;
+accent-color:var(--gold);
+cursor:pointer;
 }
 
 .close-btn{
-margin-top:10px;
 background:#444;
 color:white;
 }
@@ -98,7 +115,6 @@ color:white;
 <body>
 
 <h1>Kuaför Seç</h1>
-
 <div id="salons"></div>
 
 <div class="modal" id="bookingModal">
@@ -113,11 +129,28 @@ color:white;
 <input type="email" id="email" placeholder="E-posta">
 
 <div class="services">
-<strong>Yapılacak İşlemler:</strong>
-<label><input type="checkbox" value="Saç Kesimi"> Saç Kesimi</label>
-<label><input type="checkbox" value="Sakal Tıraşı"> Sakal Tıraşı</label>
-<label><input type="checkbox" value="Saç Boyama"> Saç Boyama</label>
-<label><input type="checkbox" value="Cilt Bakımı"> Cilt Bakımı</label>
+<h4>Yapılacak İşlemler</h4>
+
+<label class="service-item">
+<input type="checkbox" value="Saç Kesimi">
+<span>Saç Kesimi</span>
+</label>
+
+<label class="service-item">
+<input type="checkbox" value="Sakal Tıraşı">
+<span>Sakal Tıraşı</span>
+</label>
+
+<label class="service-item">
+<input type="checkbox" value="Saç Boyama">
+<span>Saç Boyama</span>
+</label>
+
+<label class="service-item">
+<input type="checkbox" value="Cilt Bakımı">
+<span>Cilt Bakımı</span>
+</label>
+
 </div>
 
 <button onclick="sendBooking()">Randevuyu Onayla</button>
@@ -129,15 +162,14 @@ color:white;
 <script>
 
 const salonData = {
-"Urban Barber": "Atatürk Cad. No 10 Kadıköy İstanbul",
-"Gold Salon": "Bağdat Cad. No 22 Kadıköy İstanbul",
-"Royal Hair": "İstiklal Cad. No 50 Beyoğlu İstanbul",
-"Elite Barber": "Nişantaşı No 8 Şişli İstanbul",
-"Diamond Hair": "Atatürk Cad. No 15 Bakırköy İstanbul"
+"Urban Barber": {lat:40.9906,lng:29.0293},
+"Gold Salon": {lat:41.0430,lng:29.0041},
+"Royal Hair": {lat:41.0369,lng:28.9850},
+"Elite Barber": {lat:41.0602,lng:28.9870},
+"Diamond Hair": {lat:40.9800,lng:28.8750}
 };
 
 let selectedSalon = "";
-
 const container = document.getElementById("salons");
 
 Object.keys(salonData).forEach(salon=>{
@@ -145,8 +177,7 @@ container.innerHTML += `
 <div class="salon-card">
 <h3>${salon}</h3>
 <button onclick="openBooking('${salon}')">Randevu Al</button>
-</div>
-`;
+</div>`;
 });
 
 function openBooking(name){
@@ -167,48 +198,67 @@ const name = document.getElementById("fullname").value;
 const phone = document.getElementById("phone").value;
 const email = document.getElementById("email").value;
 
-const services = Array.from(
-document.querySelectorAll('.services input:checked')
-).map(cb=>cb.value).join(", ");
-
 if(!date || !time || !name || !phone || !email){
 alert("Lütfen tüm alanları doldurun");
 return;
 }
 
-const address = salonData[selectedSalon];
-const mapsLink = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(address);
+const selectedServices = Array.from(
+document.querySelectorAll('.services input:checked')
+).map(cb=>cb.value);
+
+if(selectedServices.length === 0){
+alert("En az bir işlem seçmelisiniz");
+return;
+}
+
+let servicesHtml = "";
+selectedServices.forEach(service=>{
+servicesHtml += `
+<div style="
+display:inline-block;
+padding:8px 14px;
+margin:5px 5px 0 0;
+background:#d4af37;
+color:#000;
+border-radius:20px;
+font-weight:bold;
+font-size:13px;">
+${service}
+</div>`;
+});
+
+const coords = salonData[selectedSalon];
+const mapsLink = `https://www.google.com/maps?q=${coords.lat},${coords.lng}`;
 
 const startDateTime = date.replaceAll("-","") + "T" + time.replace(":","") + "00";
 const endDateTime = date.replaceAll("-","") + "T" + (parseInt(time.split(":")[0])+1).toString().padStart(2,'0') + time.split(":")[1] + "00";
 
-const qrData = `${name} - ${selectedSalon} - ${date} ${time}`;
-const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(qrData);
+const bookingId = Date.now();
 
-const templateParams = {
-salon: selectedSalon,
-date: date,
-time: time,
-name: name,
-phone: phone,
-email: email,
-services: services,
-calendar_start: startDateTime,
-calendar_end: endDateTime,
-maps_link: mapsLink,
-qr_url: qrUrl,
-address: address
+const params = {
+salon:selectedSalon,
+date:date,
+time:time,
+name:name,
+phone:phone,
+email:email,
+services:servicesHtml,
+calendar_start:startDateTime,
+calendar_end:endDateTime,
+maps_link:mapsLink,
+booking_id:bookingId
 };
 
 Promise.all([
-emailjs.send("service_8qoocwi","template_03obhwb",templateParams),
-emailjs.send("service_8qoocwi","template_08wro98",templateParams)
+emailjs.send("service_8qoocwi","template_03obhwb",params),
+emailjs.send("service_8qoocwi","template_08wro98",params)
 ])
 .then(()=>{
 alert("Randevu başarıyla oluşturuldu!");
 closeModal();
 })
-.catch((error)=>{
+.catch(error=>{
 console.log(error);
 alert("Mail gönderilirken hata oluştu!");
 });
