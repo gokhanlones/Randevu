@@ -91,7 +91,7 @@ color:white;
 <input type="date" id="date" required>
 <input type="time" id="time" required>
 <input type="text" id="fullname" placeholder="Ad Soyad" required>
-<input type="tel" id="phone" placeholder="Telefon (5xxxxxxxxx)" required>
+<input type="tel" id="phone" placeholder="Telefon" required>
 <input type="email" id="email" placeholder="E-posta" required>
 
 <button type="submit">Randevuyu Onayla</button>
@@ -200,6 +200,9 @@ return d.getFullYear().toString() +
 const formattedStart = formatDate(startDate);
 const formattedEnd = formatDate(endDate);
 
+/* QR için benzersiz ID */
+const bookingId = Date.now().toString();
+
 const params = {
 salon: selectedSalon,
 date: date,
@@ -209,7 +212,8 @@ phone: phone,
 email: email,
 location: location,
 calendar_start: formattedStart,
-calendar_end: formattedEnd
+calendar_end: formattedEnd,
+booking_id: bookingId
 };
 
 try {
