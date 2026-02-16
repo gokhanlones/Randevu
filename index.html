@@ -8,9 +8,9 @@
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
 <script>
-(function(){
-  emailjs.init("bUqxAYEWuXWVy5nKT"); // DOĞRU PUBLIC KEY
-})();
+document.addEventListener("DOMContentLoaded", function () {
+  emailjs.init("bUqxAYFWuXWTy5nKT"); 
+});
 </script>
 
 <style>
@@ -38,11 +38,13 @@ input{width:100%;padding:8px;margin-bottom:10px;border-radius:5px;border:none;}
   <div class="modal-content">
     <h3 id="selectedSalonTitle"></h3>
     <div id="serviceList"></div><br>
+
     <input type="text" id="fullname" placeholder="Ad Soyad">
     <input type="tel" id="phone" placeholder="Telefon">
     <input type="email" id="email" placeholder="Email">
     <input type="date" id="date">
     <input type="time" id="time">
+
     <button style="background:#d4af37;width:100%;" onclick="sendBooking()">Randevu Oluştur</button>
     <br><br>
     <button style="background:#444;width:100%;" onclick="closeModal()">İptal</button>
@@ -114,56 +116,57 @@ function toggleService(el){
 
 function closeModal(){
   document.getElementById("bookingModal").style.display="none";
+  document.querySelectorAll("input").forEach(i=>i.value="");
+  selectedServices=[];
 }
 
-function sendBooking(){
+async function sendBooking(){
 
-  const name=document.getElementById("fullname").value.trim();
-  const phone=document.getElementById("phone").value.trim();
-  const email=document.getElementById("email").value.trim();
-  const date=document.getElementById("date").value;
-  const time=document.getElementById("time").value;
+  try{
 
-  if(!name || !phone || !email || !date || !time || selectedServices.length===0){
-    alert("Tüm alanları doldurun");
-    return;
+    const name=document.getElementById("fullname").value.trim();
+    const phone=document.getElementById("phone").value.trim();
+    const email=document.getElementById("email").value.trim();
+    const date=document.getElementById("date").value;
+    const time=document.getElementById("time").value;
+
+    if(!name || !phone || !email || !date || !time || selectedServices.length===0){
+      alert("Tüm alanları doldurun");
+      return;
+    }
+
+    const bookingId=btoa(name+date+time);
+
+    const servicesHtml = selectedServices.map(s=>`
+      <div style="display:inline-block;padding:8px 14px;margin:5px 5px 0 0;background:#d4af37;color:#000;border-radius:20px;font-weight:bold;">
+        ${s}
+      </div>
+    `).join("");
+
+    const params={
+      salon:selectedSalon,
+      date:date,
+      time:time,
+      name:name,
+      phone:phone,
+      email:email,
+      location:salonData[selectedSalon].address,
+      services_with_prices:servicesHtml,
+      booking_id:bookingId
+    };
+
+    console.log("Mail gönderiliyor:", params);
+
+    await emailjs.send("service_8qoocwi","template_08wro98",params);
+    await emailjs.send("service_8qoocwi","template_03obhwb",params);
+
+    alert("Randevu başarıyla oluşturuldu");
+    closeModal();
+
+  }catch(error){
+    console.error("EMAILJS HATA:", error);
+    alert("Mail gönderilemedi. Console'a bak.");
   }
-
-  const bookingId=btoa(name+date+time);
-
-  const servicesHtml = selectedServices.map(s=>`
-    <div style="display:inline-block;padding:8px 14px;margin:5px 5px 0 0;background:#d4af37;color:#000;border-radius:20px;font-weight:bold;">
-      ${s}
-    </div>
-  `).join("");
-
-  const params={
-    salon:selectedSalon,
-    date:date,
-    time:time,
-    name:name,
-    phone:phone,
-    email:email,
-    location:salonData[selectedSalon].address,
-    services_with_prices:servicesHtml,
-    booking_id:bookingId
-  };
-
-  // Önce müşteri maili
-  emailjs.send("service_8qoocwi","template_08wro98",params)
-  .then(function(){
-      // Sonra işletme maili
-      return emailjs.send("service_8qoocwi","template_03obhwb",params);
-  })
-  .then(function(){
-      alert("Randevu oluşturuldu");
-      closeModal();
-  })
-  .catch(function(error){
-      console.error("EMAILJS HATA:", error);
-      alert("Mail gönderilemedi");
-  });
-
 }
 
 </script>
