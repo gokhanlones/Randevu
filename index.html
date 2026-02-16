@@ -7,12 +7,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  emailjs.init("bUqxAYFWuXWTy5nKT"); 
-});
-</script>
-
 <style>
 body{font-family:Arial,sans-serif;background:#111;color:white;margin:0;padding:20px;}
 button{padding:10px 15px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;}
@@ -45,13 +39,22 @@ input{width:100%;padding:8px;margin-bottom:10px;border-radius:5px;border:none;}
     <input type="date" id="date">
     <input type="time" id="time">
 
-    <button style="background:#d4af37;width:100%;" onclick="sendBooking()">Randevu Oluştur</button>
+    <button id="sendBtn" style="background:#d4af37;width:100%;">Randevu Oluştur</button>
     <br><br>
     <button style="background:#444;width:100%;" onclick="closeModal()">İptal</button>
   </div>
 </div>
 
 <script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+  // EMAILJS INIT
+  emailjs.init("bUqxAYFWuXWTy5nKT");
+
+  console.log("EmailJS hazır");
+
+});
 
 const salonData={
   "Diamond Hair":{address:"Kadıköy İstanbul",phone:"05320000001",rating:4.8},
@@ -116,13 +119,22 @@ function toggleService(el){
 
 function closeModal(){
   document.getElementById("bookingModal").style.display="none";
-  document.querySelectorAll("input").forEach(i=>i.value="");
+  document.querySelectorAll("#bookingModal input").forEach(i=>i.value="");
   selectedServices=[];
 }
+
+// BUTON EVENT BIND (onclick yerine güvenli tetikleme)
+document.addEventListener("click", function(e){
+  if(e.target && e.target.id==="sendBtn"){
+    sendBooking();
+  }
+});
 
 async function sendBooking(){
 
   try{
+
+    console.log("Buton tetiklendi");
 
     const name=document.getElementById("fullname").value.trim();
     const phone=document.getElementById("phone").value.trim();
@@ -137,12 +149,6 @@ async function sendBooking(){
 
     const bookingId=btoa(name+date+time);
 
-    const servicesHtml = selectedServices.map(s=>`
-      <div style="display:inline-block;padding:8px 14px;margin:5px 5px 0 0;background:#d4af37;color:#000;border-radius:20px;font-weight:bold;">
-        ${s}
-      </div>
-    `).join("");
-
     const params={
       salon:selectedSalon,
       date:date,
@@ -151,14 +157,17 @@ async function sendBooking(){
       phone:phone,
       email:email,
       location:salonData[selectedSalon].address,
-      services_with_prices:servicesHtml,
+      services_with_prices:selectedServices.join(", "),
       booking_id:bookingId
     };
 
     console.log("Mail gönderiliyor:", params);
 
-    await emailjs.send("service_8qoocwi","template_08wro98",params);
-    await emailjs.send("service_8qoocwi","template_03obhwb",params);
+    const result1 = await emailjs.send("service_8qoocwi","template_08wro98",params);
+    console.log("Müşteri maili OK", result1);
+
+    const result2 = await emailjs.send("service_8qoocwi","template_03obhwb",params);
+    console.log("Salon maili OK", result2);
 
     alert("Randevu başarıyla oluşturuldu");
     closeModal();
