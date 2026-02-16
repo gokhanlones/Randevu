@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Randevu AI</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+(function(){
+emailjs.init("bUqxAYFWuXWTy5nKT");
+})();
+</script>
+
+<style>
+:root{
+--gold:#d4af37;
+--gold-light:#f1d77a;
+}
+
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:linear-gradient(160deg,#0d0d0d,#1a1a1a);
+color:white;
+padding:20px;
+}
+
+h1{
+text-align:center;
+color:var(--gold);
+margin-bottom:30px;
+}
+
+.salon-card{
+background:#181818;
+padding:20px;
+border-radius:15px;
+margin-bottom:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+font-weight:bold;
+background:linear-gradient(90deg,var(--gold),var(--gold-light));
+cursor:pointer;
+}
+
+.modal{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.85);
+justify-content:center;
+align-items:center;
+}
+
+.modal-content{
+background:#181818;
+padding:25px;
+border-radius:15px;
+width:90%;
+max-width:400px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-bottom:10px;
+border-radius:8px;
+border:none;
+}
+
+.close-btn{
+margin-top:10px;
+background:#444;
+color:white;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Kuaför Seç</h1>
+
+<div id="salons"></div>
+
+<div class="modal" id="bookingModal">
+<div class="modal-content">
+
+<h3 id="selectedSalonTitle"></h3>
+
+<input type="date" id="date">
+<input type="time" id="time">
+<input type="text" id="fullname" placeholder="Ad Soyad">
+<input type="tel" id="phone" placeholder="Telefon">
+<input type="email" id="email" placeholder="E-posta">
+
+<button onclick="sendBooking()">Randevuyu Onayla</button>
+<button class="close-btn" onclick="closeModal()">İptal</button>
+
+</div>
+</div>
+
+<script>
+
+const salonList = [
+"Urban Barber",
+"Gold Salon",
+"Royal Hair",
+"Elite Barber",
+"Diamond Hair"
+];
+
+let selectedSalon = "";
+
+const container = document.getElementById("salons");
+
+salonList.forEach(salon=>{
+container.innerHTML += `
+<div class="salon-card">
+<h3>${salon}</h3>
+<button onclick="openBooking('${salon}')">Randevu Al</button>
+</div>
+`;
+});
+
+function openBooking(name){
+selectedSalon = name;
+document.getElementById("selectedSalonTitle").innerText = name;
+document.getElementById("bookingModal").style.display="flex";
+}
+
+function closeModal(){
+document.getElementById("bookingModal").style.display="none";
+}
+
+function sendBooking(){
+
+const date = document.getElementById("date").value;
+const time = document.getElementById("time").value;
+const name = document.getElementById("fullname").value;
+const phone = document.getElementById("phone").value;
+const email = document.getElementById("email").value;
+
+if(!date || !time || !name || !phone || !email){
+alert("Lütfen tüm alanları doldurun");
+return;
+}
+
+emailjs.send(
+"service_8qoocwi",
+"template_03obhwb",
+{
+salon: selectedSalon,
+date: date,
+time: time,
+name: name,
+phone: phone,
+email: email
+}
+)
+.then(function(response){
+alert("Randevu gönderildi!");
+closeModal();
+})
+.catch(function(error){
+console.log(error);
+alert("Mail gönderilemedi!");
+});
+
+}
+
+</script>
+
+</body>
+</html>
