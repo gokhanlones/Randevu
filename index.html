@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -81,15 +80,28 @@ color:var(--gold);
 }
 .service-item{
 display:flex;
+justify-content:space-between;
 align-items:center;
-gap:10px;
 margin-bottom:10px;
 font-size:14px;
 }
-.service-item input{
-width:18px;
-height:18px;
-accent-color:var(--gold);
+.service-left{
+display:flex;
+align-items:center;
+gap:8px;
+}
+.service-price{
+color:#d4af37;
+font-weight:bold;
+}
+.total-box{
+background:#000;
+padding:10px;
+border-radius:8px;
+margin-top:10px;
+text-align:right;
+font-weight:bold;
+color:#d4af37;
 }
 .close-btn{
 background:#444;
@@ -117,25 +129,41 @@ color:white;
 <div class="services">
 <h4>Yapılacak İşlemler</h4>
 
-<label class="service-item">
-<input type="checkbox" value="Saç Kesimi">
+<div class="service-item">
+<div class="service-left">
+<input type="checkbox" value="Saç Kesimi" data-price="250">
 <span>Saç Kesimi</span>
-</label>
+</div>
+<span class="service-price">250 ₺</span>
+</div>
 
-<label class="service-item">
-<input type="checkbox" value="Sakal Tıraşı">
+<div class="service-item">
+<div class="service-left">
+<input type="checkbox" value="Sakal Tıraşı" data-price="150">
 <span>Sakal Tıraşı</span>
-</label>
+</div>
+<span class="service-price">150 ₺</span>
+</div>
 
-<label class="service-item">
-<input type="checkbox" value="Saç Boyama">
+<div class="service-item">
+<div class="service-left">
+<input type="checkbox" value="Saç Boyama" data-price="600">
 <span>Saç Boyama</span>
-</label>
+</div>
+<span class="service-price">600 ₺</span>
+</div>
 
-<label class="service-item">
-<input type="checkbox" value="Cilt Bakımı">
+<div class="service-item">
+<div class="service-left">
+<input type="checkbox" value="Cilt Bakımı" data-price="400">
 <span>Cilt Bakımı</span>
-</label>
+</div>
+<span class="service-price">400 ₺</span>
+</div>
+
+<div class="total-box">
+Toplam: <span id="totalPrice">0</span> ₺
+</div>
 
 </div>
 
@@ -176,6 +204,18 @@ function closeModal(){
 document.getElementById("bookingModal").style.display="none";
 }
 
+document.querySelectorAll('.services input').forEach(cb=>{
+cb.addEventListener('change', calculateTotal);
+});
+
+function calculateTotal(){
+let total = 0;
+document.querySelectorAll('.services input:checked').forEach(cb=>{
+total += parseInt(cb.dataset.price);
+});
+document.getElementById("totalPrice").innerText = total;
+}
+
 function sendBooking(){
 
 const date = document.getElementById("date").value;
@@ -183,23 +223,15 @@ const time = document.getElementById("time").value;
 const name = document.getElementById("fullname").value;
 const phone = document.getElementById("phone").value;
 const email = document.getElementById("email").value;
+const total = document.getElementById("totalPrice").innerText;
 
 if(!date || !time || !name || !phone || !email){
 alert("Lütfen tüm alanları doldurun");
 return;
 }
 
-const selectedServices = Array.from(
-document.querySelectorAll('.services input:checked')
-).map(cb=>cb.value);
-
-if(selectedServices.length === 0){
-alert("En az bir işlem seçmelisiniz");
-return;
-}
-
 let servicesHtml = "";
-selectedServices.forEach(service=>{
+document.querySelectorAll('.services input:checked').forEach(cb=>{
 servicesHtml += `
 <div style="
 display:inline-block;
@@ -210,15 +242,12 @@ color:#000;
 border-radius:20px;
 font-weight:bold;
 font-size:13px;">
-${service}
+${cb.value} - ${cb.dataset.price} ₺
 </div>`;
 });
 
 const coords = salonData[selectedSalon];
 const mapsLink = `https://www.google.com/maps?q=${coords.lat},${coords.lng}`;
-
-const startDateTime = date.replaceAll("-","") + "T" + time.replace(":","") + "00";
-const endDateTime = date.replaceAll("-","") + "T" + (parseInt(time.split(":")[0])+1).toString().padStart(2,'0') + time.split(":")[1] + "00";
 
 const bookingId = Date.now();
 
@@ -230,10 +259,9 @@ name:name,
 phone:phone,
 email:email,
 services:servicesHtml,
-calendar_start:startDateTime,
-calendar_end:endDateTime,
-location:salonData[selectedSalon].address,
+total: total + " ₺",
 maps_link:mapsLink,
+location:salonData[selectedSalon].address,
 booking_id:bookingId
 };
 
