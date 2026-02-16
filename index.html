@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -17,7 +18,6 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
 --gold:#d4af37;
 --gold-light:#f1d77a;
 }
-
 body{
 margin:0;
 font-family:Arial, sans-serif;
@@ -25,13 +25,11 @@ background:linear-gradient(160deg,#0d0d0d,#1a1a1a);
 color:white;
 padding:20px;
 }
-
 h1{
 text-align:center;
 color:var(--gold);
 margin-bottom:30px;
 }
-
 .salon-card{
 background:#181818;
 padding:20px;
@@ -39,7 +37,6 @@ border-radius:15px;
 margin-bottom:20px;
 box-shadow:0 10px 30px rgba(0,0,0,0.5);
 }
-
 button{
 width:100%;
 padding:12px;
@@ -50,7 +47,6 @@ background:linear-gradient(90deg,var(--gold),var(--gold-light));
 cursor:pointer;
 margin-top:10px;
 }
-
 .modal{
 display:none;
 position:fixed;
@@ -59,7 +55,6 @@ background:rgba(0,0,0,0.85);
 justify-content:center;
 align-items:center;
 }
-
 .modal-content{
 background:#181818;
 padding:25px;
@@ -67,7 +62,6 @@ border-radius:15px;
 width:90%;
 max-width:400px;
 }
-
 input{
 width:100%;
 padding:10px;
@@ -75,36 +69,28 @@ margin-bottom:12px;
 border-radius:8px;
 border:none;
 }
-
 .services{
 background:#111;
 padding:15px;
 border-radius:10px;
 margin-bottom:15px;
 }
-
 .services h4{
 margin:0 0 12px 0;
 color:var(--gold);
-font-weight:600;
 }
-
 .service-item{
 display:flex;
 align-items:center;
 gap:10px;
 margin-bottom:10px;
 font-size:14px;
-cursor:pointer;
 }
-
 .service-item input{
 width:18px;
 height:18px;
 accent-color:var(--gold);
-cursor:pointer;
 }
-
 .close-btn{
 background:#444;
 color:white;
@@ -162,11 +148,11 @@ color:white;
 <script>
 
 const salonData = {
-"Urban Barber": {lat:40.9906,lng:29.0293},
-"Gold Salon": {lat:41.0430,lng:29.0041},
-"Royal Hair": {lat:41.0369,lng:28.9850},
-"Elite Barber": {lat:41.0602,lng:28.9870},
-"Diamond Hair": {lat:40.9800,lng:28.8750}
+"Urban Barber": {lat:40.9906,lng:29.0293,address:"Kadıköy İstanbul"},
+"Gold Salon": {lat:41.0430,lng:29.0041,address:"Beşiktaş İstanbul"},
+"Royal Hair": {lat:41.0369,lng:28.9850,address:"Beyoğlu İstanbul"},
+"Elite Barber": {lat:41.0602,lng:28.9870,address:"Şişli İstanbul"},
+"Diamond Hair": {lat:40.9800,lng:28.8750,address:"Bakırköy İstanbul"}
 };
 
 let selectedSalon = "";
@@ -246,6 +232,7 @@ email:email,
 services:servicesHtml,
 calendar_start:startDateTime,
 calendar_end:endDateTime,
+location:salonData[selectedSalon].address,
 maps_link:mapsLink,
 booking_id:bookingId
 };
