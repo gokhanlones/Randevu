@@ -91,7 +91,7 @@ color:white;
 <input type="date" id="date" required>
 <input type="time" id="time" required>
 <input type="text" id="fullname" placeholder="Ad Soyad" required>
-<input type="tel" id="phone" placeholder="Telefon" required>
+<input type="tel" id="phone" placeholder="Telefon (5xxxxxxxxx)" required>
 <input type="email" id="email" placeholder="E-posta" required>
 
 <button type="submit">Randevuyu Onayla</button>
@@ -109,89 +109,124 @@ const SERVICE_ID = "service_8qoocwi";
 const TEMPLATE_NOTIFY = "template_03obhwb";
 const TEMPLATE_AUTO_REPLY = "template_08wro98";
 
+/* ÇOKLU SALON + ADRES */
+
 const salonList = [
-"Urban Barber",
-"Gold Salon",
-"Royal Hair",
-"Elite Barber",
-"Diamond Hair"
+{
+name: "Urban Barber",
+address: "Bağdat Caddesi No 25 Kadıköy İstanbul"
+},
+{
+name: "Gold Salon",
+address: "Barbaros Bulvarı No 10 Beşiktaş İstanbul"
+},
+{
+name: "Royal Hair",
+address: "Libadiye Caddesi No 5 Üsküdar İstanbul"
+},
+{
+name: "Elite Barber",
+address: "Mecidiyeköy Mahallesi No 8 Şişli İstanbul"
+},
+{
+name: "Diamond Hair",
+address: "Atatürk Caddesi No 15 Bakırköy İstanbul"
+}
 ];
 
 let selectedSalon = "";
-
 const container = document.getElementById("salons");
 const modal = document.getElementById("bookingModal");
 const salonTitle = document.getElementById("selectedSalonTitle");
 const form = document.getElementById("bookingForm");
 const cancelBtn = document.getElementById("cancelBtn");
 
-function renderSalons(){
+/* SALONLARI YAZ */
+
 salonList.forEach(salon=>{
 const card = document.createElement("div");
 card.className = "salon-card";
 
 card.innerHTML = `
-<h3>${salon}</h3>
-<button data-salon="${salon}">Randevu Al</button>
+<h3>${salon.name}</h3>
+<button data-salon="${salon.name}">Randevu Al</button>
 `;
 
 container.appendChild(card);
 });
-}
 
-function openModal(salon){
-selectedSalon = salon;
-salonTitle.innerText = salon;
+/* MODAL */
+
+container.addEventListener("click", function(e){
+if(e.target.tagName === "BUTTON"){
+selectedSalon = e.target.getAttribute("data-salon");
+salonTitle.innerText = selectedSalon;
 modal.style.display = "flex";
 }
+});
 
-function closeModal(){
+cancelBtn.addEventListener("click", function(){
 modal.style.display = "none";
 form.reset();
+});
+
+/* RANDEVU GÖNDER */
+
+form.addEventListener("submit", async function(e){
+e.preventDefault();
+
+const date = document.getElementById("date").value;
+const time = document.getElementById("time").value;
+const name = document.getElementById("fullname").value;
+const phone = document.getElementById("phone").value;
+const email = document.getElementById("email").value;
+
+const selectedSalonObj = salonList.find(s => s.name === selectedSalon);
+const location = selectedSalonObj.address;
+
+/* TAKVİM FORMAT */
+
+const startDate = new Date(date + "T" + time);
+const endDate = new Date(startDate.getTime() + 60 * 60000);
+
+function formatDate(d){
+return d.getFullYear().toString() +
+("0"+(d.getMonth()+1)).slice(-2) +
+("0"+d.getDate()).slice(-2) + "T" +
+("0"+d.getHours()).slice(-2) +
+("0"+d.getMinutes()).slice(-2) + "00";
 }
 
-async function sendBooking(data){
+const formattedStart = formatDate(startDate);
+const formattedEnd = formatDate(endDate);
 
-try{
+const params = {
+salon: selectedSalon,
+date: date,
+time: time,
+name: name,
+phone: phone,
+email: email,
+location: location,
+calendar_start: formattedStart,
+calendar_end: formattedEnd
+};
 
-await emailjs.send(SERVICE_ID, TEMPLATE_NOTIFY, data);
-await emailjs.send(SERVICE_ID, TEMPLATE_AUTO_REPLY, data);
+try {
+
+await emailjs.send(SERVICE_ID, TEMPLATE_NOTIFY, params);
+await emailjs.send(SERVICE_ID, TEMPLATE_AUTO_REPLY, params);
 
 alert("Randevu başarıyla oluşturuldu.");
-closeModal();
+modal.style.display = "none";
+form.reset();
 
 }catch(error){
 console.error(error);
 alert("Mail gönderilirken hata oluştu!");
 }
 
-}
-
-container.addEventListener("click", function(e){
-if(e.target.tagName === "BUTTON"){
-const salon = e.target.getAttribute("data-salon");
-openModal(salon);
-}
 });
-
-cancelBtn.addEventListener("click", closeModal);
-
-form.addEventListener("submit", function(e){
-e.preventDefault();
-
-const bookingData = {
-salon: selectedSalon,
-date: document.getElementById("date").value,
-time: document.getElementById("time").value,
-name: document.getElementById("fullname").value,
-phone: document.getElementById("phone").value,
-email: document.getElementById("email").value
-};
-
-sendBooking(bookingData);
-});
-
-renderSalons();
 
 </script>
 
