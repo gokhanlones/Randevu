@@ -5,105 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Randevu AI</title>
 
-<!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
 <script>
 (function(){
-  emailjs.init("bUqxAYFWuXWTy5nKT");
+  emailjs.init("bUqxAYEWuXWVy5nKT"); // DOĞRU PUBLIC KEY
 })();
 </script>
 
 <style>
-body{
-  font-family:Arial, sans-serif;
-  background:#111;
-  color:white;
-  margin:0;
-  padding:20px;
-}
-
-button{
-  padding:10px 15px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-.salon-card{
-  background:#1e1e1e;
-  padding:15px;
-  margin-bottom:15px;
-  border-radius:10px;
-}
-
-.rating{
-  color:#d4af37;
-  font-size:14px;
-}
-
-.address{
-  font-size:13px;
-  color:#ccc;
-  margin-bottom:8px;
-}
-
-.call-btn{
-  background:#2ecc71;
-  color:white;
-  margin-right:8px;
-}
-
-.book-btn{
-  background:#d4af37;
-}
-
-.modal{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.85);
-  display:none;
-  justify-content:center;
-  align-items:center;
-}
-
-.modal-content{
-  background:#1e1e1e;
-  padding:20px;
-  border-radius:10px;
-  width:95%;
-  max-width:420px;
-}
-
-.service-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:8px 0;
-  border-bottom:1px solid #333;
-}
-
-.service-name{
-  flex:1;
-  text-align:left;
-  font-size:14px;
-}
-
-.service-row input{
-  width:18px;
-  height:18px;
-}
-
-input{
-  width:100%;
-  padding:8px;
-  margin-bottom:10px;
-  border-radius:5px;
-  border:none;
-}
+body{font-family:Arial,sans-serif;background:#111;color:white;margin:0;padding:20px;}
+button{padding:10px 15px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;}
+.salon-card{background:#1e1e1e;padding:15px;margin-bottom:15px;border-radius:10px;}
+.rating{color:#d4af37;font-size:14px;}
+.address{font-size:13px;color:#ccc;margin-bottom:8px;}
+.call-btn{background:#2ecc71;color:white;margin-right:8px;}
+.book-btn{background:#d4af37;}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;}
+.modal-content{background:#1e1e1e;padding:20px;border-radius:10px;width:95%;max-width:420px;}
+.service-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #333;}
+.service-name{flex:1;text-align:left;font-size:14px;}
+.service-row input{width:18px;height:18px;}
+input{width:100%;padding:8px;margin-bottom:10px;border-radius:5px;border:none;}
 </style>
 </head>
 <body>
@@ -114,15 +37,12 @@ input{
 <div class="modal" id="bookingModal">
   <div class="modal-content">
     <h3 id="selectedSalonTitle"></h3>
-    <div id="serviceList"></div>
-    <br>
-
+    <div id="serviceList"></div><br>
     <input type="text" id="fullname" placeholder="Ad Soyad">
     <input type="tel" id="phone" placeholder="Telefon">
     <input type="email" id="email" placeholder="Email">
     <input type="date" id="date">
     <input type="time" id="time">
-
     <button style="background:#d4af37;width:100%;" onclick="sendBooking()">Randevu Oluştur</button>
     <br><br>
     <button style="background:#444;width:100%;" onclick="closeModal()">İptal</button>
@@ -133,29 +53,14 @@ input{
 
 const salonData={
   "Diamond Hair":{address:"Kadıköy İstanbul",phone:"05320000001",rating:4.8},
-  "Gold Salon":{address:"Bakırköy İstanbul",phone:"05320000002",rating:4.6},
-  "Elite Barber":{address:"Beşiktaş İstanbul",phone:"05320000003",rating:4.7},
-  "Royal Cut":{address:"Şişli İstanbul",phone:"05320000004",rating:4.5},
-  "Modern Style":{address:"Ataşehir İstanbul",phone:"05320000005",rating:4.4},
-  "Premium Hair":{address:"Üsküdar İstanbul",phone:"05320000006",rating:4.9},
-  "Legend Barber":{address:"Kartal İstanbul",phone:"05320000007",rating:4.3},
-  "Boss Style":{address:"Maltepe İstanbul",phone:"05320000008",rating:4.6},
-  "Urban Cut":{address:"Pendik İstanbul",phone:"05320000009",rating:4.2},
-  "Luxury Barber":{address:"Levent İstanbul",phone:"05320000010",rating:4.8},
-  "Classic Hair":{address:"Fatih İstanbul",phone:"05320000011",rating:4.5},
-  "Golden Scissors":{address:"Esenyurt İstanbul",phone:"05320000012",rating:4.1},
-  "Neo Barber":{address:"Bahçelievler İstanbul",phone:"05320000013",rating:4.4},
-  "Titan Style":{address:"Sarıyer İstanbul",phone:"05320000014",rating:4.7},
-  "Sky Hair":{address:"Beylikdüzü İstanbul",phone:"05320000015",rating:4.6}
+  "Gold Salon":{address:"Bakırköy İstanbul",phone:"05320000002",rating:4.6}
 };
 
 const servicesList=[
   "Saç Kesimi",
   "Sakal Tıraşı",
   "Saç Boyama",
-  "Cilt Bakımı",
-  "Keratin Bakım",
-  "Çocuk Saç Kesimi"
+  "Cilt Bakımı"
 ];
 
 let selectedSalon="";
@@ -169,11 +74,9 @@ for(const salon in salonData){
       <h3>${salon}</h3>
       <div class="rating">⭐ ${salonData[salon].rating}</div>
       <div class="address">${salonData[salon].address}</div>
-
       <a href="tel:${salonData[salon].phone}">
         <button class="call-btn">📞 Ara</button>
       </a>
-
       <button class="book-btn" onclick="openBooking('${salon}')">
         Randevu Al
       </button>
@@ -215,9 +118,9 @@ function closeModal(){
 
 function sendBooking(){
 
-  const name=document.getElementById("fullname").value;
-  const phone=document.getElementById("phone").value;
-  const email=document.getElementById("email").value;
+  const name=document.getElementById("fullname").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const email=document.getElementById("email").value.trim();
   const date=document.getElementById("date").value;
   const time=document.getElementById("time").value;
 
@@ -226,22 +129,13 @@ function sendBooking(){
     return;
   }
 
-  let servicesHtml="";
-  selectedServices.forEach(s=>{
-    servicesHtml+=`
-      <div style="display:inline-block;
-      padding:8px 14px;
-      margin:5px 5px 0 0;
-      background:#d4af37;
-      color:#000;
-      border-radius:20px;
-      font-weight:bold;">
-      ${s}
-      </div>
-    `;
-  });
-
   const bookingId=btoa(name+date+time);
+
+  const servicesHtml = selectedServices.map(s=>`
+    <div style="display:inline-block;padding:8px 14px;margin:5px 5px 0 0;background:#d4af37;color:#000;border-radius:20px;font-weight:bold;">
+      ${s}
+    </div>
+  `).join("");
 
   const params={
     salon:selectedSalon,
@@ -255,18 +149,21 @@ function sendBooking(){
     booking_id:bookingId
   };
 
-  Promise.all([
-    emailjs.send("service_8qoocwi","template_03obhwb",params),
-    emailjs.send("service_8qoocwi","template_08wro98",params)
-  ])
-  .then(()=>{
-    alert("Randevu oluşturuldu");
-    closeModal();
+  // Önce müşteri maili
+  emailjs.send("service_8qoocwi","template_08wro98",params)
+  .then(function(){
+      // Sonra işletme maili
+      return emailjs.send("service_8qoocwi","template_03obhwb",params);
   })
-  .catch((error)=>{
-    console.error("EmailJS Hata:", error);
-    alert("Mail gönderilemedi");
+  .then(function(){
+      alert("Randevu oluşturuldu");
+      closeModal();
+  })
+  .catch(function(error){
+      console.error("EMAILJS HATA:", error);
+      alert("Mail gönderilemedi");
   });
+
 }
 
 </script>
