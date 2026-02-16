@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -16,7 +15,6 @@ body{
   margin:0;
   padding:20px;
 }
-
 button{
   padding:10px 15px;
   border:none;
@@ -24,47 +22,25 @@ button{
   cursor:pointer;
   font-weight:bold;
 }
-
 .salon-card{
   background:#1e1e1e;
   padding:15px;
   margin-bottom:15px;
   border-radius:10px;
 }
-
-.rating{
-  color:#d4af37;
-  font-size:14px;
-}
-
-.address{
-  font-size:13px;
-  color:#ccc;
-  margin-bottom:8px;
-}
-
-.call-btn{
-  background:#2ecc71;
-  color:white;
-  margin-right:8px;
-}
-
-.book-btn{
-  background:#d4af37;
-}
-
+.rating{ color:#d4af37; font-size:14px; }
+.address{ font-size:13px; color:#ccc; margin-bottom:8px; }
+.call-btn{ background:#2ecc71; color:white; margin-right:8px; }
+.book-btn{ background:#d4af37; }
 .modal{
   position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
+  top:0; left:0;
+  width:100%; height:100%;
   background:rgba(0,0,0,0.85);
   display:none;
   justify-content:center;
   align-items:center;
 }
-
 .modal-content{
   background:#1e1e1e;
   padding:20px;
@@ -72,8 +48,6 @@ button{
   width:95%;
   max-width:420px;
 }
-
-/* CHECKBOX HİZALAMA */
 .service-row{
   display:flex;
   align-items:center;
@@ -81,18 +55,6 @@ button{
   padding:8px 0;
   border-bottom:1px solid #333;
 }
-
-.service-name{
-  flex:1;
-  text-align:left;
-  font-size:14px;
-}
-
-.service-row input{
-  width:18px;
-  height:18px;
-}
-
 input{
   width:100%;
   padding:8px;
@@ -105,61 +67,43 @@ input{
 <body>
 
 <h2>Salon Seçin</h2>
-
 <div id="salonContainer"></div>
 
 <div class="modal" id="bookingModal">
   <div class="modal-content">
-
     <h3 id="selectedSalonTitle"></h3>
-
     <div id="serviceList"></div>
-
     <br>
-
     <input type="text" id="fullname" placeholder="Ad Soyad">
     <input type="tel" id="phone" placeholder="Telefon">
     <input type="email" id="email" placeholder="Email">
     <input type="date" id="date">
     <input type="time" id="time">
-
     <button style="background:#d4af37;width:100%;" onclick="sendBooking()">Randevu Oluştur</button>
     <br><br>
     <button style="background:#444;width:100%;" onclick="closeModal()">İptal</button>
-
   </div>
 </div>
 
 <script>
-emailjs.init("YOUR_PUBLIC_KEY");
 
-/* 15 SALON */
+/* 🔴 BURAYA EMAILJS PUBLIC KEY */
+emailjs.init("BURAYA_PUBLIC_KEY");
+
+/* 🔴 BURAYA SERVICE ID */
+const SERVICE_ID = "service_8qoocwi";
+
+/* 🔴 TEMPLATE ID’LER */
+const TEMPLATE_BUSINESS = "template_03obhwb";
+const TEMPLATE_CUSTOMER = "template_08wro98";
+
 const salonData={
   "Diamond Hair":{address:"Kadıköy İstanbul",phone:"05320000001",rating:4.8},
-  "Gold Salon":{address:"Bakırköy İstanbul",phone:"05320000002",rating:4.6},
-  "Elite Barber":{address:"Beşiktaş İstanbul",phone:"05320000003",rating:4.7},
-  "Royal Cut":{address:"Şişli İstanbul",phone:"05320000004",rating:4.5},
-  "Modern Style":{address:"Ataşehir İstanbul",phone:"05320000005",rating:4.4},
-  "Premium Hair":{address:"Üsküdar İstanbul",phone:"05320000006",rating:4.9},
-  "Legend Barber":{address:"Kartal İstanbul",phone:"05320000007",rating:4.3},
-  "Boss Style":{address:"Maltepe İstanbul",phone:"05320000008",rating:4.6},
-  "Urban Cut":{address:"Pendik İstanbul",phone:"05320000009",rating:4.2},
-  "Luxury Barber":{address:"Levent İstanbul",phone:"05320000010",rating:4.8},
-  "Classic Hair":{address:"Fatih İstanbul",phone:"05320000011",rating:4.5},
-  "Golden Scissors":{address:"Esenyurt İstanbul",phone:"05320000012",rating:4.1},
-  "Neo Barber":{address:"Bahçelievler İstanbul",phone:"05320000013",rating:4.4},
-  "Titan Style":{address:"Sarıyer İstanbul",phone:"05320000014",rating:4.7},
-  "Sky Hair":{address:"Beylikdüzü İstanbul",phone:"05320000015",rating:4.6}
+  "Gold Salon":{address:"Bakırköy İstanbul",phone:"05320000002",rating:4.6}
 };
 
-/* Ortak Hizmetler */
 const servicesList=[
-  "Saç Kesimi",
-  "Sakal Tıraşı",
-  "Saç Boyama",
-  "Cilt Bakımı",
-  "Keratin Bakım",
-  "Çocuk Saç Kesimi"
+  "Saç Kesimi","Sakal Tıraşı","Saç Boyama","Cilt Bakımı"
 ];
 
 let selectedSalon="";
@@ -173,11 +117,9 @@ for(const salon in salonData){
       <h3>${salon}</h3>
       <div class="rating">⭐ ${salonData[salon].rating}</div>
       <div class="address">${salonData[salon].address}</div>
-
       <a href="tel:${salonData[salon].phone}">
         <button class="call-btn">📞 Ara</button>
       </a>
-
       <button class="book-btn" onclick="openBooking('${salon}')">
         Randevu Al
       </button>
@@ -189,19 +131,16 @@ function openBooking(name){
   selectedSalon=name;
   selectedServices=[];
   document.getElementById("selectedSalonTitle").innerText=name;
-
   const list=document.getElementById("serviceList");
   list.innerHTML="";
-
   servicesList.forEach(service=>{
     list.innerHTML+=`
       <div class="service-row">
-        <div class="service-name">${service}</div>
+        <span>${service}</span>
         <input type="checkbox" value="${service}" onchange="toggleService(this)">
       </div>
     `;
   });
-
   document.getElementById("bookingModal").style.display="flex";
 }
 
@@ -230,23 +169,6 @@ function sendBooking(){
     return;
   }
 
-  let servicesHtml="";
-  selectedServices.forEach(s=>{
-    servicesHtml+=`
-      <div style="display:inline-block;
-      padding:8px 14px;
-      margin:5px 5px 0 0;
-      background:#d4af37;
-      color:#000;
-      border-radius:20px;
-      font-weight:bold;">
-      ${s}
-      </div>
-    `;
-  });
-
-  const bookingId=btoa(name+date+time);
-
   const params={
     salon:selectedSalon,
     date:date,
@@ -255,22 +177,25 @@ function sendBooking(){
     phone:phone,
     email:email,
     location:salonData[selectedSalon].address,
-    services_with_prices:servicesHtml,
-    booking_id:bookingId
+    services:selectedServices.join(", ")
   };
 
-  Promise.all([
-    emailjs.send("service_8qoocwi","template_03obhwb",params),
-    emailjs.send("service_8qoocwi","template_08wro98",params)
-  ])
+  /* İşletmeye mail */
+  emailjs.send(SERVICE_ID, TEMPLATE_BUSINESS, params)
+  .then(()=>{
+    /* Müşteriye mail */
+    return emailjs.send(SERVICE_ID, TEMPLATE_CUSTOMER, params);
+  })
   .then(()=>{
     alert("Randevu oluşturuldu");
     closeModal();
   })
-  .catch(()=>{
-    alert("Mesaj gönderilemedi");
+  .catch((error)=>{
+    console.log("EMAIL ERROR:",error);
+    alert("Mail gönderilemedi");
   });
 }
+
 </script>
 
 </body>
