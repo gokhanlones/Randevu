@@ -25,10 +25,32 @@ button{
 }
 
 .salon-card{
-  background:#222;
+  background:#1e1e1e;
   padding:15px;
   margin-bottom:15px;
-  border-radius:8px;
+  border-radius:10px;
+}
+
+.rating{
+  color:#d4af37;
+  font-size:14px;
+  margin-bottom:5px;
+}
+
+.address{
+  font-size:13px;
+  color:#ccc;
+  margin-bottom:10px;
+}
+
+.call-btn{
+  background:#2ecc71;
+  color:white;
+  margin-right:10px;
+}
+
+.book-btn{
+  background:#d4af37;
 }
 
 .modal{
@@ -37,21 +59,21 @@ button{
   left:0;
   width:100%;
   height:100%;
-  background:rgba(0,0,0,0.7);
+  background:rgba(0,0,0,0.8);
   display:none;
   justify-content:center;
   align-items:center;
 }
 
 .modal-content{
-  background:#222;
+  background:#1e1e1e;
   padding:20px;
-  border-radius:8px;
+  border-radius:10px;
   width:95%;
-  max-width:400px;
+  max-width:420px;
 }
 
-input, select{
+input{
   width:100%;
   padding:8px;
   margin-bottom:10px;
@@ -65,30 +87,13 @@ input, select{
   align-items:center;
   margin-bottom:8px;
 }
-
-.total-box{
-  margin-top:10px;
-  padding:8px;
-  background:#333;
-  border-radius:6px;
-  text-align:right;
-  font-weight:bold;
-}
 </style>
 </head>
 <body>
 
 <h2>Salon Seçin</h2>
 
-<div class="salon-card">
-  <h3>Diamond Hair</h3>
-  <button onclick="openBooking('Diamond Hair')">Randevu Al</button>
-</div>
-
-<div class="salon-card">
-  <h3>Gold Salon</h3>
-  <button onclick="openBooking('Gold Salon')">Randevu Al</button>
-</div>
+<div id="salonContainer"></div>
 
 <div class="modal" id="bookingModal">
   <div class="modal-content">
@@ -96,10 +101,6 @@ input, select{
     <h3 id="selectedSalonTitle"></h3>
 
     <div id="serviceList"></div>
-
-    <div class="total-box">
-      Toplam: <span id="totalPrice">0 TL</span>
-    </div>
 
     <input type="text" id="fullname" placeholder="Ad Soyad">
     <input type="tel" id="phone" placeholder="Telefon">
@@ -115,67 +116,74 @@ input, select{
 </div>
 
 <script>
-emailjs.init("YOUR_PUBLIC_KEY"); // BURAYA PUBLIC KEY
+emailjs.init("YOUR_PUBLIC_KEY");
 
 const salonData = {
   "Diamond Hair":{
     address:"Bağdat Caddesi No 45 Kadıköy İstanbul",
-    services:{
-      "Saç Kesimi":400,
-      "Sakal Tıraşı":300,
-      "Saç Boyama":950,
-      "Cilt Bakımı":700
-    }
+    phone:"05321234567",
+    rating:4.8,
+    services:["Saç Kesimi","Sakal Tıraşı","Saç Boyama","Cilt Bakımı"]
   },
   "Gold Salon":{
     address:"Atatürk Caddesi No 15 Bakırköy İstanbul",
-    services:{
-      "Saç Kesimi":350,
-      "Sakal Tıraşı":250,
-      "Saç Boyama":900,
-      "Cilt Bakımı":650
-    }
+    phone:"05462329118",
+    rating:4.6,
+    services:["Saç Kesimi","Sakal Tıraşı","Saç Boyama","Cilt Bakımı"]
   }
 };
 
 let selectedSalon="";
 let selectedServices=[];
-let total=0;
+
+const container=document.getElementById("salonContainer");
+
+for(const salon in salonData){
+
+  container.innerHTML+=`
+    <div class="salon-card">
+      <h3>${salon}</h3>
+      <div class="rating">⭐ ${salonData[salon].rating}</div>
+      <div class="address">${salonData[salon].address}</div>
+
+      <a href="tel:${salonData[salon].phone}">
+        <button class="call-btn">📞 Ara</button>
+      </a>
+
+      <button class="book-btn" onclick="openBooking('${salon}')">
+        Randevu Al
+      </button>
+    </div>
+  `;
+}
 
 function openBooking(name){
   selectedSalon=name;
   selectedServices=[];
-  total=0;
-  document.getElementById("totalPrice").innerText="0 TL";
   document.getElementById("selectedSalonTitle").innerText=name;
 
   const list=document.getElementById("serviceList");
   list.innerHTML="";
 
-  const services=salonData[name].services;
-
-  for(const service in services){
+  salonData[name].services.forEach(service=>{
     list.innerHTML+=`
       <div class="service-row">
-        <span>${service} - ${services[service]} TL</span>
+        <span>${service}</span>
         <input type="checkbox" value="${service}" 
-        onchange="toggleService(this,${services[service]})">
+        onchange="toggleService(this)">
       </div>
     `;
-  }
+  });
 
   document.getElementById("bookingModal").style.display="flex";
 }
 
-function toggleService(el,price){
+function toggleService(el){
   if(el.checked){
-    selectedServices.push({name:el.value,price:price});
-    total+=price;
+    selectedServices.push(el.value);
   }else{
-    selectedServices=selectedServices.filter(s=>s.name!==el.value);
-    total-=price;
+    selectedServices=selectedServices.filter(s=>s!==el.value);
   }
-  document.getElementById("totalPrice").innerText=total+" TL";
 }
 
 function closeModal(){
@@ -205,15 +213,10 @@ function sendBooking(){
       color:#000;
       border-radius:20px;
       font-weight:bold;">
-      ${s.name} - ${s.price} TL
+      ${s}
       </div>
     `;
   });
-
-  const start=new Date(`${date}T${time}`);
-  const end=new Date(start.getTime()+60*60000);
-  const calendarStart=start.toISOString().replace(/-|:|\.\d\d\d/g,"");
-  const calendarEnd=end.toISOString().replace(/-|:|\.\d\d\d/g,"");
 
   const bookingId=btoa(name+date+time);
 
@@ -226,10 +229,7 @@ function sendBooking(){
     email:email,
     location:salonData[selectedSalon].address,
     services_with_prices:servicesHtml,
-    total_price:total+" TL",
-    booking_id:bookingId,
-    calendar_start:calendarStart,
-    calendar_end:calendarEnd
+    booking_id:bookingId
   };
 
   Promise.all([
@@ -243,7 +243,6 @@ function sendBooking(){
   .catch(()=>{
     alert("Mesaj gönderilemedi");
   });
-
 }
 </script>
 
