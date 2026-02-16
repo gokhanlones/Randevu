@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -7,9 +6,6 @@
 <title>Randevu AI</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>
-emailjs.init("bUqxAYFWuXWTy5nKT");
-</script>
 
 <style>
 :root{
@@ -47,6 +43,7 @@ border-radius:10px;
 font-weight:bold;
 background:linear-gradient(90deg,var(--gold),var(--gold-light));
 cursor:pointer;
+margin-top:10px;
 }
 
 .modal{
@@ -75,7 +72,6 @@ border:none;
 }
 
 .close-btn{
-margin-top:10px;
 background:#444;
 color:white;
 }
@@ -89,30 +85,31 @@ color:white;
 
 <div class="modal" id="bookingModal">
 <div class="modal-content">
-
 <h3 id="selectedSalonTitle"></h3>
 
-<input type="date" id="date">
-<input type="time" id="time">
-<input type="text" id="fullname" placeholder="Ad Soyad">
-<input type="tel" id="phone" placeholder="Telefon">
-<input type="email" id="email" placeholder="E-posta">
+<form id="bookingForm">
+<input type="date" id="date" required>
+<input type="time" id="time" required>
+<input type="text" id="fullname" placeholder="Ad Soyad" required>
+<input type="tel" id="phone" placeholder="Telefon" required>
+<input type="email" id="email" placeholder="E-posta" required>
 
-<button id="confirmBtn">Randevuyu Onayla</button>
-<button class="close-btn" id="cancelBtn">İptal</button>
+<button type="submit">Randevuyu Onayla</button>
+<button type="button" class="close-btn" id="cancelBtn">İptal</button>
+</form>
 
 </div>
 </div>
 
 <script>
 
-/* ===== CONFIG ===== */
+emailjs.init("bUqxAYFWuXWTy5nKT");
 
 const SERVICE_ID = "service_8qoocwi";
-const ADMIN_TEMPLATE_ID = "template_03obhwb";
-const CUSTOMER_TEMPLATE_ID = "template_08wno98";
+const TEMPLATE_NOTIFY = "template_03obhwb";
+const TEMPLATE_AUTO_REPLY = "template_08wro98";
 
-const SALONS = [
+const salonList = [
 "Urban Barber",
 "Gold Salon",
 "Royal Hair",
@@ -122,97 +119,79 @@ const SALONS = [
 
 let selectedSalon = "";
 
-/* ===== INIT ===== */
-
-document.addEventListener("DOMContentLoaded", () => {
-renderSalons();
-bindEvents();
-});
-
-/* ===== RENDER ===== */
+const container = document.getElementById("salons");
+const modal = document.getElementById("bookingModal");
+const salonTitle = document.getElementById("selectedSalonTitle");
+const form = document.getElementById("bookingForm");
+const cancelBtn = document.getElementById("cancelBtn");
 
 function renderSalons(){
-const container = document.getElementById("salons");
-container.innerHTML = "";
+salonList.forEach(salon=>{
+const card = document.createElement("div");
+card.className = "salon-card";
 
-SALONS.forEach(salon=>{
-container.innerHTML += `
-<div class="salon-card">
+card.innerHTML = `
 <h3>${salon}</h3>
 <button data-salon="${salon}">Randevu Al</button>
-</div>
 `;
+
+container.appendChild(card);
 });
 }
-
-/* ===== EVENTS ===== */
-
-function bindEvents(){
-
-document.getElementById("salons").addEventListener("click", e=>{
-if(e.target.tagName === "BUTTON"){
-openModal(e.target.dataset.salon);
-}
-});
-
-document.getElementById("cancelBtn").addEventListener("click", closeModal);
-document.getElementById("confirmBtn").addEventListener("click", sendBooking);
-
-}
-
-/* ===== MODAL ===== */
 
 function openModal(salon){
 selectedSalon = salon;
-document.getElementById("selectedSalonTitle").innerText = salon;
-document.getElementById("bookingModal").style.display = "flex";
+salonTitle.innerText = salon;
+modal.style.display = "flex";
 }
 
 function closeModal(){
-document.getElementById("bookingModal").style.display = "none";
+modal.style.display = "none";
+form.reset();
 }
 
-/* ===== BOOKING ===== */
-
-async function sendBooking(){
-
-const date = document.getElementById("date").value;
-const time = document.getElementById("time").value;
-const name = document.getElementById("fullname").value;
-const phone = document.getElementById("phone").value;
-const email = document.getElementById("email").value;
-
-if(!date || !time || !name || !phone || !email){
-alert("Lütfen tüm alanları doldurun");
-return;
-}
-
-const params = {
-salon: selectedSalon,
-date,
-time,
-name,
-phone,
-email
-};
+async function sendBooking(data){
 
 try{
 
-// 1️⃣ Admin mail
-await emailjs.send(SERVICE_ID, ADMIN_TEMPLATE_ID, params);
+await emailjs.send(SERVICE_ID, TEMPLATE_NOTIFY, data);
+await emailjs.send(SERVICE_ID, TEMPLATE_AUTO_REPLY, data);
 
-// 2️⃣ Customer mail
-await emailjs.send(SERVICE_ID, CUSTOMER_TEMPLATE_ID, params);
-
-alert("Randevu başarıyla oluşturuldu!");
+alert("Randevu başarıyla oluşturuldu.");
 closeModal();
 
 }catch(error){
-console.error("Mail Error:", error);
+console.error(error);
 alert("Mail gönderilirken hata oluştu!");
 }
 
 }
+
+container.addEventListener("click", function(e){
+if(e.target.tagName === "BUTTON"){
+const salon = e.target.getAttribute("data-salon");
+openModal(salon);
+}
+});
+
+cancelBtn.addEventListener("click", closeModal);
+
+form.addEventListener("submit", function(e){
+e.preventDefault();
+
+const bookingData = {
+salon: selectedSalon,
+date: document.getElementById("date").value,
+time: document.getElementById("time").value,
+name: document.getElementById("fullname").value,
+phone: document.getElementById("phone").value,
+email: document.getElementById("email").value
+};
+
+sendBooking(bookingData);
+});
+
+renderSalons();
 
 </script>
 
