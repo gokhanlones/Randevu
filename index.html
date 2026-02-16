@@ -6,10 +6,9 @@
 <title>Randevu AI</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 <script>
-(function(){
 emailjs.init("bUqxAYFWuXWTy5nKT");
-})();
 </script>
 
 <style>
@@ -86,12 +85,10 @@ color:white;
 <body>
 
 <h1>Kuaför Seç</h1>
-
 <div id="salons"></div>
 
 <div class="modal" id="bookingModal">
 <div class="modal-content">
-
 <h3 id="selectedSalonTitle"></h3>
 
 <input type="date" id="date">
@@ -100,78 +97,147 @@ color:white;
 <input type="tel" id="phone" placeholder="Telefon">
 <input type="email" id="email" placeholder="E-posta">
 
-<button onclick="sendBooking()">Randevuyu Onayla</button>
-<button class="close-btn" onclick="closeModal()">İptal</button>
+<button id="confirmBtn">Randevuyu Onayla</button>
+<button class="close-btn" id="cancelBtn">İptal</button>
 
 </div>
 </div>
 
 <script>
 
-const salonList = [
+/* =========================
+   CONFIG
+========================= */
+
+const CONFIG = {
+serviceID: "service_8qoocwi",
+adminTemplateID: "template_03obhwb",
+customerTemplateID: "template_MUSTERIID", // buraya yaz
+salons: [
 "Urban Barber",
 "Gold Salon",
 "Royal Hair",
 "Elite Barber",
 "Diamond Hair"
-];
+]
+};
+
+/* =========================
+   STATE
+========================= */
 
 let selectedSalon = "";
 
-const container = document.getElementById("salons");
+/* =========================
+   INIT
+========================= */
 
-salonList.forEach(salon=>{
-container.innerHTML += `
-<div class="salon-card">
-<h3>${salon}</h3>
-<button onclick="openBooking('${salon}')">Randevu Al</button>
-</div>
-`;
+document.addEventListener("DOMContentLoaded", () => {
+renderSalons();
+bindUI();
 });
 
-function openBooking(name){
-selectedSalon = name;
-document.getElementById("selectedSalonTitle").innerText = name;
-document.getElementById("bookingModal").style.display="flex";
+/* =========================
+   UI RENDER
+========================= */
+
+function renderSalons(){
+const container = document.getElementById("salons");
+container.innerHTML = "";
+
+CONFIG.salons.forEach(salon=>{
+const card = document.createElement("div");
+card.className = "salon-card";
+
+card.innerHTML = `
+<h3>${salon}</h3>
+<button data-salon="${salon}">Randevu Al</button>
+`;
+
+container.appendChild(card);
+});
+}
+
+/* =========================
+   UI EVENTS
+========================= */
+
+function bindUI(){
+
+document.getElementById("salons").addEventListener("click", e=>{
+if(e.target.tagName === "BUTTON"){
+openModal(e.target.dataset.salon);
+}
+});
+
+document.getElementById("cancelBtn").addEventListener("click", closeModal);
+document.getElementById("confirmBtn").addEventListener("click", handleBooking);
+
+}
+
+/* =========================
+   MODAL
+========================= */
+
+function openModal(salon){
+selectedSalon = salon;
+document.getElementById("selectedSalonTitle").innerText = salon;
+document.getElementById("bookingModal").style.display = "flex";
 }
 
 function closeModal(){
-document.getElementById("bookingModal").style.display="none";
+document.getElementById("bookingModal").style.display = "none";
 }
 
-function sendBooking(){
+/* =========================
+   FORM
+========================= */
 
-const date = document.getElementById("date").value;
-const time = document.getElementById("time").value;
-const name = document.getElementById("fullname").value;
-const phone = document.getElementById("phone").value;
-const email = document.getElementById("email").value;
+function getFormData(){
 
-if(!date || !time || !name || !phone || !email){
+return {
+salon: selectedSalon,
+date: document.getElementById("date").value,
+time: document.getElementById("time").value,
+name: document.getElementById("fullname").value,
+phone: document.getElementById("phone").value,
+email: document.getElementById("email").value
+};
+
+}
+
+function validateForm(data){
+return data.date && data.time && data.name && data.phone && data.email;
+}
+
+/* =========================
+   BOOKING FLOW
+========================= */
+
+async function handleBooking(){
+
+const data = getFormData();
+
+if(!validateForm(data)){
 alert("Lütfen tüm alanları doldurun");
 return;
 }
 
-emailjs.send(
-"service_8qoocwi",
-"template_03obhwb",
-{
-salon: selectedSalon,
-date: date,
-time: time,
-name: name,
-phone: phone,
-email: email
-}
-)
-.then(function(response){
-alert("Randevu gönderildi!");
+try{
+
+// 1️⃣ Admin mail
+await emailjs.send(CONFIG.serviceID, CONFIG.adminTemplateID, data);
+
+// 2️⃣ Customer mail
+await emailjs.send(CONFIG.serviceID, CONFIG.customerTemplateID, data);
+
+alert("Randevu başarıyla oluşturuldu!");
 closeModal();
-})
-.catch(function(error){
-console.log(error);
+
+}catch(error){
+console.error(error);
 alert("Mail gönderilemedi!");
-});
+}
 
 }
 
