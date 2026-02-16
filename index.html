@@ -6,6 +6,11 @@
 <title>Randevu AI</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+(function(){
+emailjs.init("bUqxAYFWuXWTy5nKT");
+})();
+</script>
 
 <style>
 :root{
@@ -43,7 +48,6 @@ border-radius:10px;
 font-weight:bold;
 background:linear-gradient(90deg,var(--gold),var(--gold-light));
 cursor:pointer;
-margin-top:10px;
 }
 
 .modal{
@@ -71,7 +75,20 @@ border-radius:8px;
 border:none;
 }
 
+.services{
+background:#111;
+padding:10px;
+border-radius:8px;
+margin-bottom:10px;
+}
+
+.services label{
+display:block;
+margin-bottom:5px;
+}
+
 .close-btn{
+margin-top:10px;
 background:#444;
 color:white;
 }
@@ -81,99 +98,68 @@ color:white;
 <body>
 
 <h1>Kuaför Seç</h1>
+
 <div id="salons"></div>
 
 <div class="modal" id="bookingModal">
 <div class="modal-content">
+
 <h3 id="selectedSalonTitle"></h3>
 
-<form id="bookingForm">
-<input type="date" id="date" required>
-<input type="time" id="time" required>
-<input type="text" id="fullname" placeholder="Ad Soyad" required>
-<input type="tel" id="phone" placeholder="Telefon" required>
-<input type="email" id="email" placeholder="E-posta" required>
+<input type="date" id="date">
+<input type="time" id="time">
+<input type="text" id="fullname" placeholder="Ad Soyad">
+<input type="tel" id="phone" placeholder="Telefon">
+<input type="email" id="email" placeholder="E-posta">
 
-<button type="submit">Randevuyu Onayla</button>
-<button type="button" class="close-btn" id="cancelBtn">İptal</button>
-</form>
+<div class="services">
+<strong>Yapılacak İşlemler:</strong>
+<label><input type="checkbox" value="Saç Kesimi"> Saç Kesimi</label>
+<label><input type="checkbox" value="Sakal Tıraşı"> Sakal Tıraşı</label>
+<label><input type="checkbox" value="Saç Boyama"> Saç Boyama</label>
+<label><input type="checkbox" value="Cilt Bakımı"> Cilt Bakımı</label>
+</div>
+
+<button onclick="sendBooking()">Randevuyu Onayla</button>
+<button class="close-btn" onclick="closeModal()">İptal</button>
 
 </div>
 </div>
 
 <script>
 
-emailjs.init("bUqxAYFWuXWTy5nKT");
-
-const SERVICE_ID = "service_8qoocwi";
-const TEMPLATE_NOTIFY = "template_03obhwb";
-const TEMPLATE_AUTO_REPLY = "template_08wro98";
-
-/* ÇOKLU SALON + ADRES */
-
-const salonList = [
-{
-name: "Urban Barber",
-address: "Bağdat Caddesi No 25 Kadıköy İstanbul"
-},
-{
-name: "Gold Salon",
-address: "Barbaros Bulvarı No 10 Beşiktaş İstanbul"
-},
-{
-name: "Royal Hair",
-address: "Libadiye Caddesi No 5 Üsküdar İstanbul"
-},
-{
-name: "Elite Barber",
-address: "Mecidiyeköy Mahallesi No 8 Şişli İstanbul"
-},
-{
-name: "Diamond Hair",
-address: "Atatürk Caddesi No 15 Bakırköy İstanbul"
-}
-];
+const salonData = {
+"Urban Barber": "Atatürk Cad. No 10 Kadıköy İstanbul",
+"Gold Salon": "Bağdat Cad. No 22 Kadıköy İstanbul",
+"Royal Hair": "İstiklal Cad. No 50 Beyoğlu İstanbul",
+"Elite Barber": "Nişantaşı No 8 Şişli İstanbul",
+"Diamond Hair": "Atatürk Cad. No 15 Bakırköy İstanbul"
+};
 
 let selectedSalon = "";
+
 const container = document.getElementById("salons");
-const modal = document.getElementById("bookingModal");
-const salonTitle = document.getElementById("selectedSalonTitle");
-const form = document.getElementById("bookingForm");
-const cancelBtn = document.getElementById("cancelBtn");
 
-/* SALONLARI YAZ */
-
-salonList.forEach(salon=>{
-const card = document.createElement("div");
-card.className = "salon-card";
-
-card.innerHTML = `
-<h3>${salon.name}</h3>
-<button data-salon="${salon.name}">Randevu Al</button>
+Object.keys(salonData).forEach(salon=>{
+container.innerHTML += `
+<div class="salon-card">
+<h3>${salon}</h3>
+<button onclick="openBooking('${salon}')">Randevu Al</button>
+</div>
 `;
-
-container.appendChild(card);
 });
 
-/* MODAL */
-
-container.addEventListener("click", function(e){
-if(e.target.tagName === "BUTTON"){
-selectedSalon = e.target.getAttribute("data-salon");
-salonTitle.innerText = selectedSalon;
-modal.style.display = "flex";
+function openBooking(name){
+selectedSalon = name;
+document.getElementById("selectedSalonTitle").innerText = name;
+document.getElementById("bookingModal").style.display="flex";
 }
-});
 
-cancelBtn.addEventListener("click", function(){
-modal.style.display = "none";
-form.reset();
-});
+function closeModal(){
+document.getElementById("bookingModal").style.display="none";
+}
 
-/* RANDEVU GÖNDER */
-
-form.addEventListener("submit", async function(e){
-e.preventDefault();
+function sendBooking(){
 
 const date = document.getElementById("date").value;
 const time = document.getElementById("time").value;
@@ -181,56 +167,53 @@ const name = document.getElementById("fullname").value;
 const phone = document.getElementById("phone").value;
 const email = document.getElementById("email").value;
 
-const selectedSalonObj = salonList.find(s => s.name === selectedSalon);
-const location = selectedSalonObj.address;
+const services = Array.from(
+document.querySelectorAll('.services input:checked')
+).map(cb=>cb.value).join(", ");
 
-/* TAKVİM FORMAT */
-
-const startDate = new Date(date + "T" + time);
-const endDate = new Date(startDate.getTime() + 60 * 60000);
-
-function formatDate(d){
-return d.getFullYear().toString() +
-("0"+(d.getMonth()+1)).slice(-2) +
-("0"+d.getDate()).slice(-2) + "T" +
-("0"+d.getHours()).slice(-2) +
-("0"+d.getMinutes()).slice(-2) + "00";
+if(!date || !time || !name || !phone || !email){
+alert("Lütfen tüm alanları doldurun");
+return;
 }
 
-const formattedStart = formatDate(startDate);
-const formattedEnd = formatDate(endDate);
+const address = salonData[selectedSalon];
+const mapsLink = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(address);
 
-/* QR için benzersiz ID */
-const bookingId = Date.now().toString();
+const startDateTime = date.replaceAll("-","") + "T" + time.replace(":","") + "00";
+const endDateTime = date.replaceAll("-","") + "T" + (parseInt(time.split(":")[0])+1).toString().padStart(2,'0') + time.split(":")[1] + "00";
 
-const params = {
+const qrData = `${name} - ${selectedSalon} - ${date} ${time}`;
+const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(qrData);
+
+const templateParams = {
 salon: selectedSalon,
 date: date,
 time: time,
 name: name,
 phone: phone,
 email: email,
-location: location,
-calendar_start: formattedStart,
-calendar_end: formattedEnd,
-booking_id: bookingId
+services: services,
+calendar_start: startDateTime,
+calendar_end: endDateTime,
+maps_link: mapsLink,
+qr_url: qrUrl,
+address: address
 };
 
-try {
-
-await emailjs.send(SERVICE_ID, TEMPLATE_NOTIFY, params);
-await emailjs.send(SERVICE_ID, TEMPLATE_AUTO_REPLY, params);
-
-alert("Randevu başarıyla oluşturuldu.");
-modal.style.display = "none";
-form.reset();
-
-}catch(error){
-console.error(error);
+Promise.all([
+emailjs.send("service_8qoocwi","template_03obhwb",templateParams),
+emailjs.send("service_8qoocwi","template_08wro98",templateParams)
+])
+.then(()=>{
+alert("Randevu başarıyla oluşturuldu!");
+closeModal();
+})
+.catch((error)=>{
+console.log(error);
 alert("Mail gönderilirken hata oluştu!");
-}
-
 });
+
+}
 
 </script>
 
