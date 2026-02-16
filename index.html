@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Randevu AI</title>
+
+<style>
+body {
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container {
+    background:#111;
+    padding:30px;
+    border-radius:20px;
+    width:90%;
+    max-width:400px;
+    box-shadow:0 0 30px rgba(0,0,0,0.6);
+}
+
+h1 {
+    text-align:center;
+    margin-bottom:20px;
+}
+
+input, select {
+    width:100%;
+    padding:12px;
+    margin-bottom:15px;
+    border-radius:10px;
+    border:none;
+    font-size:16px;
+}
+
+button {
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(90deg,#f7971e,#ffd200);
+    font-weight:bold;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover {
+    opacity:0.9;
+}
+
+.success {
+    text-align:center;
+    margin-top:15px;
+    color:#00ff88;
+    display:none;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Randevu AI</h1>
+
+    <form id="appointmentForm" 
+          action="https://formsubmit.co/gokhanlones@gmail.com" 
+          method="POST">
+
+        <!-- Gizli Ayarlar -->
+        <input type="hidden" name="_subject" value="Yeni Randevu Talebi">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+
+        <input type="text" name="İsim" placeholder="Ad Soyad" required>
+        <input type="tel" name="Telefon" placeholder="Telefon" required>
+        <input type="date" name="Tarih" required>
+        <input type="time" name="Saat" required>
+
+        <button type="submit">Randevuyu Onayla</button>
+    </form>
+
+    <div class="success" id="successMessage">
+        ✅ Randevu talebiniz gönderildi!
+    </div>
+</div>
+
+<script>
+const form = document.getElementById("appointmentForm");
+const successMessage = document.getElementById("successMessage");
+
+form.addEventListener("submit", function(){
+    setTimeout(() => {
+        successMessage.style.display = "block";
+    }, 1000);
+});
+</script>
+
+</body>
+</html>
