@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Randevu AI</title>
 
-<!-- GÜNCEL EMAILJS -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <style>
@@ -35,7 +34,8 @@ button{
 .book-btn{ background:#d4af37; }
 .modal{
   position:fixed;
-  inset:0;
+  top:0; left:0;
+  width:100%; height:100%;
   background:rgba(0,0,0,0.85);
   display:none;
   justify-content:center;
@@ -50,10 +50,13 @@ button{
 }
 .service-row{
   display:flex;
+  align-items:center;
   justify-content:space-between;
   padding:8px 0;
   border-bottom:1px solid #333;
 }
+.service-name{ flex:1; text-align:left; font-size:14px; }
+.service-row input{ width:18px; height:18px; }
 input{
   width:100%;
   padding:8px;
@@ -85,16 +88,8 @@ input{
 </div>
 
 <script>
+emailjs.init("BURAYA_PUBLIC_KEYİN");
 
-/* 🔴 BURAYA PUBLIC KEY YAZ */
-emailjs.init("BURAYA_PUBLIC_KEY");
-
-/* 🔴 SABİTLER */
-const SERVICE_ID = "service_8qoocwi";
-const TEMPLATE_BUSINESS = "template_03obhwb";
-const TEMPLATE_CUSTOMER = "template_08wro98";
-
-/* SALONLAR */
 const salonData={
   "Diamond Hair":{address:"Kadıköy İstanbul",phone:"05320000001",rating:4.8},
   "Gold Salon":{address:"Bakırköy İstanbul",phone:"05320000002",rating:4.6}
@@ -103,8 +98,7 @@ const salonData={
 const servicesList=[
   "Saç Kesimi",
   "Sakal Tıraşı",
-  "Saç Boyama",
-  "Cilt Bakımı"
+  "Saç Boyama"
 ];
 
 let selectedSalon="";
@@ -137,7 +131,7 @@ function openBooking(name){
   servicesList.forEach(service=>{
     list.innerHTML+=`
       <div class="service-row">
-        <span>${service}</span>
+        <div class="service-name">${service}</div>
         <input type="checkbox" value="${service}" onchange="toggleService(this)">
       </div>
     `;
@@ -165,38 +159,34 @@ function sendBooking(){
   const date=document.getElementById("date").value;
   const time=document.getElementById("time").value;
 
-  if(!name || !phone || !email || !date || !time || selectedServices.length===0){
+  if(!name || !phone || !email || !date || !time){
     alert("Tüm alanları doldurun");
     return;
   }
 
   const params={
-    name:name,
-    phone:phone,
-    email:email,
     salon:selectedSalon,
     date:date,
     time:time,
+    name:name,
+    phone:phone,
+    email:email,
     location:salonData[selectedSalon].address,
     services:selectedServices.join(", ")
   };
 
-  /* 1️⃣ İşletmeye mail */
-  emailjs.send(SERVICE_ID, TEMPLATE_BUSINESS, params)
-  .then(()=>{
-      /* 2️⃣ Müşteriye mail */
-      return emailjs.send(SERVICE_ID, TEMPLATE_CUSTOMER, params);
-  })
-  .then(()=>{
-      alert("Randevu oluşturuldu");
+  emailjs.send("service_8qoocwi","template_03obhwb",params)
+  .then(function(response){
+      console.log("SUCCESS", response);
+      alert("Mail başarıyla gönderildi");
       closeModal();
   })
-  .catch((error)=>{
-      console.log("EMAIL ERROR:", error);
-      alert("Mail gönderilemedi");
+  .catch(function(error){
+      console.log("ERROR", error);
+      alert("HATA VAR - Console'a bak");
   });
-}
 
+}
 </script>
 
 </body>
