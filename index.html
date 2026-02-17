@@ -6,6 +6,7 @@
 <title>Randevu AI</title>
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   emailjs.init("bUqxAYFWuXWTy5nKT");
@@ -13,82 +14,70 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 <style>
+
 body{
-  font-family:Arial;
+  font-family:Arial, sans-serif;
   background:#111;
   color:white;
   margin:0;
   padding:20px;
 }
 
-h2{margin-bottom:20px;}
+h2{
+  text-align:center;
+}
 
+/* SALON KART */
 .salon-card{
   background:#1e1e1e;
   padding:15px;
   margin-bottom:15px;
   border-radius:12px;
+  text-align:center;
 }
 
-.rating{color:#d4af37;font-size:14px;}
-.address{font-size:13px;color:#aaa;margin-bottom:15px;}
-
-.action-row{
-  display:flex;
-  gap:14px;
-  margin-bottom:15px;
+.rating{
+  color:#d4af37;
+  font-size:14px;
 }
 
-.icon-btn{
-  width:46px;
-  height:46px;
+.address{
+  font-size:13px;
+  color:#ccc;
+  margin-bottom:10px;
+}
+
+/* ICON ROW */
+.icon-row{
   display:flex;
-  align-items:center;
   justify-content:center;
-  border-radius:50%;
+  gap:18px;
+  margin-bottom:12px;
+}
+
+.icon-row a{
+  font-size:22px;
   text-decoration:none;
+  color:white;
   transition:0.2s;
 }
 
-.icon-btn:hover{
-  transform:scale(1.08);
+.icon-row a:hover{
+  transform:scale(1.2);
 }
 
-.icon{
-  width:20px;
-  height:20px;
-  fill:white;
-}
-
-.insta-btn{
-  background:linear-gradient(45deg,#f58529,#dd2a7b,#8134af,#515bd4);
-}
-
-.map-btn{
-  background:#3498db;
-}
-
-.call-btn{
-  background:#2ecc71;
-}
-
+/* BOOK BUTTON */
 .book-btn{
   background:#d4af37;
   color:black;
-  width:100%;
-  padding:14px;
+  padding:10px 20px;
   border:none;
-  border-radius:10px;
+  border-radius:8px;
   font-weight:bold;
   cursor:pointer;
-  font-size:15px;
-  transition:0.2s;
 }
 
-.book-btn:hover{
-  opacity:0.9;
-}
-
+/* MODAL */
 .modal{
   position:fixed;
   inset:0;
@@ -100,26 +89,63 @@ h2{margin-bottom:20px;}
 
 .modal-content{
   background:#1e1e1e;
-  padding:20px;
-  border-radius:12px;
+  padding:25px;
+  border-radius:14px;
   width:95%;
   max-width:420px;
 }
 
+/* SERVICE LIST */
 .service-row{
   display:flex;
+  align-items:center;
   justify-content:space-between;
-  padding:8px 0;
+  padding:10px 5px;
   border-bottom:1px solid #333;
 }
 
-input{
-  width:100%;
-  padding:10px;
-  margin-bottom:10px;
-  border-radius:6px;
-  border:none;
+.service-name{
+  flex:1;
+  text-align:left;
 }
+
+.service-row input{
+  width:20px;
+  height:20px;
+}
+
+/* INPUTS */
+.modal-content input{
+  width:90%;
+  padding:10px;
+  margin:12px auto;
+  border-radius:8px;
+  border:none;
+  display:block;
+}
+
+/* MODAL BUTTONS */
+.modal-content button{
+  width:90%;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+  display:block;
+  margin:10px auto;
+}
+
+.confirm-btn{
+  background:#d4af37;
+  color:black;
+}
+
+.cancel-btn{
+  background:#444;
+  color:white;
+}
+
 </style>
 </head>
 <body>
@@ -127,10 +153,13 @@ input{
 <h2>Salon Seçin</h2>
 <div id="salonContainer"></div>
 
+<!-- MODAL -->
 <div class="modal" id="bookingModal">
   <div class="modal-content">
-    <h3 id="selectedSalonTitle"></h3>
-    <div id="serviceList"></div><br>
+
+    <h3 id="selectedSalonTitle" style="text-align:center;"></h3>
+
+    <div id="serviceList"></div>
 
     <input type="text" id="fullname" placeholder="Ad Soyad">
     <input type="tel" id="phone" placeholder="Telefon">
@@ -138,11 +167,14 @@ input{
     <input type="date" id="date">
     <input type="time" id="time">
 
-    <button id="bookBtn" class="book-btn">✂️ Randevu Oluştur</button>
-    <br><br>
-    <button onclick="closeModal()" style="background:#444;width:100%;padding:12px;border:none;border-radius:8px;color:white;">
+    <button class="confirm-btn" onclick="sendBooking()" id="bookBtn">
+      Randevu Oluştur
+    </button>
+
+    <button class="cancel-btn" onclick="closeModal()">
       İptal
     </button>
+
   </div>
 </div>
 
@@ -177,43 +209,31 @@ let selectedServices=[];
 
 const container=document.getElementById("salonContainer");
 
+/* SALON KARTLARI */
 for(const salon in salonData){
+
   container.innerHTML+=`
     <div class="salon-card">
+
       <h3>${salon}</h3>
       <div class="rating">⭐ ${salonData[salon].rating}</div>
       <div class="address">${salonData[salon].address}</div>
 
-      <div class="action-row">
-
-        <a href="${salonData[salon].instagram}" target="_blank" class="icon-btn insta-btn">
-          <svg class="icon" viewBox="0 0 24 24">
-            <path d="M7.75 2C4.57 2 2 4.57 2 7.75v8.5C2 19.43 4.57 22 7.75 22h8.5C19.43 22 22 19.43 22 16.25v-8.5C22 4.57 19.43 2 16.25 2h-8.5zm0 2h8.5C18.54 4 20 5.46 20 7.75v8.5c0 2.29-1.46 3.75-3.75 3.75h-8.5C5.46 20 4 18.54 4 16.25v-8.5C4 5.46 5.46 4 7.75 4zm8.75 1.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
-          </svg>
-        </a>
-
-        <a href="${salonData[salon].maps}" target="_blank" class="icon-btn map-btn">
-          <svg class="icon" viewBox="0 0 24 24">
-            <path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/>
-          </svg>
-        </a>
-
-        <a href="tel:${salonData[salon].phone}" class="icon-btn call-btn">
-          <svg class="icon" viewBox="0 0 24 24">
-            <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011-.24 11.36 11.36 0 003.55.57 1 1 0 011 1V21a1 1 0 01-1 1A17 17 0 012 5a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.55 1 1 0 01-.24 1l-2.2 2.24z"/>
-          </svg>
-        </a>
-
+      <div class="icon-row">
+        <a href="${salonData[salon].instagram}" target="_blank">📷</a>
+        <a href="${salonData[salon].maps}" target="_blank">📍</a>
+        <a href="tel:${salonData[salon].phone}">📞</a>
       </div>
 
       <button class="book-btn" onclick="openBooking('${salon}')">
-        ✂️ Randevu Al
+        Randevu Al
       </button>
 
     </div>
   `;
 }
 
+/* MODAL AÇ */
 function openBooking(name){
   selectedSalon=name;
   selectedServices=[];
@@ -223,7 +243,7 @@ function openBooking(name){
   servicesList.forEach(service=>{
     document.getElementById("serviceList").innerHTML+=`
       <div class="service-row">
-        <div>${service}</div>
+        <div class="service-name">${service}</div>
         <input type="checkbox" value="${service}" onchange="toggleService(this)">
       </div>
     `;
@@ -232,6 +252,7 @@ function openBooking(name){
   document.getElementById("bookingModal").style.display="flex";
 }
 
+/* CHECKBOX */
 function toggleService(el){
   if(el.checked){
     selectedServices.push(el.value);
@@ -240,8 +261,48 @@ function toggleService(el){
   }
 }
 
+/* MODAL KAPAT */
 function closeModal(){
   document.getElementById("bookingModal").style.display="none";
+  selectedServices=[];
+}
+
+/* MAIL GÖNDER */
+async function sendBooking(){
+
+  const name=document.getElementById("fullname").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const email=document.getElementById("email").value.trim();
+  const date=document.getElementById("date").value;
+  const time=document.getElementById("time").value;
+
+  if(!name || !phone || !email || !date || !time || selectedServices.length===0){
+    alert("Tüm alanları doldurun");
+    return;
+  }
+
+  try{
+
+    const params={
+      salon:selectedSalon,
+      date:date,
+      time:time,
+      name:name,
+      phone:phone,
+      email:email,
+      location:salonData[selectedSalon].address,
+      services:selectedServices.join(", ")
+    };
+
+    await emailjs.send("service_8qoocwi","template_03obhwb",params);
+
+    alert("Randevu oluşturuldu");
+    closeModal();
+
+  }catch(error){
+    console.error(error);
+    alert("Mail gönderilemedi");
+  }
 }
 
 </script>
