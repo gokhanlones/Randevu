@@ -54,7 +54,16 @@ h2{margin-bottom:20px;}
   color:white;
 }
 
-.insta-btn{ background:#e1306c; }
+.icon{
+  width:18px;
+  height:18px;
+  fill:white;
+}
+
+.insta-btn{
+  background:linear-gradient(45deg,#f58529,#dd2a7b,#8134af,#515bd4);
+}
+
 .map-btn{ background:#3498db; }
 .call-btn{ background:#2ecc71; }
 
@@ -120,7 +129,7 @@ input{
     <input type="time" id="time">
 
     <button id="bookBtn" style="background:#d4af37;width:100%;padding:10px;border:none;border-radius:6px;font-weight:bold;">
-      Randevu Oluştur
+      ✂️ Randevu Oluştur
     </button>
     <br><br>
     <button style="background:#444;width:100%;padding:10px;border:none;border-radius:6px;color:white;" onclick="closeModal()">
@@ -169,10 +178,17 @@ for(const salon in salonData){
 
       <div class="action-row">
         <a href="${salonData[salon].instagram}" target="_blank" class="action-btn insta-btn">
-          📸 Instagram
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M7.75 2C4.57 2 2 4.57 2 7.75v8.5C2 19.43 4.57 22 7.75 22h8.5C19.43 22 22 19.43 22 16.25v-8.5C22 4.57 19.43 2 16.25 2h-8.5zm0 2h8.5C18.54 4 20 5.46 20 7.75v8.5c0 2.29-1.46 3.75-3.75 3.75h-8.5C5.46 20 4 18.54 4 16.25v-8.5C4 5.46 5.46 4 7.75 4zm8.75 1.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
+          </svg>
+          Instagram
         </a>
+
         <a href="${salonData[salon].maps}" target="_blank" class="action-btn map-btn">
-          📍 Harita
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/>
+          </svg>
+          Harita
         </a>
       </div>
 
@@ -182,7 +198,10 @@ for(const salon in salonData){
 
       <div class="action-row">
         <a href="tel:${salonData[salon].phone}" class="action-btn call-btn">
-          📞 Ara
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011-.24 11.36 11.36 0 003.55.57 1 1 0 011 1V21a1 1 0 01-1 1A17 17 0 012 5a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.55 1 1 0 01-.24 1l-2.2 2.24z"/>
+          </svg>
+          Ara
         </a>
       </div>
     </div>
@@ -217,51 +236,6 @@ function toggleService(el){
 
 function closeModal(){
   document.getElementById("bookingModal").style.display="none";
-  document.getElementById("bookBtn").disabled=false;
-}
-
-document.getElementById("bookBtn").addEventListener("click", sendBooking);
-
-async function sendBooking(){
-
-  const name=document.getElementById("fullname").value.trim();
-  const phone=document.getElementById("phone").value.trim();
-  const email=document.getElementById("email").value.trim();
-  const date=document.getElementById("date").value;
-  const time=document.getElementById("time").value;
-
-  if(!name || !phone || !email || !date || !time || selectedServices.length===0){
-    alert("Tüm alanları doldurun");
-    return;
-  }
-
-  document.getElementById("bookBtn").disabled=true;
-
-  const params={
-    salon:selectedSalon,
-    date:date,
-    time:time,
-    name:name,
-    phone:phone,
-    email:email,
-    to_email: email,
-    location:salonData[selectedSalon].address,
-    services:selectedServices.join(", ")
-  };
-
-  try{
-
-    await emailjs.send("service_8qoocwi","template_08wro98",params);
-    await emailjs.send("service_8qoocwi","template_03obhwb",params);
-
-    alert("Randevu başarıyla oluşturuldu");
-    closeModal();
-
-  }catch(error){
-    console.error("EMAILJS HATA:", error);
-    alert("Mail gönderilemedi");
-    document.getElementById("bookBtn").disabled=false;
-  }
 }
 
 </script>
