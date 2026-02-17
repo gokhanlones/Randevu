@@ -17,7 +17,6 @@ body{
     height:100vh;
 }
 
-/* LOGIN CARD */
 .login-container{
     background:#1e1e1e;
     padding:40px 30px;
@@ -29,7 +28,7 @@ body{
 
 h2{
     text-align:center;
-    margin-bottom:30px;
+    margin-bottom:25px;
     color:#d4af37;
 }
 
@@ -49,6 +48,7 @@ button{
     border-radius:6px;
     font-weight:bold;
     cursor:pointer;
+    margin-bottom:12px;
 }
 
 .login-btn{
@@ -60,55 +60,60 @@ button{
     opacity:0.9;
 }
 
-.register-link{
+/* GOOGLE BUTTON */
+.google-btn{
+    background:white;
+    color:#444;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+}
+
+.google-btn img{
+    width:18px;
+}
+
+.google-btn:hover{
+    background:#f1f1f1;
+}
+
+.register-text{
     text-align:center;
     margin-top:15px;
     font-size:13px;
+    cursor:pointer;
+    transition:0.2s;
 }
 
-.register-link a{
+.register-text:hover{
     color:#d4af37;
-    text-decoration:none;
-}
-
-.register-link a:hover{
-    text-decoration:underline;
 }
 </style>
-
 </head>
+
 <body>
 
 <div class="login-container">
 
     <h2>İşletme Girişi</h2>
 
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Şifre">
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Şifre">
 
-    <button class="login-btn" onclick="login()">Giriş Yap</button>
+    <button class="login-btn">Giriş Yap</button>
 
-    <div class="register-link">
-        Hesabınız yok mu? <a href="register.html">Kayıt Ol</a>
+    <!-- GOOGLE LOGIN BUTONU -->
+    <button class="google-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png">
+        Google ile Giriş Yap
+    </button>
+
+    <div class="register-text">
+        Hesabınız yok mu? Kayıt Ol
     </div>
 
 </div>
-
-<script>
-function login(){
-
-    const email=document.getElementById("email").value.trim();
-    const password=document.getElementById("password").value.trim();
-
-    if(!email || !password){
-        alert("Email ve şifre giriniz");
-        return;
-    }
-
-    // Şimdilik test amaçlı basit kontrol
-    alert("Giriş başarılı (Backend bağlanacak)");
-}
-</script>
 
 </body>
 </html>
