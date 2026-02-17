@@ -608,9 +608,10 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
   // EMAIL GÖNDER
   // =========================
   emailjs.send("service_8qoocwi","template_08wro98",{
-      email: email,
-      verification_code: code
-  })
+    email: email,   // to_email değil!
+    verification_code: code,
+    full_name: first + " " + last
+})
   .then(function(){
 
       closeRegister();
