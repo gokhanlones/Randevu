@@ -18,11 +18,11 @@ body{
 /* MENU BUTTON */
 .menu-btn{
     position:fixed;
-    top:15px;
-    left:15px;
+    top:18px;
+    left:18px;
     font-size:24px;
     cursor:pointer;
-    z-index:1000;
+    z-index:1001;
 }
 
 /* SIDE MENU */
@@ -34,13 +34,13 @@ body{
     height:100%;
     background:#1e1e1e;
     transition:0.3s;
-    padding-top:60px;
-    z-index:999;
+    padding-top:70px;
+    z-index:1000;
 }
 
 .side-menu a{
     display:block;
-    padding:15px 20px;
+    padding:16px 22px;
     color:white;
     text-decoration:none;
     cursor:pointer;
@@ -52,71 +52,86 @@ body{
 
 /* MAIN CONTENT */
 #mainContent{
-    padding:80px 20px;
-    min-height:100vh;
+    padding:100px 20px;
 }
 
-/* LOGIN OVERLAY */
-#loginOverlay{
+/* ===== LOGIN MODAL ===== */
+#loginModal{
     position:fixed;
     inset:0;
-    width:100vw;
-    height:100vh;
-    background:linear-gradient(135deg,#111,#1c1c1c);
+    background:rgba(0,0,0,0.85);
     display:none;
     justify-content:center;
     align-items:center;
-    z-index:5000;
+    z-index:2000;
 }
 
-/* LOGIN CARD */
 .login-card{
     width:95%;
-    max-width:700px;
-    min-height:550px;
+    max-width:420px;
+    padding:40px 30px;
     background:#1e1e1e;
-    padding:60px 50px;
-    border-radius:20px;
-    box-shadow:0 25px 70px rgba(0,0,0,0.8);
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
+    border-radius:18px;
+    box-shadow:0 25px 60px rgba(0,0,0,0.7);
 }
 
 .login-card h2{
     text-align:center;
     color:#d4af37;
-    margin-bottom:40px;
-    font-size:28px;
+    margin-bottom:30px;
 }
 
 .login-card input{
     width:100%;
-    padding:18px;
-    margin-bottom:20px;
+    padding:14px;
+    margin-bottom:16px;
     border:none;
-    border-radius:10px;
-    font-size:16px;
+    border-radius:8px;
+    font-size:14px;
 }
 
 .login-btn{
     width:100%;
-    padding:18px;
+    padding:14px;
     background:#d4af37;
     border:none;
-    border-radius:10px;
+    border-radius:8px;
     font-weight:bold;
-    font-size:16px;
+    cursor:pointer;
+}
+
+.google-btn{
+    width:100%;
+    padding:14px;
+    margin-top:14px;
+    background:#fff;
+    color:#444;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
     cursor:pointer;
 }
 
 .close-btn{
-    margin-top:15px;
-    background:#444;
-    color:white;
-    border:none;
+    width:100%;
     padding:14px;
-    border-radius:10px;
+    margin-top:14px;
+    background:#444;
+    border:none;
+    border-radius:8px;
+    color:white;
+    cursor:pointer;
+}
+
+.register-link{
+    text-align:center;
+    margin-top:20px;
+    font-size:14px;
+    color:#aaa;
+}
+
+.register-link span{
+    color:#d4af37;
     cursor:pointer;
 }
 </style>
@@ -124,27 +139,39 @@ body{
 
 <body>
 
+<!-- MENU BUTTON -->
 <div class="menu-btn" onclick="toggleMenu()">☰</div>
 
+<!-- SIDE MENU -->
 <div class="side-menu" id="menu">
     <a onclick="openLogin()">İşletme Girişi</a>
 </div>
 
+<!-- MAIN CONTENT -->
 <div id="mainContent">
     <h2>FlowRandevu</h2>
     <p>Ana sayfa içerik alanı</p>
 </div>
 
-<!-- LOGIN OVERLAY -->
-<div id="loginOverlay">
+<!-- LOGIN MODAL -->
+<div id="loginModal">
     <div class="login-card">
+
         <h2>İşletme Girişi</h2>
 
         <input type="email" placeholder="Email">
         <input type="password" placeholder="Şifre">
 
         <button class="login-btn">Giriş Yap</button>
+
+        <button class="google-btn">Google ile Giriş Yap</button>
+
+        <div class="register-link">
+            Hesabınız yok mu? <span>Kayıt Ol</span>
+        </div>
+
         <button class="close-btn" onclick="closeLogin()">Kapat</button>
+
     </div>
 </div>
 
@@ -152,16 +179,16 @@ body{
 
 function toggleMenu(){
     const menu=document.getElementById("menu");
-    menu.style.left = menu.style.left==="0px" ? "-260px" : "0px";
+    menu.style.left = (menu.style.left==="0px") ? "-260px" : "0px";
 }
 
 function openLogin(){
-    document.getElementById("loginOverlay").style.display="flex";
+    document.getElementById("loginModal").style.display="flex";
     toggleMenu();
 }
 
 function closeLogin(){
-    document.getElementById("loginOverlay").style.display="none";
+    document.getElementById("loginModal").style.display="none";
 }
 
 </script>
