@@ -130,44 +130,43 @@ document.addEventListener("click", function(e){
   }
 });
 
+<script>
+
 async function sendBooking(){
 
   try{
 
-    console.log("Buton tetiklendi");
-
-    const name=document.getElementById("fullname").value.trim();
-    const phone=document.getElementById("phone").value.trim();
-    const email=document.getElementById("email").value.trim();
-    const date=document.getElementById("date").value;
-    const time=document.getElementById("time").value;
+    const name = document.getElementById("fullname").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
 
     if(!name || !phone || !email || !date || !time || selectedServices.length===0){
       alert("Tüm alanları doldurun");
       return;
     }
 
-    const bookingId=btoa(name+date+time);
+    const bookingId = btoa(name+date+time);
 
-    const params={
-      salon:selectedSalon,
-      date:date,
-      time:time,
-      name:name,
-      phone:phone,
-      email:email,
-      location:salonData[selectedSalon].address,
-      services_with_prices:selectedServices.join(", "),
-      booking_id:bookingId
+    const servicesText = selectedServices.join(", ");
+
+    const params = {
+      salon: selectedSalon,
+      date: date,
+      time: time,
+      name: name,
+      phone: phone,
+      email: email,
+      location: salonData[selectedSalon].address,
+      services: servicesText,
+      booking_id: bookingId
     };
 
-    console.log("Mail gönderiliyor:", params);
+    console.log("Giden Parametre:", params);
 
-    const result1 = await emailjs.send("service_8qoocwi","template_08wro98",params);
-    console.log("Müşteri maili OK", result1);
-
-    const result2 = await emailjs.send("service_8qoocwi","template_03obhwb",params);
-    console.log("Salon maili OK", result2);
+    await emailjs.send("service_8qoocwi","template_08wro98",params);
+    await emailjs.send("service_8qoocwi","template_03obhwb",params);
 
     alert("Randevu başarıyla oluşturuldu");
     closeModal();
@@ -176,8 +175,6 @@ async function sendBooking(){
     console.error("EMAILJS HATA:", error);
     alert("Mail gönderilemedi. Console'a bak.");
   }
-}
 
+}
 </script>
-</body>
-</html>
