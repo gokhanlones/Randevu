@@ -3,278 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Randevu AI</title>
-
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  emailjs.init("bUqxAYFWuXWTy5nKT");
-});
-</script>
+<title>FlowRandevu</title>
 
 <style>
-body{font-family:Arial;background:#111;color:white;margin:0;padding:20px;}
-h2{text-align:center;margin-bottom:25px;}
-
-.salon-card{
-  background:#1e1e1e;
-  padding:18px;
-  margin-bottom:18px;
-  border-radius:14px;
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#111;
+  color:white;
+  overflow-x:hidden;
 }
 
-.salon-name{
-  font-size:20px;
-  font-weight:bold;
-  margin-bottom:6px;
-}
-
-.rating{color:#d4af37;font-size:14px;margin-bottom:3px;}
-.address{font-size:13px;color:#bbb;margin-bottom:15px;}
-
-.icon-row{
+/* TOP BAR */
+.topbar{
+  height:60px;
   display:flex;
-  gap:18px;
-  margin-bottom:15px;
-}
-
-.icon-row a{
-  font-size:22px;
-  text-decoration:none;
-}
-
-.book-btn{
-  background:#d4af37;
+  align-items:center;
+  padding:0 15px;
+  background:#1a1a1a;
+  position:fixed;
   width:100%;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
+  top:0;
+  z-index:1000;
 }
 
-.modal{
+.menu-btn{
+  font-size:26px;
+  cursor:pointer;
+  color:#d4af37;
+}
+
+.title{
+  margin-left:15px;
+  font-size:18px;
+  font-weight:bold;
+}
+
+/* SIDE NAV */
+.sidenav{
   position:fixed;
   top:0;
-  left:0;
-  width:100%;
+  left:-280px;
+  width:260px;
   height:100%;
-  background:rgba(0,0,0,0.85);
-  display:none;
-  justify-content:center;
-  align-items:center;
-}
-
-.modal-content{
   background:#1e1e1e;
-  padding:20px;
-  border-radius:14px;
-  width:95%;
-  max-width:420px;
+  padding-top:80px;
+  transition:0.3s ease;
+  z-index:999;
 }
 
-.service-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px 0;
+.sidenav.active{
+  left:0;
+}
+
+.sidenav a{
+  display:block;
+  padding:15px 20px;
+  text-decoration:none;
+  color:white;
   border-bottom:1px solid #333;
 }
 
-.service-name{
-  flex:1;
-  white-space:nowrap;
+.sidenav a:hover{
+  background:#2a2a2a;
 }
 
-.service-row input{
-  width:18px;
-  height:18px;
-}
-
-input{
-  width:100%;
-  padding:10px;
-  margin-top:12px;
-  border-radius:8px;
-  border:none;
-}
-
-.submit-btn{
-  background:#d4af37;
-  width:100%;
-  padding:12px;
-  margin-top:15px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.cancel-btn{
-  background:#444;
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-  color:white;
-  cursor:pointer;
+/* ANA SAYFA */
+.content{
+  padding-top:80px;
+  padding:80px 20px;
 }
 </style>
 </head>
 <body>
 
-<h2>Salon Seçin</h2>
-<div id="salonContainer"></div>
+<div class="topbar">
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <div class="title">FlowRandevu</div>
+</div>
 
-<div class="modal" id="bookingModal">
-  <div class="modal-content">
-    <h3 id="selectedSalonTitle"></h3>
-    <div id="serviceList"></div>
+<div class="sidenav" id="sideNav">
+  <a href="#">İşletme Girişi</a>
+  <a href="#">Kayıt Ol</a>
+</div>
 
-    <input type="text" id="fullname" placeholder="Ad Soyad">
-    <input type="tel" id="phone" placeholder="Telefon">
-    <input type="email" id="email" placeholder="Email">
-    <input type="date" id="date">
-    <input type="time" id="time">
-
-    <button class="submit-btn" onclick="sendBooking()" id="bookBtn">
-      Randevu Oluştur
-    </button>
-
-    <button class="cancel-btn" onclick="closeModal()">İptal</button>
-  </div>
+<div class="content">
+  <h2>Ana Sayfa</h2>
+  <p>Buraya ana içerik gelecek.</p>
 </div>
 
 <script>
-
-const salonData={
-  "Diamond Hair":{
-    address:"Kadıköy İstanbul",
-    phone:"05320000001",
-    rating:4.8,
-    instagram:"https://instagram.com/diamondhair",
-    maps:"https://www.google.com/maps/search/?api=1&query=Kadıköy+İstanbul"
-  },
-  "Gold Salon":{
-    address:"Bakırköy İstanbul",
-    phone:"05320000002",
-    rating:4.6,
-    instagram:"https://instagram.com/goldsalon",
-    maps:"https://www.google.com/maps/search/?api=1&query=Bakırköy+İstanbul"
-  }
-};
-
-const servicesList=[
-  "Saç Kesimi",
-  "Sakal Tıraşı",
-  "Saç Boyama",
-  "Cilt Bakımı"
-];
-
-let selectedSalon="";
-let selectedServices=[];
-
-const container=document.getElementById("salonContainer");
-
-for(const salon in salonData){
-  container.innerHTML+=`
-    <div class="salon-card">
-      <div class="salon-name">${salon}</div>
-      <div class="rating">⭐ ${salonData[salon].rating}</div>
-      <div class="address">${salonData[salon].address}</div>
-
-      <div class="icon-row">
-        <a href="${salonData[salon].instagram}" target="_blank">📷</a>
-        <a href="${salonData[salon].maps}" target="_blank">📍</a>
-        <a href="tel:${salonData[salon].phone}">📞</a>
-      </div>
-
-      <button class="book-btn" onclick="openBooking('${salon}')">
-        Randevu Al
-      </button>
-    </div>
-  `;
+function toggleMenu(){
+  document.getElementById("sideNav").classList.toggle("active");
 }
-
-function openBooking(name){
-  selectedSalon=name;
-  selectedServices=[];
-  document.getElementById("selectedSalonTitle").innerText=name;
-
-  const list=document.getElementById("serviceList");
-  list.innerHTML="";
-
-  servicesList.forEach(service=>{
-    list.innerHTML+=`
-      <div class="service-row">
-        <div class="service-name">${service}</div>
-        <input type="checkbox" value="${service}" onchange="toggleService(this)">
-      </div>
-    `;
-  });
-
-  document.getElementById("bookingModal").style.display="flex";
-}
-
-function toggleService(el){
-  if(el.checked){
-    selectedServices.push(el.value);
-  }else{
-    selectedServices=selectedServices.filter(s=>s!==el.value);
-  }
-}
-
-function closeModal(){
-  document.getElementById("bookingModal").style.display="none";
-  selectedServices=[];
-}
-
-async function sendBooking(){
-
-  const name=document.getElementById("fullname").value.trim();
-  const phone=document.getElementById("phone").value.trim();
-  const email=document.getElementById("email").value.trim();
-  const date=document.getElementById("date").value;
-  const time=document.getElementById("time").value;
-
-  if(!name || !phone || !email || !date || !time || selectedServices.length===0){
-    alert("Tüm alanları doldurun");
-    return;
-  }
-
-  document.getElementById("bookBtn").disabled=true;
-
-  const params={
-    salon:selectedSalon,
-    date:date,
-    time:time,
-    name:name,
-    phone:phone,
-    email:email,
-    location:salonData[selectedSalon].address,
-    services:selectedServices.join(", ")
-  };
-
-  try{
-
-    // 1️⃣ Müşteri maili
-    await emailjs.send("service_8qoocwi","template_08wro98",params);
-
-    // 2️⃣ İşletme maili
-    await emailjs.send("service_8qoocwi","template_03obhwb",params);
-
-    alert("Randevu başarıyla oluşturuldu");
-    closeModal();
-
-  }catch(error){
-    console.error("EMAILJS HATA:", error);
-    alert("Mail gönderilemedi");
-    document.getElementById("bookBtn").disabled=false;
-  }
-}
-
 </script>
+
 </body>
 </html>
