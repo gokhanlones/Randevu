@@ -7,120 +7,106 @@
 
 <style>
 
-*{
-    box-sizing:border-box;
-}
-
 body{
     margin:0;
     font-family:Arial, sans-serif;
-    background:linear-gradient(135deg,#111,#1c1c1c);
-    color:white;
-    min-height:100vh;
+    background:#111;
 }
 
-/* FRAME */
-.login-frame{
+/* FULLSCREEN LOGIN OVERLAY */
+#loginFrame{
     position:fixed;
-    inset:0;
+    top:0;
+    left:0;
+    width:100vw;
+    height:100vh;
+    background:linear-gradient(135deg,#111,#1c1c1c);
     display:flex;
     justify-content:center;
     align-items:center;
-    padding:20px;
+    z-index:9999;
 }
 
-/* CARD */
-.login-container{
+/* BÜYÜK LOGIN CARD */
+.login-card{
     background:#1e1e1e;
-    width:100%;
-    max-width:520px;
-    min-height:620px;
-    padding:60px 45px;
-    border-radius:22px;
+    width:95%;
+    max-width:520px;     /* BÜYÜTÜLDÜ */
+    padding:60px 45px;   /* YÜKSEKLİK ARTTI */
+    border-radius:20px;
     box-shadow:0 25px 60px rgba(0,0,0,0.8);
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
 }
 
-/* TITLE */
-.login-container h2{
+/* BAŞLIK */
+.login-card h2{
     text-align:center;
-    margin-bottom:35px;
     color:#d4af37;
-    font-size:26px;
+    margin-bottom:40px;
+    font-size:24px;
 }
 
 /* INPUT */
-.login-container input{
+.login-card input{
     width:100%;
-    padding:14px;
-    margin-bottom:18px;
+    padding:15px;
+    margin-bottom:20px;
+    border-radius:10px;
     border:none;
-    border-radius:8px;
     font-size:15px;
 }
 
-/* BUTTON */
-.login-container button{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:8px;
-    font-weight:bold;
-    cursor:pointer;
-    font-size:15px;
-    transition:0.2s;
-}
-
+/* GİRİŞ BUTON */
 .login-btn{
+    width:100%;
+    padding:15px;
     background:#d4af37;
     color:#000;
-}
-
-.login-btn:hover{
-    opacity:0.9;
+    border:none;
+    border-radius:10px;
+    font-weight:bold;
+    margin-bottom:20px;
+    cursor:pointer;
 }
 
 /* GOOGLE BUTTON */
 .google-btn{
+    width:100%;
+    padding:15px;
     background:#fff;
-    color:#444;
+    color:#333;
+    border:none;
+    border-radius:10px;
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:10px;
-    margin-top:18px;
+    gap:12px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-.google-btn:hover{
-    background:#f1f1f1;
+.google-btn img{
+    width:22px;
 }
 
-/* REGISTER */
-.register-link{
+/* REGISTER TEXT */
+.register-text{
     text-align:center;
-    margin-top:28px;
+    margin-top:25px;
     font-size:14px;
 }
 
-.register-link span{
+.register-text span{
     color:#d4af37;
     cursor:pointer;
 }
 
-.register-link span:hover{
-    text-decoration:underline;
-}
-
 </style>
-
 </head>
 <body>
 
-<div class="login-frame">
+<div id="loginFrame">
 
-    <div class="login-container">
+    <div class="login-card">
 
         <h2>İşletme Girişi</h2>
 
@@ -130,13 +116,12 @@ body{
         <button class="login-btn">Giriş Yap</button>
 
         <button class="google-btn">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png">
             Google ile Giriş Yap
         </button>
 
-        <div class="register-link">
-            Hesabınız yok mu? 
-            <span>Kayıt Ol</span>
+        <div class="register-text">
+            Hesabınız yok mu? <span>Kayıt Ol</span>
         </div>
 
     </div>
