@@ -9,22 +9,98 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  emailjs.init("bUqxAYFWuXWTy5nKT"); // PUBLIC KEY
+  emailjs.init("bUqxAYFWuXWTy5nKT");
 });
 </script>
 
 <style>
-body{font-family:Arial;background:#111;color:white;margin:0;padding:20px;}
-button{padding:10px 15px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;}
-.salon-card{background:#1e1e1e;padding:15px;margin-bottom:15px;border-radius:10px;}
+body{
+  font-family:Arial;
+  background:#111;
+  color:white;
+  margin:0;
+  padding:20px;
+}
+
+h2{margin-bottom:20px;}
+
+.salon-card{
+  background:#1e1e1e;
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:10px;
+}
+
 .rating{color:#d4af37;font-size:14px;}
-.address{font-size:13px;color:#ccc;margin-bottom:8px;}
-.call-btn{background:#2ecc71;color:white;margin-right:6px;}
-.book-btn{background:#d4af37;}
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;}
-.modal-content{background:#1e1e1e;padding:20px;border-radius:10px;width:95%;max-width:420px;}
-.service-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #333;}
-input{width:100%;padding:8px;margin-bottom:10px;border-radius:5px;border:none;}
+.address{font-size:13px;color:#ccc;margin-bottom:10px;}
+
+.action-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.action-btn{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:8px;
+  border-radius:6px;
+  font-size:13px;
+  font-weight:bold;
+  text-decoration:none;
+  color:white;
+}
+
+.insta-btn{ background:#e1306c; }
+.map-btn{ background:#3498db; }
+.call-btn{ background:#2ecc71; }
+
+.book-btn{
+  background:#d4af37;
+  color:black;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-bottom:10px;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-content{
+  background:#1e1e1e;
+  padding:20px;
+  border-radius:10px;
+  width:95%;
+  max-width:420px;
+}
+
+.service-row{
+  display:flex;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid #333;
+}
+
+input{
+  width:100%;
+  padding:8px;
+  margin-bottom:10px;
+  border-radius:5px;
+  border:none;
+}
 </style>
 </head>
 <body>
@@ -43,19 +119,33 @@ input{width:100%;padding:8px;margin-bottom:10px;border-radius:5px;border:none;}
     <input type="date" id="date">
     <input type="time" id="time">
 
-    <button style="background:#d4af37;width:100%;" id="bookBtn">
+    <button id="bookBtn" style="background:#d4af37;width:100%;padding:10px;border:none;border-radius:6px;font-weight:bold;">
       Randevu Oluştur
     </button>
     <br><br>
-    <button style="background:#444;width:100%;" onclick="closeModal()">İptal</button>
+    <button style="background:#444;width:100%;padding:10px;border:none;border-radius:6px;color:white;" onclick="closeModal()">
+      İptal
+    </button>
   </div>
 </div>
 
 <script>
 
 const salonData={
-  "Diamond Hair":{address:"Kadıköy İstanbul",phone:"05320000001",rating:4.8},
-  "Gold Salon":{address:"Bakırköy İstanbul",phone:"05320000002",rating:4.6}
+  "Diamond Hair":{
+    address:"Kadıköy İstanbul",
+    phone:"05320000001",
+    rating:4.8,
+    instagram:"https://instagram.com/diamondhair",
+    maps:"https://www.google.com/maps/search/?api=1&query=Kadıköy+İstanbul"
+  },
+  "Gold Salon":{
+    address:"Bakırköy İstanbul",
+    phone:"05320000002",
+    rating:4.6,
+    instagram:"https://instagram.com/goldsalon",
+    maps:"https://www.google.com/maps/search/?api=1&query=Bakırköy+İstanbul"
+  }
 };
 
 const servicesList=[
@@ -77,13 +167,24 @@ for(const salon in salonData){
       <div class="rating">⭐ ${salonData[salon].rating}</div>
       <div class="address">${salonData[salon].address}</div>
 
-      <a href="tel:${salonData[salon].phone}">
-        <button class="call-btn">Ara</button>
-      </a>
+      <div class="action-row">
+        <a href="${salonData[salon].instagram}" target="_blank" class="action-btn insta-btn">
+          📸 Instagram
+        </a>
+        <a href="${salonData[salon].maps}" target="_blank" class="action-btn map-btn">
+          📍 Harita
+        </a>
+      </div>
 
       <button class="book-btn" onclick="openBooking('${salon}')">
-        Randevu Al
+        ✂️ Randevu Al
       </button>
+
+      <div class="action-row">
+        <a href="tel:${salonData[salon].phone}" class="action-btn call-btn">
+          📞 Ara
+        </a>
+      </div>
     </div>
   `;
 }
@@ -150,10 +251,7 @@ async function sendBooking(){
 
   try{
 
-    // Müşteri maili
     await emailjs.send("service_8qoocwi","template_08wro98",params);
-
-    // İşletme maili
     await emailjs.send("service_8qoocwi","template_03obhwb",params);
 
     alert("Randevu başarıyla oluşturuldu");
