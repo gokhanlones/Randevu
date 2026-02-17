@@ -15,180 +15,185 @@ body{
     color:white;
 }
 
-/* MENU BUTTON */
-.menu-btn{
-    position:fixed;
-    top:18px;
-    left:18px;
-    font-size:24px;
-    cursor:pointer;
-    z-index:1001;
-}
-
-/* SIDE MENU */
-.side-menu{
-    position:fixed;
-    top:0;
-    left:-260px;
-    width:260px;
-    height:100%;
-    background:#1e1e1e;
-    transition:0.3s;
-    padding-top:70px;
-    z-index:1000;
-}
-
-.side-menu a{
-    display:block;
-    padding:16px 22px;
-    color:white;
-    text-decoration:none;
-    cursor:pointer;
-}
-
-.side-menu a:hover{
-    background:#333;
-}
-
-/* MAIN CONTENT */
-#mainContent{
-    padding:100px 20px;
-}
-
-/* ===== LOGIN MODAL ===== */
-#loginModal{
+/* ===== OVERLAY ===== */
+#authOverlay{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.85);
-    display:none;
+    background:linear-gradient(135deg,#111,#1c1c1c);
+    display:flex;
     justify-content:center;
     align-items:center;
-    z-index:2000;
+    z-index:9999;
 }
 
-.login-card{
+/* ===== CARD ===== */
+.auth-card{
     width:95%;
-    max-width:420px;
-    padding:40px 30px;
+    max-width:520px;
+    padding:40px 35px;
     background:#1e1e1e;
     border-radius:18px;
-    box-shadow:0 25px 60px rgba(0,0,0,0.7);
+    box-shadow:0 25px 60px rgba(0,0,0,0.8);
+    animation:fadeIn .3s ease;
 }
 
-.login-card h2{
+@keyframes fadeIn{
+    from{opacity:0;transform:scale(.95);}
+    to{opacity:1;transform:scale(1);}
+}
+
+.auth-card h2{
     text-align:center;
     color:#d4af37;
     margin-bottom:30px;
 }
 
-.login-card input{
+.auth-card input{
     width:100%;
     padding:14px;
-    margin-bottom:16px;
+    margin-bottom:14px;
     border:none;
     border-radius:8px;
     font-size:14px;
 }
 
-.login-btn{
+.auth-card button{
     width:100%;
     padding:14px;
-    background:#d4af37;
     border:none;
     border-radius:8px;
     font-weight:bold;
     cursor:pointer;
+    margin-top:6px;
+}
+
+.primary-btn{
+    background:#d4af37;
+    color:#000;
 }
 
 .google-btn{
-    width:100%;
-    padding:14px;
-    margin-top:14px;
-    background:#fff;
+    background:white;
     color:#444;
-    border:none;
-    border-radius:8px;
-    font-weight:bold;
-    cursor:pointer;
+    margin-top:12px;
 }
 
-.close-btn{
-    width:100%;
-    padding:14px;
-    margin-top:14px;
-    background:#444;
-    border:none;
-    border-radius:8px;
-    color:white;
-    cursor:pointer;
-}
-
-.register-link{
+.link-text{
     text-align:center;
     margin-top:20px;
-    font-size:14px;
+    font-size:13px;
     color:#aaa;
 }
 
-.register-link span{
+.link-text span{
     color:#d4af37;
     cursor:pointer;
+}
+
+/* REGISTER özel */
+#registerCard{
+    display:none;
+    max-width:620px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- MENU BUTTON -->
-<div class="menu-btn" onclick="toggleMenu()">☰</div>
+<div id="authOverlay">
 
-<!-- SIDE MENU -->
-<div class="side-menu" id="menu">
-    <a onclick="openLogin()">İşletme Girişi</a>
-</div>
-
-<!-- MAIN CONTENT -->
-<div id="mainContent">
-    <h2>FlowRandevu</h2>
-    <p>Ana sayfa içerik alanı</p>
-</div>
-
-<!-- LOGIN MODAL -->
-<div id="loginModal">
-    <div class="login-card">
-
+    <!-- LOGIN -->
+    <div class="auth-card" id="loginCard">
         <h2>İşletme Girişi</h2>
 
-        <input type="email" placeholder="Email">
-        <input type="password" placeholder="Şifre">
+        <input type="email" id="loginEmail" placeholder="Email">
+        <input type="password" id="loginPassword" placeholder="Şifre">
 
-        <button class="login-btn">Giriş Yap</button>
+        <button class="primary-btn" onclick="login()">Giriş Yap</button>
 
         <button class="google-btn">Google ile Giriş Yap</button>
 
-        <div class="register-link">
-            Hesabınız yok mu? <span>Kayıt Ol</span>
+        <div class="link-text">
+            Hesabınız yok mu? <span onclick="openRegister()">Kayıt Ol</span>
         </div>
-
-        <button class="close-btn" onclick="closeLogin()">Kapat</button>
-
     </div>
+
+    <!-- REGISTER -->
+    <div class="auth-card" id="registerCard">
+        <h2>İşletme Kaydı</h2>
+
+        <input type="text" id="businessName" placeholder="İşletme Adı">
+        <input type="text" id="ownerName" placeholder="Yetkili Ad Soyad">
+        <input type="email" id="regEmail" placeholder="Email">
+        <input type="email" id="regEmail2" placeholder="Email Tekrar">
+        <input type="password" id="regPassword" placeholder="Şifre">
+        <input type="password" id="regPassword2" placeholder="Şifre Tekrar">
+        <input type="tel" id="regPhone" placeholder="Telefon">
+
+        <button class="primary-btn" onclick="register()">Kayıt Ol</button>
+
+        <div class="link-text">
+            Zaten hesabım var <span onclick="openLogin()">Giriş Yap</span>
+        </div>
+    </div>
+
 </div>
 
 <script>
 
-function toggleMenu(){
-    const menu=document.getElementById("menu");
-    menu.style.left = (menu.style.left==="0px") ? "-260px" : "0px";
+function openRegister(){
+    document.getElementById("loginCard").style.display="none";
+    document.getElementById("registerCard").style.display="block";
 }
 
 function openLogin(){
-    document.getElementById("loginModal").style.display="flex";
-    toggleMenu();
+    document.getElementById("registerCard").style.display="none";
+    document.getElementById("loginCard").style.display="block";
 }
 
-function closeLogin(){
-    document.getElementById("loginModal").style.display="none";
+function login(){
+    const email=document.getElementById("loginEmail").value.trim();
+    const password=document.getElementById("loginPassword").value.trim();
+
+    if(!email || !password){
+        alert("Email ve şifre giriniz");
+        return;
+    }
+
+    alert("Login başarılı (backend bağlanacak)");
+}
+
+function register(){
+
+    const business=document.getElementById("businessName").value.trim();
+    const owner=document.getElementById("ownerName").value.trim();
+    const email=document.getElementById("regEmail").value.trim();
+    const email2=document.getElementById("regEmail2").value.trim();
+    const pass=document.getElementById("regPassword").value.trim();
+    const pass2=document.getElementById("regPassword2").value.trim();
+    const phone=document.getElementById("regPhone").value.trim();
+
+    if(!business || !owner || !email || !email2 || !pass || !pass2 || !phone){
+        alert("Tüm alanları doldurun");
+        return;
+    }
+
+    if(email !== email2){
+        alert("Email adresleri eşleşmiyor");
+        return;
+    }
+
+    if(pass.length < 6){
+        alert("Şifre en az 6 karakter olmalı");
+        return;
+    }
+
+    if(pass !== pass2){
+        alert("Şifreler eşleşmiyor");
+        return;
+    }
+
+    alert("Kayıt başarılı (email doğrulama sonraki adım)");
 }
 
 </script>
