@@ -536,50 +536,98 @@
     // REGISTER SUBMIT (TUTARSIZLIK KONTROLLERİ + BAŞARILIYSA KAPAT)
     // ======================
     function submitRegister(){
-      const business = document.getElementById("regBusiness").value.trim();
-      const first = document.getElementById("regFirst").value.trim();
-      const last  = document.getElementById("regLast").value.trim();
-      const phone = document.getElementById("regPhone").value.trim();
 
-      const email = document.getElementById("regEmail").value.trim();
-      const email2= document.getElementById("regEmail2").value.trim();
+  const business = document.getElementById("regBusiness").value.trim();
+  const first = document.getElementById("regFirst").value.trim();
+  const last  = document.getElementById("regLast").value.trim();
+  const phone = document.getElementById("regPhone").value.trim();
 
-      const pw    = document.getElementById("regPw").value.trim();
-      const pw2   = document.getElementById("regPw2").value.trim();
+  const email = document.getElementById("regEmail").value.trim();
+  const email2= document.getElementById("regEmail2").value.trim();
 
-      // 1) boş kontrol
-      if(!business || !first || !last || !phone || !email || !email2 || !pw || !pw2){
-        showBanner("Eksik alan", "Tüm alanları doldurun.", 3500);
-        return;
-      }
+  const pw    = document.getElementById("regPw").value.trim();
+  const pw2   = document.getElementById("regPw2").value.trim();
 
-      // 2) email eşleşme
-      if(email.toLowerCase() !== email2.toLowerCase()){
-        showBanner("Email uyuşmuyor", "Email ve Email Tekrar aynı olmalı.", 4000);
-        return;
-      }
+  // =========================
+  // BOŞ KONTROL
+  // =========================
+  if(!business || !first || !last || !phone || !email || !email2 || !pw || !pw2){
+    showBanner("Eksik alan", "Tüm alanları doldurun.", 3500);
+    return;
+  }
 
-      // 3) şifre eşleşme + basit kural
-      if(pw !== pw2){
-        showBanner("Şifre uyuşmuyor", "Şifre ve Şifre Tekrar aynı olmalı.", 4000);
-        return;
-      }
-      if(pw.length < 6){
-        showBanner("Şifre kısa", "En az 6 karakter kullan.", 4000);
-        return;
-      }
+  // =========================
+  // EMAIL EŞLEŞME
+  // =========================
+  if(email.toLowerCase() !== email2.toLowerCase()){
+    showBanner("Email uyuşmuyor", "Email ve Email Tekrar aynı olmalı.", 4000);
+    return;
+  }
 
-      // 4) telefon basit kontrol (opsiyonel)
-      if(phone.replaceAll(" ","").length < 10){
-        showBanner("Telefon hatalı", "Telefon numarasını kontrol et.", 4000);
-        return;
-      }
+  // =========================
+  // ŞİFRE EŞLEŞME
+  // =========================
+  if(pw !== pw2){
+    showBanner("Şifre uyuşmuyor", "Şifre ve Şifre Tekrar aynı olmalı.", 4000);
+    return;
+  }
 
-      // BAŞARILI: kart kapansın + banner
+  if(pw.length < 6){
+    showBanner("Şifre kısa", "En az 6 karakter kullan.", 4000);
+    return;
+  }
+
+  // =========================
+  // TELEFON BASİT KONTROL
+  // =========================
+  if(phone.replaceAll(" ","").length < 10){
+    showBanner("Telefon hatalı", "Telefon numarasını kontrol et.", 4000);
+    return;
+  }
+
+  // =========================
+  // DOĞRULAMA KODU ÜRET
+  // =========================
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // LocalStorage'a geçici kaydet
+  localStorage.setItem("flow_verify_code", code);
+  localStorage.setItem("flow_register_email", email);
+  localStorage.setItem("flow_register_business", business);
+  localStorage.setItem("flow_register_first", first);
+  localStorage.setItem("flow_register_last", last);
+  localStorage.setItem("flow_register_phone", phone);
+  localStorage.setItem("flow_register_pw", pw);
+
+  showBanner("Doğrulama kodu gönderiliyor...", "", 2000);
+
+  // =========================
+  // EMAIL GÖNDER
+  // =========================
+  emailjs.send("service_8qoocwi","template_08wro98",{
+      email: email,
+      verification_code: code
+  })
+  .then(function(){
+
       closeRegister();
-      showBanner("Kayıt başarılı ✅", "Email kontrol edin (doğrulama kodu gönderilecek).", 4500);
 
-      // Burada sonra: Google Apps Script endpoint'e POST atacağız.
+      showBanner(
+        "Kod gönderildi 📩",
+        "Email adresinizi kontrol edin.",
+        4000
+      );
+
+      setTimeout(()=>{
+        window.location.href = "verify.html";
+      }, 2000);
+
+  })
+  .catch(function(error){
+      console.error("EmailJS Hata:", error);
+      showBanner("Mail gönderilemedi", "Lütfen tekrar deneyin.", 4000);
+  });
+
     }
   </script>
 
