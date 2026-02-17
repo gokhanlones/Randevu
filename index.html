@@ -608,10 +608,23 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
   // EMAIL GÖNDER
   // =========================
   emailjs.send("service_8qoocwi","template_08wro98",{
-    email: email,   // to_email değil!
+    to_email: email,
+    email: email,                 // BUNU EKLEDİK
     verification_code: code,
     full_name: first + " " + last
 })
+.then(function(){
+    closeRegister();
+    showBanner("Kayıt başarılı ✅","Email adresinize doğrulama kodu gönderildi.",4000);
+
+    setTimeout(()=>{
+        window.location.href="verify.html";
+    },1500);
+})
+.catch(function(error){
+    console.error("MAIL ERROR:", error);
+    showBanner("Mail gönderilemedi","Tekrar deneyin.",4000);
+});
   .then(function(){
 
       closeRegister();
