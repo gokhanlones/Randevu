@@ -9,46 +9,32 @@
 *{box-sizing:border-box;}
 body{
     margin:0;
-    font-family:Arial, sans-serif;
+    font-family:Arial;
     background:#111;
     color:white;
 }
 
-/* ========================= */
-/* TOP BANNER */
-/* ========================= */
-#topBanner{
+/* ÜST SABİT BANNER */
+#banner{
     position:fixed;
-    top:-100px;
+    top:0;
     left:0;
     width:100%;
-    padding:18px;
+    padding:14px;
     text-align:center;
     font-weight:bold;
-    z-index:99999;
-    transition:0.4s ease;
+    display:none;
+    z-index:9999;
 }
+.banner-error{background:#c0392b;}
+.banner-success{background:#27ae60;}
 
-.banner-error{
-    background:#2b0d0d;
-    border-left:4px solid #ff4d4d;
-    color:#ffb3b3;
-}
-
-.banner-success{
-    background:#0f2d1f;
-    border-left:4px solid #00c853;
-    color:#a5f5c8;
-}
-
-/* ========================= */
 /* HAMBURGER */
-/* ========================= */
 .menu-btn{
     position:fixed;
     top:15px;
     left:15px;
-    font-size:26px;
+    font-size:24px;
     cursor:pointer;
     z-index:1000;
 }
@@ -62,25 +48,22 @@ body{
     height:100%;
     background:#1e1e1e;
     transition:0.3s;
-    padding-top:60px;
-    z-index:999;
+    padding-top:70px;
+    z-index:900;
 }
-
 .side-menu a{
     display:block;
     padding:15px 20px;
-    text-decoration:none;
-    color:white;
     cursor:pointer;
 }
+.side-menu a:hover{background:#333;}
 
-.side-menu a:hover{
-    background:#333;
+/* MAIN CONTENT */
+#mainContent{
+    padding:100px 20px;
 }
 
-/* ========================= */
 /* MODAL */
-/* ========================= */
 .modal{
     position:fixed;
     inset:0;
@@ -88,82 +71,67 @@ body{
     display:none;
     justify-content:center;
     align-items:center;
-    z-index:10000;
+    z-index:2000;
 }
-
 .card{
-    width:95%;
-    max-width:520px;
     background:#1e1e1e;
-    padding:40px;
-    border-radius:20px;
-    box-shadow:0 25px 70px rgba(0,0,0,0.8);
+    padding:35px;
+    border-radius:16px;
+    width:95%;
+    max-width:500px;
 }
-
 .card h2{
     text-align:center;
     color:#d4af37;
-    margin-bottom:30px;
+    margin-bottom:25px;
 }
-
-input{
+.card input{
     width:100%;
     padding:14px;
     margin-bottom:15px;
     border:none;
     border-radius:8px;
 }
-
-button{
+.primary-btn{
     width:100%;
     padding:14px;
     border:none;
     border-radius:8px;
+    background:#d4af37;
     font-weight:bold;
     cursor:pointer;
 }
-
-.primary-btn{
-    background:#d4af37;
-    color:#000;
-}
-
-.google-btn{
+.close-btn{
+    width:100%;
     margin-top:10px;
-    background:white;
-    color:#444;
-}
-
-.link-text{
-    text-align:center;
-    margin-top:18px;
-    font-size:14px;
-}
-
-.link-text span{
-    color:#d4af37;
+    padding:12px;
+    background:#444;
+    border:none;
+    border-radius:8px;
+    color:white;
     cursor:pointer;
 }
-
-/* CLOSE BUTTON */
-.close-btn{
-    margin-top:15px;
-    background:#444;
-    color:white;
+.show-pass{
+    position:absolute;
+    right:15px;
+    top:14px;
+    cursor:pointer;
 }
+.relative{position:relative;}
 </style>
 </head>
 <body>
 
-<div id="topBanner"></div>
+<div id="banner"></div>
 
 <div class="menu-btn" onclick="toggleMenu()">☰</div>
 
 <div class="side-menu" id="menu">
-    <a onclick="openLogin()">İşletme Girişi</a>
+    <a onclick="openModal('loginModal')">İşletme Girişi</a>
+    <a onclick="openModal('registerModal')">Kayıt Ol</a>
 </div>
 
-<div style="padding:100px 20px;">
+<div id="mainContent">
     <h2>FlowRandevu Ana Sayfa</h2>
 </div>
 
@@ -171,18 +139,9 @@ button{
 <div class="modal" id="loginModal">
     <div class="card">
         <h2>İşletme Girişi</h2>
-
-        <input type="email" id="loginEmail" placeholder="Email">
-        <input type="password" id="loginPassword" placeholder="Şifre">
-
+        <input type="email" placeholder="Email">
+        <input type="password" placeholder="Şifre">
         <button class="primary-btn">Giriş Yap</button>
-
-        <button class="google-btn">Google ile Giriş Yap</button>
-
-        <div class="link-text">
-            Hesabınız yok mu? <span onclick="switchToRegister()">Kayıt Ol</span>
-        </div>
-
         <button class="close-btn" onclick="closeModal('loginModal')">Kapat</button>
     </div>
 </div>
@@ -194,82 +153,83 @@ button{
 
         <input type="text" id="firstName" placeholder="Ad">
         <input type="text" id="lastName" placeholder="Soyad">
-        <input type="email" id="regEmail" placeholder="Email">
-        <input type="email" id="regEmail2" placeholder="Email Tekrar">
-        <input type="password" id="regPassword" placeholder="Şifre">
+        <input type="tel" id="phone" placeholder="Telefon">
+
+        <input type="email" id="email1" placeholder="Email">
+        <input type="email" id="email2" placeholder="Email Tekrar">
+
+        <div class="relative">
+            <input type="password" id="pass1" placeholder="Şifre">
+            <span class="show-pass" onclick="togglePass('pass1')">👁</span>
+        </div>
+
+        <div class="relative">
+            <input type="password" id="pass2" placeholder="Şifre Tekrar">
+            <span class="show-pass" onclick="togglePass('pass2')">👁</span>
+        </div>
 
         <button class="primary-btn" onclick="register()">Kayıt Ol</button>
-
         <button class="close-btn" onclick="closeModal('registerModal')">Kapat</button>
     </div>
 </div>
 
 <script>
 
-/* ========================= */
 /* MENU */
-/* ========================= */
 function toggleMenu(){
     const menu=document.getElementById("menu");
     menu.style.left = menu.style.left==="0px" ? "-250px" : "0px";
 }
 
-/* ========================= */
-/* MODALS */
-/* ========================= */
-function openLogin(){
-    document.getElementById("loginModal").style.display="flex";
+/* MODAL */
+function openModal(id){
+    document.getElementById(id).style.display="flex";
     toggleMenu();
 }
-
-function switchToRegister(){
-    closeModal("loginModal");
-    document.getElementById("registerModal").style.display="flex";
-}
-
 function closeModal(id){
     document.getElementById(id).style.display="none";
 }
 
-/* ========================= */
-/* BANNER SYSTEM */
-/* ========================= */
+/* BANNER */
 function showError(msg){
-    const banner=document.getElementById("topBanner");
+    const banner=document.getElementById("banner");
     banner.className="banner-error";
     banner.innerHTML=msg;
-    banner.style.top="0";
+    banner.style.display="block";
 }
-
 function showSuccess(msg){
-    const banner=document.getElementById("topBanner");
+    const banner=document.getElementById("banner");
     banner.className="banner-success";
     banner.innerHTML=msg;
-    banner.style.top="0";
-
-    setTimeout(()=>{
-        banner.style.top="-100px";
-    },5000);
+    banner.style.display="block";
 }
 
-/* ========================= */
-/* REGISTER VALIDATION */
-/* ========================= */
+/* PASSWORD TOGGLE */
+function togglePass(id){
+    const input=document.getElementById(id);
+    input.type = input.type==="password" ? "text" : "password";
+}
+
+/* REGISTER */
 function register(){
 
     const first=document.getElementById("firstName").value.trim();
     const last=document.getElementById("lastName").value.trim();
-    const email1=document.getElementById("regEmail").value.trim();
-    const email2=document.getElementById("regEmail2").value.trim();
-    const pass=document.getElementById("regPassword").value.trim();
+    const phone=document.getElementById("phone").value.trim();
+    const email1=document.getElementById("email1").value.trim();
+    const email2=document.getElementById("email2").value.trim();
+    const pass1=document.getElementById("pass1").value.trim();
+    const pass2=document.getElementById("pass2").value.trim();
 
     let errors=[];
 
     if(!first) errors.push("Ad boş olamaz");
     if(!last) errors.push("Soyad boş olamaz");
+    if(!phone || phone.length<10) errors.push("Geçerli telefon girin");
     if(!email1) errors.push("Email boş olamaz");
     if(email1!==email2) errors.push("Email adresleri uyuşmuyor");
-    if(pass.length<6) errors.push("Şifre en az 6 karakter olmalı");
+    if(pass1.length<6) errors.push("Şifre en az 6 karakter olmalı");
+    if(pass1!==pass2) errors.push("Şifreler uyuşmuyor");
 
     if(errors.length>0){
         showError(errors.join("<br>"));
@@ -281,6 +241,5 @@ function register(){
 }
 
 </script>
-
 </body>
 </html>
