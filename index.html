@@ -18,8 +18,6 @@ button{padding:10px 15px;border:none;border-radius:6px;cursor:pointer;font-weigh
 .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;}
 .modal-content{background:#1e1e1e;padding:20px;border-radius:10px;width:95%;max-width:420px;}
 .service-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #333;}
-.service-name{flex:1;text-align:left;font-size:14px;}
-.service-row input{width:18px;height:18px;}
 input{width:100%;padding:8px;margin-bottom:10px;border-radius:5px;border:none;}
 </style>
 </head>
@@ -39,142 +37,128 @@ input{width:100%;padding:8px;margin-bottom:10px;border-radius:5px;border:none;}
     <input type="date" id="date">
     <input type="time" id="time">
 
-    <button id="sendBtn" style="background:#d4af37;width:100%;">Randevu Oluştur</button>
+    <button style="background:#d4af37;width:100%;" id="bookBtn">Randevu Oluştur</button>
     <br><br>
-    <button style="background:#444;width:100%;" onclick="closeModal()">İptal</button>
+    <button style="background:#444;width:100%;" id="cancelBtn">İptal</button>
   </div>
 </div>
 
 <script>
-
 document.addEventListener("DOMContentLoaded", function(){
 
-  // EMAILJS INIT
   emailjs.init("bUqxAYFWuXWTy5nKT");
 
-  console.log("EmailJS hazır");
+  const salonData={
+    "Diamond Hair":{address:"Kadıköy İstanbul",phone:"05320000001",rating:4.8},
+    "Gold Salon":{address:"Bakırköy İstanbul",phone:"05320000002",rating:4.6}
+  };
 
-});
+  const servicesList=[
+    "Saç Kesimi",
+    "Sakal Tıraşı",
+    "Saç Boyama",
+    "Cilt Bakımı"
+  ];
 
-const salonData={
-  "Diamond Hair":{address:"Kadıköy İstanbul",phone:"05320000001",rating:4.8},
-  "Gold Salon":{address:"Bakırköy İstanbul",phone:"05320000002",rating:4.6}
-};
+  let selectedSalon="";
+  let selectedServices=[];
 
-const servicesList=[
-  "Saç Kesimi",
-  "Sakal Tıraşı",
-  "Saç Boyama",
-  "Cilt Bakımı"
-];
+  const container=document.getElementById("salonContainer");
 
-let selectedSalon="";
-let selectedServices=[];
-
-const container=document.getElementById("salonContainer");
-
-for(const salon in salonData){
-  container.innerHTML+=`
-    <div class="salon-card">
+  // Salonları oluştur
+  Object.keys(salonData).forEach(salon=>{
+    const card=document.createElement("div");
+    card.className="salon-card";
+    card.innerHTML=`
       <h3>${salon}</h3>
       <div class="rating">⭐ ${salonData[salon].rating}</div>
       <div class="address">${salonData[salon].address}</div>
       <a href="tel:${salonData[salon].phone}">
         <button class="call-btn">📞 Ara</button>
       </a>
-      <button class="book-btn" onclick="openBooking('${salon}')">
-        Randevu Al
-      </button>
-    </div>
-  `;
-}
-
-function openBooking(name){
-  selectedSalon=name;
-  selectedServices=[];
-  document.getElementById("selectedSalonTitle").innerText=name;
-
-  const list=document.getElementById("serviceList");
-  list.innerHTML="";
-
-  servicesList.forEach(service=>{
-    list.innerHTML+=`
-      <div class="service-row">
-        <div class="service-name">${service}</div>
-        <input type="checkbox" value="${service}" onchange="toggleService(this)">
-      </div>
+      <button class="book-btn">Randevu Al</button>
     `;
+    card.querySelector(".book-btn").addEventListener("click",()=>{
+      openBooking(salon);
+    });
+    container.appendChild(card);
   });
 
-  document.getElementById("bookingModal").style.display="flex";
-}
+  function openBooking(name){
+    selectedSalon=name;
+    selectedServices=[];
+    document.getElementById("selectedSalonTitle").innerText=name;
 
-function toggleService(el){
-  if(el.checked){
-    selectedServices.push(el.value);
-  }else{
-    selectedServices=selectedServices.filter(s=>s!==el.value);
+    const list=document.getElementById("serviceList");
+    list.innerHTML="";
+
+    servicesList.forEach(service=>{
+      const row=document.createElement("div");
+      row.className="service-row";
+      row.innerHTML=`
+        <span>${service}</span>
+        <input type="checkbox">
+      `;
+      row.querySelector("input").addEventListener("change",(e)=>{
+        if(e.target.checked){
+          selectedServices.push(service);
+        }else{
+          selectedServices=selectedServices.filter(s=>s!==service);
+        }
+      });
+      list.appendChild(row);
+    });
+
+    document.getElementById("bookingModal").style.display="flex";
   }
-}
 
-function closeModal(){
-  document.getElementById("bookingModal").style.display="none";
-  document.querySelectorAll("#bookingModal input").forEach(i=>i.value="");
-  selectedServices=[];
-}
+  document.getElementById("cancelBtn").addEventListener("click",()=>{
+    document.getElementById("bookingModal").style.display="none";
+  });
 
-// BUTON EVENT BIND (onclick yerine güvenli tetikleme)
-document.addEventListener("click", function(e){
-  if(e.target && e.target.id==="sendBtn"){
-    sendBooking();
-  }
-});
+  document.getElementById("bookBtn").addEventListener("click", async ()=>{
 
-<script>
+    try{
 
-async function sendBooking(){
+      const name=document.getElementById("fullname").value.trim();
+      const phone=document.getElementById("phone").value.trim();
+      const email=document.getElementById("email").value.trim();
+      const date=document.getElementById("date").value;
+      const time=document.getElementById("time").value;
 
-  try{
+      if(!name || !phone || !email || !date || !time || selectedServices.length===0){
+        alert("Tüm alanları doldurun");
+        return;
+      }
 
-    const name = document.getElementById("fullname").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const date = document.getElementById("date").value;
-    const time = document.getElementById("time").value;
+      const params={
+        salon:selectedSalon,
+        date,
+        time,
+        name,
+        phone,
+        email,
+        location:salonData[selectedSalon].address,
+        services:selectedServices.join(", ")
+      };
 
-    if(!name || !phone || !email || !date || !time || selectedServices.length===0){
-      alert("Tüm alanları doldurun");
-      return;
+      console.log("GÖNDERİLİYOR:", params);
+
+      await emailjs.send("service_8qoocwi","template_08wro98",params);
+      await emailjs.send("service_8qoocwi","template_03obhwb",params);
+
+      alert("Randevu oluşturuldu");
+      document.getElementById("bookingModal").style.display="none";
+
+    }catch(err){
+      console.error("HATA:",err);
+      alert("Mail gönderilemedi. Console’a bak.");
     }
 
-    const bookingId = btoa(name+date+time);
+  });
 
-    const servicesText = selectedServices.join(", ");
-
-    const params = {
-      salon: selectedSalon,
-      date: date,
-      time: time,
-      name: name,
-      phone: phone,
-      email: email,
-      location: salonData[selectedSalon].address,
-      services: servicesText,
-      booking_id: bookingId
-    };
-
-    console.log("Giden Parametre:", params);
-
-    await emailjs.send("service_8qoocwi","template_08wro98",params);
-    await emailjs.send("service_8qoocwi","template_03obhwb",params);
-
-    alert("Randevu başarıyla oluşturuldu");
-    closeModal();
-
-  }catch(error){
-    console.error("EMAILJS HATA:", error);
-    alert("Mail gönderilemedi. Console'a bak.");
-  }
-
-}
+});
 </script>
+
+</body>
+</html>
