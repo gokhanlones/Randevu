@@ -417,79 +417,7 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
   </div>
 
 
-  <script>
-    // ======================
-    // MENU
-    // ======================
-    function toggleMenu(){
-      document.body.classList.toggle("menu-open");
-    }
-    function closeMenu(){
-      document.body.classList.remove("menu-open");
-    }
-
-    // ======================
-    // BANNER (TEK MERKEZ)
-    // ======================
-    let bannerTimer = null;
-
-    function showBanner(title, detail="", ms=3000){
-      const banner = document.getElementById("banner");
-      const text = document.getElementById("bannerText");
-
-      text.innerHTML = `
-        <div><b>${escapeHtml(title)}</b></div>
-        ${detail ? `<small>${escapeHtml(detail)}</small>` : ""}
-      `;
-
-      banner.style.display = "block";
-
-      if (bannerTimer) clearTimeout(bannerTimer);
-      if (ms && ms > 0){
-        bannerTimer = setTimeout(() => hideBanner(), ms);
-      }
-    }
-
-    function hideBanner(){
-      const banner = document.getElementById("banner");
-      banner.style.display = "none";
-      if (bannerTimer) clearTimeout(bannerTimer);
-      bannerTimer = null;
-    }
-
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    // ======================
-    // MODALS
-    // ======================
-    function openLogin(){
-      closeMenu();
-      document.getElementById("loginModal").classList.add("open");
-    }
-    function closeLogin(){
-      document.getElementById("loginModal").classList.remove("open");
-    }
-
-    function openRegister(){
-      closeMenu();
-      document.getElementById("registerModal").classList.add("open");
-    }
-    function closeRegister(){
-      document.getElementById("registerModal").classList.remove("open");
-    }
-
-    function switchToRegister(){
-      closeLogin();
-      openRegister();
-    }
-    function switchToLogin(){
+(){
       closeRegister();
       openLogin();
     }
@@ -578,6 +506,47 @@ function showBanner(title, detail="", ms=3000){
 
 /* ======================
    MENU
+
+function openRegister(){
+  closeMenu();
+  document.getElementById("registerModal").classList.add("open");
+}
+function closeRegister(){
+  document.getElementById("registerModal").classList.remove("open");
+}
+
+<script>
+emailjs.init("bUqxAYFWuXWTy5nKT");
+
+/* ======================
+   MENU
+====================== */
+function toggleMenu(){
+  document.body.classList.toggle("menu-open");
+}
+function closeMenu(){
+  document.body.classList.remove("menu-open");
+}
+
+/* ======================
+   BANNER
+====================== */
+let bannerTimer = null;
+
+function showBanner(title, detail="", ms=3000){
+  const banner = document.getElementById("banner");
+  const text = document.getElementById("bannerText");
+
+  text.innerHTML = `
+    <div><b>${escapeHtml(title)}</b></div>
+    ${detail ? `<small>${escapeHtml(detail)}</small>` : ""}
+  `;
+
+<script>
+emailjs.init("bUqxAYFWuXWTy5nKT");
+
+/* ======================
+   MENU
 ====================== */
 function toggleMenu(){
   document.body.classList.toggle("menu-open");
@@ -603,8 +572,8 @@ function showBanner(title, detail="", ms=3000){
   banner.style.display = "block";
 
   if (bannerTimer) clearTimeout(bannerTimer);
-  if (ms && ms > 0){
-    bannerTimer = setTimeout(() => hideBanner(), ms);
+  if (ms > 0){
+    bannerTimer = setTimeout(hideBanner, ms);
   }
 }
 
@@ -641,6 +610,22 @@ function openRegister(){
 function closeRegister(){
   document.getElementById("registerModal").classList.remove("open");
 }
+function switchToRegister(){
+  closeLogin();
+  openRegister();
+}
+function switchToLogin(){
+  closeRegister();
+  openLogin();
+}
+
+/* Modal dışına tıklayınca kapat */
+document.getElementById("loginModal").addEventListener("click", e=>{
+  if(e.target.id==="loginModal") closeLogin();
+});
+document.getElementById("registerModal").addEventListener("click", e=>{
+  if(e.target.id==="registerModal") closeRegister();
+});
 
 /* ======================
    PASSWORD TOGGLE
@@ -674,35 +659,33 @@ function submitRegister(){
   const first = document.getElementById("regFirst").value.trim();
   const last  = document.getElementById("regLast").value.trim();
   const phone = document.getElementById("regPhone").value.trim();
-
   const email = document.getElementById("regEmail").value.trim();
   const email2= document.getElementById("regEmail2").value.trim();
-
   const pw    = document.getElementById("regPw").value.trim();
   const pw2   = document.getElementById("regPw2").value.trim();
 
   if(!business || !first || !last || !phone || !email || !email2 || !pw || !pw2){
-    showBanner("Eksik alan", "Tüm alanları doldurun.", 3500);
+    showBanner("Eksik alan","Tüm alanları doldurun.",3500);
     return;
   }
 
   if(email.toLowerCase() !== email2.toLowerCase()){
-    showBanner("Email uyuşmuyor", "Email ve tekrar aynı olmalı.", 4000);
+    showBanner("Email uyuşmuyor","Email ve tekrar aynı olmalı.",4000);
     return;
   }
 
   if(pw !== pw2){
-    showBanner("Şifre uyuşmuyor", "Şifreler aynı olmalı.", 4000);
+    showBanner("Şifre uyuşmuyor","Şifreler aynı olmalı.",4000);
     return;
   }
 
   if(pw.length < 6){
-    showBanner("Şifre kısa", "En az 6 karakter.", 4000);
+    showBanner("Şifre kısa","En az 6 karakter.",4000);
     return;
   }
 
   if(phone.replaceAll(" ","").length < 10){
-    showBanner("Telefon hatalı", "Numarayı kontrol edin.", 4000);
+    showBanner("Telefon hatalı","Numarayı kontrol edin.",4000);
     return;
   }
 
@@ -714,32 +697,23 @@ function submitRegister(){
   showBanner("Doğrulama kodu gönderiliyor...", "", 2000);
 
   emailjs.send("service_8qoocwi","template_08wro98",{
-      to_email: email,
-      verification_code: code,
-      full_name: first + " " + last
+    to_email: email,
+    verification_code: code,
+    full_name: first + " " + last
   })
-  .then(function(){
-
-      closeRegister();
-
-      showBanner("Kod gönderildi 📩","Email adresinizi kontrol edin.",4000);
-
-      setTimeout(function(){
-        window.location.href = "verify.html";
-      },2000);
-
+  .then(()=>{
+    closeRegister();
+    showBanner("Kod gönderildi 📩","Email adresinizi kontrol edin.",4000);
+    setTimeout(()=>{
+      window.location.href="verify.html";
+    },2000);
   })
-  .catch(function(error){
-
-      console.error("MAIL ERROR:", error);
-
-      showBanner("Mail gönderilemedi","Lütfen tekrar deneyin.",4000);
-
+  .catch(error=>{
+    console.error("MAIL ERROR:", error);
+    showBanner("Mail gönderilemedi","Lütfen tekrar deneyin.",4000);
   });
 
 }
-
 </script>
-
 </body>
 </html>
