@@ -15,15 +15,44 @@ body{
     color:white;
 }
 
-/* OPEN BUTTON */
-.open-login{
-    margin:40px;
-    padding:12px 20px;
-    background:#d4af37;
-    border:none;
-    border-radius:8px;
-    font-weight:bold;
+/* HAMBURGER */
+.menu-btn{
+    position:fixed;
+    top:15px;
+    left:15px;
+    font-size:24px;
     cursor:pointer;
+    z-index:2000;
+}
+
+/* SIDE MENU */
+.side-menu{
+    position:fixed;
+    top:0;
+    left:-260px;
+    width:260px;
+    height:100%;
+    background:#1e1e1e;
+    transition:0.3s;
+    padding-top:60px;
+    z-index:1500;
+}
+
+.side-menu a{
+    display:block;
+    padding:15px 20px;
+    color:white;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.side-menu a:hover{
+    background:#333;
+}
+
+/* MAIN CONTENT */
+#mainContent{
+    padding:80px 20px;
 }
 
 /* MODAL */
@@ -34,18 +63,18 @@ body{
     display:none;
     justify-content:center;
     align-items:center;
-    z-index:9999;
+    z-index:3000;
 }
 
-/* CARD */
+/* AUTH CARD */
 .auth-card{
     width:95%;
-    max-width:500px;
+    max-width:520px;
     max-height:90vh;
     overflow-y:auto;
     background:#1e1e1e;
     padding:40px 35px;
-    border-radius:18px;
+    border-radius:20px;
     box-shadow:0 30px 80px rgba(0,0,0,0.7);
 }
 
@@ -55,17 +84,14 @@ body{
     margin-bottom:30px;
 }
 
-/* INPUT */
 .auth-card input{
     width:100%;
     padding:14px;
     margin-bottom:15px;
     border:none;
     border-radius:8px;
-    font-size:14px;
 }
 
-/* PASSWORD WRAPPER */
 .password-wrapper{
     position:relative;
 }
@@ -80,7 +106,6 @@ body{
     color:#d4af37;
 }
 
-/* BUTTONS */
 .primary-btn{
     width:100%;
     padding:14px;
@@ -115,7 +140,6 @@ body{
     color:white;
 }
 
-/* LINKS */
 .link-text{
     text-align:center;
     margin-top:18px;
@@ -131,7 +155,19 @@ body{
 
 <body>
 
-<button class="open-login" onclick="openLogin()">İşletme Girişi</button>
+<!-- HAMBURGER -->
+<div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+<!-- SIDE MENU -->
+<div class="side-menu" id="menu">
+    <a onclick="openLogin()">İşletme Girişi</a>
+</div>
+
+<!-- MAIN -->
+<div id="mainContent">
+    <h2>FlowRandevu</h2>
+    <p>Ana sayfa içerik alanı</p>
+</div>
 
 <!-- MODAL -->
 <div class="modal" id="authModal">
@@ -141,6 +177,7 @@ body{
         <h2>İşletme Girişi</h2>
 
         <input type="email" placeholder="Email">
+
         <div class="password-wrapper">
             <input type="password" id="loginPass" placeholder="Şifre">
             <span onclick="togglePassword('loginPass')">Göster</span>
@@ -162,7 +199,6 @@ body{
         <h2>İşletme Kaydı</h2>
 
         <input type="text" placeholder="İşletme Adı">
-
         <input type="text" placeholder="Yetkili Ad">
         <input type="text" placeholder="Yetkili Soyad">
 
@@ -194,10 +230,16 @@ body{
 
 <script>
 
+function toggleMenu(){
+    const menu=document.getElementById("menu");
+    menu.style.left = menu.style.left === "0px" ? "-260px" : "0px";
+}
+
 function openLogin(){
     document.getElementById("authModal").style.display="flex";
     document.getElementById("loginCard").style.display="block";
     document.getElementById("registerCard").style.display="none";
+    toggleMenu();
 }
 
 function openRegister(){
