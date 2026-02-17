@@ -418,17 +418,20 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
 
 
 <script>
-emailjs.init("bUqxAYFWuXWTy5nKT");
 
 /* ======================
    MENU
 ====================== */
-function toggleMenu(){
-  document.body.classList.toggle("menu-open");
-}
-function closeMenu(){
-  document.body.classList.remove("menu-open");
-}
+document.addEventListener("DOMContentLoaded", function(){
+
+  const menuBtn = document.querySelector(".menu-btn");
+  if(menuBtn){
+    menuBtn.addEventListener("click", function(){
+      document.body.classList.toggle("menu-open");
+    });
+  }
+
+});
 
 /* ======================
    BANNER
@@ -447,8 +450,8 @@ function showBanner(title, detail="", ms=3000){
   banner.style.display = "block";
 
   if (bannerTimer) clearTimeout(bannerTimer);
-  if (ms > 0){
-    bannerTimer = setTimeout(hideBanner, ms);
+  if (ms && ms > 0){
+    bannerTimer = setTimeout(() => hideBanner(), ms);
   }
 }
 
@@ -472,14 +475,12 @@ function escapeHtml(str){
    MODALS
 ====================== */
 function openLogin(){
-  closeMenu();
   document.getElementById("loginModal").classList.add("open");
 }
 function closeLogin(){
   document.getElementById("loginModal").classList.remove("open");
 }
 function openRegister(){
-  closeMenu();
   document.getElementById("registerModal").classList.add("open");
 }
 function closeRegister(){
@@ -494,19 +495,11 @@ function switchToLogin(){
   openLogin();
 }
 
-/* Modal dışına tıklayınca kapat */
-document.getElementById("loginModal").addEventListener("click", e=>{
-  if(e.target.id==="loginModal") closeLogin();
-});
-document.getElementById("registerModal").addEventListener("click", e=>{
-  if(e.target.id==="registerModal") closeRegister();
-});
-
 /* ======================
    PASSWORD TOGGLE
 ====================== */
-function togglePw(inputId){
-  const input = document.getElementById(inputId);
+function togglePw(id){
+  const input = document.getElementById(id);
   input.type = input.type === "password" ? "text" : "password";
 }
 
@@ -526,7 +519,7 @@ function submitLogin(){
 }
 
 /* ======================
-   REGISTER + EMAILJS
+   REGISTER + EMAIL + SHEET
 ====================== */
 function submitRegister(){
 
@@ -540,27 +533,27 @@ function submitRegister(){
   const pw2   = document.getElementById("regPw2").value.trim();
 
   if(!business || !first || !last || !phone || !email || !email2 || !pw || !pw2){
-    showBanner("Eksik alan","Tüm alanları doldurun.",3500);
+    showBanner("Eksik alan", "Tüm alanları doldurun.", 3500);
     return;
   }
 
   if(email.toLowerCase() !== email2.toLowerCase()){
-    showBanner("Email uyuşmuyor","Email ve tekrar aynı olmalı.",4000);
+    showBanner("Email uyuşmuyor", "Email ve tekrar aynı olmalı.", 4000);
     return;
   }
 
   if(pw !== pw2){
-    showBanner("Şifre uyuşmuyor","Şifreler aynı olmalı.",4000);
+    showBanner("Şifre uyuşmuyor", "Şifreler aynı olmalı.", 4000);
     return;
   }
 
   if(pw.length < 6){
-    showBanner("Şifre kısa","En az 6 karakter.",4000);
+    showBanner("Şifre kısa", "En az 6 karakter.", 4000);
     return;
   }
 
   if(phone.replaceAll(" ","").length < 10){
-    showBanner("Telefon hatalı","Numarayı kontrol edin.",4000);
+    showBanner("Telefon hatalı", "Numarayı kontrol edin.", 4000);
     return;
   }
 
@@ -572,56 +565,43 @@ function submitRegister(){
   showBanner("Doğrulama kodu gönderiliyor...", "", 2000);
 
   emailjs.send("service_8qoocwi","template_08wro98",{
-    to_email: email,
-    verification_code: code,
-    full_name: first + " " + last
-})
-.then(function(){
+      to_email: email,
+      verification_code: code,
+      full_name: first + " " + last
+  })
+  .then(function(){
 
-    return fetch("https://script.google.com/macros/s/AKfycbygCRK4EX0SP-Wjy8lWMh-RndW24bAex68VswO8LB5R-C3ckcnlbnOlKRrX3_yjLv1O/exec", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            business: business,
-            first: first,
-            last: last,
-            phone: phone,
-            email: email
-        })
-    });
+      // GOOGLE SHEET KAYIT
+      fetch("https://script.google.com/macros/s/AKfycbygCRK4EX0SP-Wjy8lWMh-RndW24bAex68VswO8LB5R-C3ckcnlbnOlKRrX3_yjLv1O/exec", {
+          method: "POST",
+          mode: "no-cors",
+          body: JSON.stringify({
+              business: business,
+              first: first,
+              last: last,
+              phone: phone,
+              email: email
+          })
+      });
 
-})
-.then(response => response.json())
-.then(data => {
+      closeRegister();
 
-    console.log("Sheet kayıt:", data);
+      showBanner("Kod gönderildi 📩","Email adresinizi kontrol edin.",4000);
 
-    closeRegister();
-
-    showBanner(
-        "Kod gönderildi 📩",
-        "Email adresinizi kontrol edin.",
-        4000
-    );
-
-    setTimeout(function(){
+      setTimeout(function(){
         window.location.href = "verify.html";
-    },2000);
+      },2000);
 
-})
-.catch(function(error){
+  })
+  .catch(function(error){
 
-    console.error("Sistem Hatası:", error);
+      console.error("MAIL ERROR:", error);
+      showBanner("Mail gönderilemedi","Lütfen tekrar deneyin.",4000);
 
-    showBanner(
-        "Bir hata oluştu",
-        "Lütfen tekrar deneyin.",
-        4000
-    );
+  });
 
-});
-</script>
+}
+
+</script>i
 </body>
 </html>
