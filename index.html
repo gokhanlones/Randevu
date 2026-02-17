@@ -44,14 +44,18 @@ input{width:100%;padding:8px;margin-bottom:10px;border-radius:5px;border:none;}
     <input type="tel" id="phone" placeholder="Telefon">
     <input type="email" id="email" placeholder="Email">
 
-    <button class="verify-btn" onclick="sendVerification()">Doğrulama Kodu Gönder</button>
+    <button class="verify-btn" onclick="sendVerification()" id="verifyBtn">
+      Doğrulama Kodu Gönder
+    </button>
 
     <input type="text" id="verifyCodeInput" placeholder="Doğrulama Kodu">
 
     <input type="date" id="date">
     <input type="time" id="time">
 
-    <button style="background:#d4af37;width:100%;" onclick="sendBooking()">Randevu Oluştur</button>
+    <button style="background:#d4af37;width:100%;" onclick="sendBooking()" id="bookBtn">
+      Randevu Oluştur
+    </button>
     <br><br>
     <button style="background:#444;width:100%;" onclick="closeModal()">İptal</button>
   </div>
@@ -59,8 +63,7 @@ input{width:100%;padding:8px;margin-bottom:10px;border-radius:5px;border:none;}
 
 <script>
 
-let generatedCode = "";
-let emailVerified = false;
+let generatedCode = null;
 
 const salonData={
   "Diamond Hair":{
@@ -120,14 +123,12 @@ for(const salon in salonData){
 function openBooking(name){
   selectedSalon=name;
   selectedServices=[];
-  emailVerified=false;
+  generatedCode=null;
   document.getElementById("selectedSalonTitle").innerText=name;
-
-  const list=document.getElementById("serviceList");
-  list.innerHTML="";
+  document.getElementById("serviceList").innerHTML="";
 
   servicesList.forEach(service=>{
-    list.innerHTML+=`
+    document.getElementById("serviceList").innerHTML+=`
       <div class="service-row">
         <div>${service}</div>
         <input type="checkbox" value="${service}" onchange="toggleService(this)">
@@ -157,24 +158,30 @@ async function sendVerification(){
 
   generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-  await emailjs.send("service_8qoocwi","template_08wro98",{
-    email:email,
-    verification_code:generatedCode
-  });
+  document.getElementById("verifyBtn").disabled=true;
 
-  alert("Doğrulama kodu gönderildi");
+  try{
+    await emailjs.send("service_8qoocwi","template_08wro98",{
+      email:email,
+      verification_code:generatedCode
+    });
+
+    alert("Doğrulama kodu gönderildi");
+
+  }catch(error){
+    console.error(error);
+    alert("Kod gönderilemedi");
+    document.getElementById("verifyBtn").disabled=false;
+  }
 }
 
 async function sendBooking(){
 
   const inputCode=document.getElementById("verifyCodeInput").value.trim();
-
   if(inputCode !== generatedCode){
     alert("Doğrulama kodu yanlış");
     return;
   }
-
-  emailVerified=true;
 
   const name=document.getElementById("fullname").value.trim();
   const phone=document.getElementById("phone").value.trim();
@@ -187,21 +194,31 @@ async function sendBooking(){
     return;
   }
 
-  const params={
-    salon:selectedSalon,
-    date:date,
-    time:time,
-    name:name,
-    phone:phone,
-    email:email,
-    location:salonData[selectedSalon].address,
-    services:selectedServices.join(", ")
-  };
+  document.getElementById("bookBtn").disabled=true;
 
-  await emailjs.send("service_8qoocwi","template_03obhwb",params);
+  try{
 
-  alert("Randevu oluşturuldu");
-  closeModal();
+    const params={
+      salon:selectedSalon,
+      date:date,
+      time:time,
+      name:name,
+      phone:phone,
+      email:email,
+      location:salonData[selectedSalon].address,
+      services:selectedServices.join(", ")
+    };
+
+    await emailjs.send("service_8qoocwi","template_03obhwb",params);
+
+    alert("Randevu oluşturuldu");
+    closeModal();
+
+  }catch(error){
+    console.error(error);
+    alert("Mail gönderilemedi");
+    document.getElementById("bookBtn").disabled=false;
+  }
 }
 
 </script>
