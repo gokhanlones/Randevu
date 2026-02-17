@@ -1,119 +1,120 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowRandevu</title>
 
 <style>
 *{box-sizing:border-box}
-:root{ --gold:#d4af37; --bg:#111; --card:#1e1e1e; --muted:#aaa; }
-
 body{
-  margin:0; font-family:Arial, sans-serif; background:var(--bg); color:#fff;
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#111;
+    color:white;
 }
 
-/* ===== TOP BANNER (SABİT) ===== */
+/* ===== TOP BANNER ===== */
 #topBanner{
-  position:fixed; left:0; top:-120px; width:100%;
-  padding:14px 16px; text-align:center; font-weight:700;
-  z-index:99999; transition:top .35s ease;
+    position:fixed;
+    top:-100px;
+    left:0;
+    width:100%;
+    padding:14px;
+    text-align:center;
+    font-weight:bold;
+    transition:top .3s ease;
+    z-index:9999;
 }
-#topBanner.banner-error{
-  background:#2b0d0d; border-left:4px solid #ff4d4d; color:#ffb3b3;
+.banner-error{
+    background:#2a0d0d;
+    color:#ffb3b3;
 }
-#topBanner.banner-success{
-  background:#0f2d1f; border-left:4px solid #00c853; color:#a5f5c8;
+.banner-success{
+    background:#0f2d1f;
+    color:#a5f5c8;
 }
 
-/* ===== HAMBURGER ===== */
+/* ===== MENU ===== */
 .menu-btn{
-  position:fixed; top:14px; left:14px; width:44px; height:44px;
-  display:flex; align-items:center; justify-content:center;
-  border-radius:12px; background:#1a1a1a; cursor:pointer;
-  z-index:2000; user-select:none;
-  box-shadow:0 10px 24px rgba(0,0,0,.45);
+    position:fixed;
+    top:15px;
+    left:15px;
+    font-size:22px;
+    cursor:pointer;
+    z-index:1000;
 }
-.menu-btn:active{transform:scale(.98)}
-.menu-btn span{font-size:22px}
-
-/* ===== SIDE MENU ===== */
-#sideMenu{
-  position:fixed; top:0; left:-280px; width:280px; height:100vh;
-  background:#1b1b1b; transition:left .28s ease;
-  z-index:1500; padding-top:70px;
-  box-shadow:20px 0 60px rgba(0,0,0,.45);
-}
-#sideMenu.open{left:0}
-#sideMenu .item{
-  padding:16px 18px; cursor:pointer; color:#fff;
-  border-bottom:1px solid #2b2b2b;
-}
-#sideMenu .item:hover{background:#242424}
-
-/* ===== MAIN ===== */
-#mainContent{
-  padding:90px 18px 24px;
-}
-h2{margin:0 0 10px; color:var(--gold)}
-p{margin:0; color:var(--muted); line-height:1.5}
 
 /* ===== MODAL ===== */
 .modal{
-  position:fixed; inset:0; background:rgba(0,0,0,.82);
-  display:none; align-items:center; justify-content:center;
-  z-index:5000; padding:18px;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.85);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
 }
-.modal.show{display:flex}
+.modal.show{
+    display:flex;
+}
+
 .card{
-  width:min(560px, 96vw);
-  background:var(--card);
-  border-radius:18px;
-  padding:26px 22px;
-  box-shadow:0 30px 80px rgba(0,0,0,.7);
+    background:#1e1e1e;
+    width:100%;
+    max-width:420px;
+    padding:30px 25px;
+    border-radius:18px;
 }
-.card h3{
-  margin:0 0 16px; text-align:center; color:var(--gold); font-size:20px;
-}
-.field{
-  width:100%; padding:14px 12px; border:none; border-radius:10px;
-  background:#101010; color:#fff; outline:none;
-  margin:0 0 12px;
-}
-.row{display:flex; gap:10px}
-.row .field{margin-bottom:12px}
 
-.btn{
-  width:100%; padding:14px 12px; border:none; border-radius:10px;
-  cursor:pointer; font-weight:800;
+.card h2{
+    text-align:center;
+    color:#d4af37;
+    margin-bottom:25px;
 }
-.btn-primary{background:var(--gold); color:#000}
-.btn-ghost{background:#3a3a3a; color:#fff; margin-top:10px}
 
-.small-link{
-  text-align:center; margin-top:14px; font-size:13px; color:#cfcfcf;
+.input{
+    width:100%;
+    padding:14px;
+    margin-bottom:14px;
+    border:none;
+    border-radius:10px;
+    background:#0f0f0f;
+    color:white;
+    font-size:15px;
 }
-.small-link span{color:var(--gold); cursor:pointer}
 
-/* Password show/hide */
-.passWrap{position:relative}
+.passWrap{
+    position:relative;
+}
 .eye{
-  position:absolute; right:12px; top:12px;
-  width:38px; height:38px; display:flex; align-items:center; justify-content:center;
-  border-radius:10px; cursor:pointer; user-select:none;
-  background:rgba(255,255,255,.06);
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+    font-size:18px;
+    opacity:.8;
 }
 
-/* Google button (görsel) */
-.btn-google{
-  margin-top:10px;
-  background:#fff; color:#333; display:flex; gap:10px;
-  align-items:center; justify-content:center;
-  font-weight:800;
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:8px;
 }
-.googleDot{
-  width:18px; height:18px; border-radius:50%;
-  background:conic-gradient(#4285F4 0 25%, #34A853 0 50%, #FBBC05 0 75%, #EA4335 0 100%);
+
+.login-btn{
+    background:#d4af37;
+    color:#000;
+}
+
+.close-btn{
+    background:#3a3a3a;
+    color:white;
 }
 </style>
 </head>
@@ -122,206 +123,67 @@ p{margin:0; color:var(--muted); line-height:1.5}
 
 <div id="topBanner"></div>
 
-<div class="menu-btn" id="menuBtn" aria-label="Menu">
-  <span>☰</span>
-</div>
-
-<div id="sideMenu">
-  <div class="item" id="openLoginBtn">İşletme Girişi</div>
-  <div class="item" id="openRegisterBtn">Kayıt Ol</div>
-</div>
-
-<div id="mainContent">
-  <h2>FlowRandevu</h2>
-  <p>Ana sayfa boş gelebilir. Menüden “İşletme Girişi / Kayıt Ol” ile ilerleyeceğiz.</p>
-</div>
+<div class="menu-btn" onclick="openLogin()">☰</div>
 
 <!-- LOGIN MODAL -->
 <div class="modal" id="loginModal">
-  <div class="card">
-    <h3>İşletme Girişi</h3>
+    <div class="card">
+        <h2>İşletme Girişi</h2>
 
-    <input class="field" type="email" id="loginEmail" placeholder="Email" autocomplete="email">
-    <input class="field" type="password" id="loginPass" placeholder="Şifre" autocomplete="current-password">
+        <input class="input" id="businessName" placeholder="İşletme Adı">
 
-    <button class="btn btn-primary" id="loginSubmit">Giriş Yap</button>
+        <input class="input" id="email" type="email" placeholder="Email">
 
-    <button class="btn btn-google" type="button">
-      <span class="googleDot"></span> Google ile Giriş Yap
-    </button>
+        <div class="passWrap">
+            <input class="input" id="password" type="password" placeholder="Şifre">
+            <span class="eye" onclick="togglePass()">👁</span>
+        </div>
 
-    <div class="small-link">
-      Hesabınız yok mu? <span id="goRegisterFromLogin">Kayıt Ol</span>
+        <button class="login-btn" onclick="login()">Giriş Yap</button>
+        <button class="close-btn" onclick="closeLogin()">Kapat</button>
     </div>
-
-    <button class="btn btn-ghost" type="button" id="closeLogin">Kapat</button>
-  </div>
-</div>
-
-<!-- REGISTER MODAL -->
-<div class="modal" id="registerModal">
-  <div class="card">
-    <h3>İşletme Kaydı</h3>
-
-    <input class="field" type="text" id="regFirst" placeholder="Ad" autocomplete="given-name">
-    <input class="field" type="text" id="regLast" placeholder="Soyad" autocomplete="family-name">
-    <input class="field" type="tel" id="regPhone" placeholder="Telefon" autocomplete="tel">
-
-    <input class="field" type="email" id="regEmail1" placeholder="Email" autocomplete="email">
-    <input class="field" type="email" id="regEmail2" placeholder="Email Tekrar" autocomplete="email">
-
-    <div class="passWrap">
-      <input class="field" type="password" id="regPass1" placeholder="Şifre" autocomplete="new-password">
-      <div class="eye" data-eye="regPass1">👁</div>
-    </div>
-
-    <div class="passWrap">
-      <input class="field" type="password" id="regPass2" placeholder="Şifre Tekrar" autocomplete="new-password">
-      <div class="eye" data-eye="regPass2">👁</div>
-    </div>
-
-    <button class="btn btn-primary" id="registerSubmit">Kayıt Ol</button>
-
-    <div class="small-link">
-      Zaten hesabım var: <span id="goLoginFromRegister">Giriş Yap</span>
-    </div>
-
-    <button class="btn btn-ghost" type="button" id="closeRegister">Kapat</button>
-  </div>
 </div>
 
 <script>
-/* ========= Helpers ========= */
-const $ = (id) => document.getElementById(id);
 
-function bannerHide(){
-  const b = $("topBanner");
-  b.style.top = "-120px";
-}
-function showError(html){
-  const b = $("topBanner");
-  b.className = "banner-error";
-  b.innerHTML = html;
-  b.style.top = "0";
-}
-function showSuccess(text){
-  const b = $("topBanner");
-  b.className = "banner-success";
-  b.textContent = text;
-  b.style.top = "0";
-  setTimeout(bannerHide, 5000);
+function showBanner(message,type){
+    const banner=document.getElementById("topBanner");
+    banner.className= type==="error" ? "banner-error" : "banner-success";
+    banner.innerHTML=message;
+    banner.style.top="0";
+
+    setTimeout(()=>{
+        banner.style.top="-100px";
+    },3000); // 3 saniye sonra kaybolur
 }
 
-/* ========= Menu ========= */
-function menuOpen(){ $("sideMenu").classList.add("open"); }
-function menuClose(){ $("sideMenu").classList.remove("open"); }
-function menuToggle(){
-  $("sideMenu").classList.toggle("open");
+function openLogin(){
+    document.getElementById("loginModal").classList.add("show");
 }
 
-$("menuBtn").addEventListener("click", () => {
-  bannerHide();
-  menuToggle();
-});
-
-/* ========= Modals ========= */
-function openModal(modalId){
-  bannerHide();
-  $(modalId).classList.add("show");
-}
-function closeModal(modalId){
-  $(modalId).classList.remove("show");
+function closeLogin(){
+    document.getElementById("loginModal").classList.remove("show");
 }
 
-/* Side menu actions */
-$("openLoginBtn").addEventListener("click", () => { menuClose(); openModal("loginModal"); });
-$("openRegisterBtn").addEventListener("click", () => { menuClose(); openModal("registerModal"); });
-
-/* Close buttons */
-$("closeLogin").addEventListener("click", () => closeModal("loginModal"));
-$("closeRegister").addEventListener("click", () => closeModal("registerModal"));
-
-/* Switch links */
-$("goRegisterFromLogin").addEventListener("click", () => { closeModal("loginModal"); openModal("registerModal"); });
-$("goLoginFromRegister").addEventListener("click", () => { closeModal("registerModal"); openModal("loginModal"); });
-
-/* Click outside closes modal */
-["loginModal","registerModal"].forEach(id=>{
-  $(id).addEventListener("click", (e)=>{
-    if(e.target.id === id) closeModal(id);
-  });
-});
-
-/* ========= Password eye ========= */
-document.querySelectorAll(".eye").forEach(eye=>{
-  eye.addEventListener("click", ()=>{
-    const targetId = eye.getAttribute("data-eye");
-    const inp = $(targetId);
-    inp.type = (inp.type === "password") ? "text" : "password";
-  });
-});
-
-/* ========= Register Validation ========= */
-function isEmail(s){
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
-}
-function cleanPhone(s){
-  return s.replace(/[^\d]/g,"");
+function togglePass(){
+    const pass=document.getElementById("password");
+    pass.type = pass.type==="password" ? "text" : "password";
 }
 
-async function registerFlow(){
-  const first = $("regFirst").value.trim();
-  const last  = $("regLast").value.trim();
-  const phoneRaw = $("regPhone").value.trim();
-  const phone = cleanPhone(phoneRaw);
-  const email1 = $("regEmail1").value.trim();
-  const email2 = $("regEmail2").value.trim();
-  const pass1 = $("regPass1").value;
-  const pass2 = $("regPass2").value;
+function login(){
+    const business=document.getElementById("businessName").value.trim();
+    const email=document.getElementById("email").value.trim();
+    const pass=document.getElementById("password").value.trim();
 
-  const errors = [];
+    if(!business || !email || !pass){
+        showBanner("Tüm alanları doldurun","error");
+        return;
+    }
 
-  if(!first) errors.push("Ad boş olamaz");
-  if(!last) errors.push("Soyad boş olamaz");
-
-  if(!phone) errors.push("Telefon boş olamaz");
-  else if(phone.length < 10) errors.push("Telefon geçersiz (en az 10 hane)");
-
-  if(!email1) errors.push("Email boş olamaz");
-  else if(!isEmail(email1)) errors.push("Email formatı geçersiz");
-
-  if(email1 !== email2) errors.push("Email adresleri uyuşmuyor");
-
-  if(!pass1) errors.push("Şifre boş olamaz");
-  else if(pass1.length < 6) errors.push("Şifre en az 6 karakter olmalı");
-
-  if(pass1 !== pass2) errors.push("Şifreler uyuşmuyor");
-
-  if(errors.length){
-    showError(errors.join("<br>"));
-    return;
-  }
-
-  // ŞİMDİLİK SADECE LOG (bir sonraki adım Sheets)
-  console.log("REGISTER OK:", {first,last,phone,email:email1});
-
-  closeModal("registerModal");
-  showSuccess("Kayıt başarılı. Email adresinizi kontrol edin.");
+    closeLogin();
+    showBanner("Giriş başarılı","success");
 }
 
-$("registerSubmit").addEventListener("click", registerFlow);
-
-/* ========= Login (placeholder) ========= */
-$("loginSubmit").addEventListener("click", ()=>{
-  const e = $("loginEmail").value.trim();
-  const p = $("loginPass").value;
-  if(!e || !p){
-    showError("Email ve şifre giriniz");
-    return;
-  }
-  closeModal("loginModal");
-  showSuccess("Giriş başarılı (backend bağlanacak).");
-});
 </script>
 
 </body>
