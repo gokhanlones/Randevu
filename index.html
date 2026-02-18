@@ -4,10 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FlowRandevu</title>
+
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script>
-emailjs.init("bUqxAYFWuXWTy5nKT");
-</script> 
+  <script>
+    emailjs.init("bUqxAYFWuXWTy5nKT");
+  </script>
+
   <style>
     :root{
       --bg:#0f0f0f;
@@ -197,9 +199,7 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
       margin:6px 0 18px;
     }
 
-    .field{
-      margin-top:12px;
-    }
+    .field{ margin-top:12px; }
     .input{
       width:100%;
       padding:16px 14px;
@@ -211,10 +211,7 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
       font-size:16px;
     }
     .input::placeholder{ color:rgba(255,255,255,.45); }
-    .row{
-      display:flex;
-      gap:10px;
-    }
+    .row{ display:flex; gap:10px; }
     .row .field{ flex:1; }
 
     .btn{
@@ -257,10 +254,7 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
       cursor:pointer;
     }
 
-    /* PASSWORD EYE */
-    .pw-wrap{
-      position:relative;
-    }
+    .pw-wrap{ position:relative; }
     .eye-btn{
       position:absolute;
       right:10px;
@@ -280,10 +274,7 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
     }
     .eye-btn svg{ width:22px; height:22px; opacity:.9; }
 
-    /* KAPAT BUTONU ALT */
-    .footer-close{
-      margin-top:16px;
-    }
+    .footer-close{ margin-top:16px; }
   </style>
 </head>
 
@@ -299,17 +290,17 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
   </div>
 
   <!-- HAMBURGER -->
-<div class="menu-btn" onclick="toggleMenu()" aria-label="Menü">
-  <span>☰</span>
-</div>
+  <div class="menu-btn" onclick="toggleMenu()" aria-label="Menü">
+    <span>☰</span>
+  </div>
 
-<!-- SIDE OVERLAY -->
-<div class="side-overlay" onclick="toggleMenu()"></div>
+  <!-- OVERLAY (EKSİKTİ) -->
+  <div class="side-overlay" onclick="toggleMenu()"></div>
 
-<!-- SIDE MENU -->
-<div class="side-menu" id="sideMenu">
-  <a onclick="openLogin()">İşletme Girişi</a>
-</div>
+  <!-- SIDE MENU -->
+  <div class="side-menu" id="sideMenu">
+    <a onclick="openLogin()">İşletme Girişi</a>
+  </div>
 
   <!-- MAIN -->
   <div class="main">
@@ -330,7 +321,7 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
 
       <div class="field pw-wrap">
         <input class="input" id="loginPassword" type="password" placeholder="Şifre" autocomplete="current-password">
-        <button class="eye-btn" onclick="togglePw('loginPassword', this)" aria-label="Şifreyi göster/gizle">
+        <button class="eye-btn" onclick="togglePw('loginPassword')" aria-label="Şifreyi göster/gizle">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" stroke="currentColor" stroke-width="2"/>
             <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="2"/>
@@ -387,7 +378,7 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
 
       <div class="field pw-wrap">
         <input class="input" id="regPw" type="password" placeholder="Şifre" autocomplete="new-password">
-        <button class="eye-btn" onclick="togglePw('regPw', this)" aria-label="Şifreyi göster/gizle">
+        <button class="eye-btn" onclick="togglePw('regPw')" aria-label="Şifreyi göster/gizle">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" stroke="currentColor" stroke-width="2"/>
             <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="2"/>
@@ -397,7 +388,7 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
 
       <div class="field pw-wrap">
         <input class="input" id="regPw2" type="password" placeholder="Şifre Tekrar" autocomplete="new-password">
-        <button class="eye-btn" onclick="togglePw('regPw2', this)" aria-label="Şifreyi göster/gizle">
+        <button class="eye-btn" onclick="togglePw('regPw2')" aria-label="Şifreyi göster/gizle">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" stroke="currentColor" stroke-width="2"/>
             <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="2"/>
@@ -416,185 +407,173 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
       </div>
     </div>
   </div>
-<script>
 
-/* ======================
-   MENU
-====================== */
-function toggleMenu(){
-  document.body.classList.toggle("menu-open");
-}
+  <script>
+    /* ======================
+       MENU
+    ====================== */
+    function toggleMenu(){
+      document.body.classList.toggle("menu-open");
+    }
 
-/* ======================
-   BANNER
-====================== */
-let bannerTimer = null;
+    /* ======================
+       BANNER
+    ====================== */
+    let bannerTimer = null;
 
-function showBanner(title, detail="", ms=3000){
-  const banner = document.getElementById("banner");
-  const text = document.getElementById("bannerText");
+    function showBanner(title, detail="", ms=3000){
+      const banner = document.getElementById("banner");
+      const text = document.getElementById("bannerText");
 
-  text.innerHTML = `
-    <div><b>${escapeHtml(title)}</b></div>
-    ${detail ? `<small>${escapeHtml(detail)}</small>` : ""}
-  `;
+      text.innerHTML = `
+        <div><b>${escapeHtml(title)}</b></div>
+        ${detail ? `<small>${escapeHtml(detail)}</small>` : ""}
+      `;
 
-  banner.style.display = "block";
+      banner.style.display = "block";
 
-  if (bannerTimer) clearTimeout(bannerTimer);
-  if (ms > 0){
-    bannerTimer = setTimeout(hideBanner, ms);
-  }
-}
+      if (bannerTimer) clearTimeout(bannerTimer);
+      if (ms && ms > 0){
+        bannerTimer = setTimeout(hideBanner, ms);
+      }
+    }
 
-function hideBanner(){
-  document.getElementById("banner").style.display = "none";
-  if (bannerTimer) clearTimeout(bannerTimer);
-}
+    function hideBanner(){
+      const banner = document.getElementById("banner");
+      banner.style.display = "none";
+      if (bannerTimer) clearTimeout(bannerTimer);
+      bannerTimer = null;
+    }
 
-function escapeHtml(str){
-  return String(str)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
 
-/* ======================
-   MODALS
-====================== */
-function openLogin(){
-  document.getElementById("loginModal").classList.add("open");
-}
-function closeLogin(){
-  document.getElementById("loginModal").classList.remove("open");
-}
-function openRegister(){
-  document.getElementById("registerModal").classList.add("open");
-}
-function closeRegister(){
-  document.getElementById("registerModal").classList.remove("open");
-}
-function switchToRegister(){
-  closeLogin();
-  openRegister();
-}
-function switchToLogin(){
-  closeRegister();
-  openLogin();
-}
+    /* ======================
+       MODALS
+    ====================== */
+    function openLogin(){ document.getElementById("loginModal").classList.add("open"); }
+    function closeLogin(){ document.getElementById("loginModal").classList.remove("open"); }
+    function openRegister(){ document.getElementById("registerModal").classList.add("open"); }
+    function closeRegister(){ document.getElementById("registerModal").classList.remove("open"); }
+    function switchToRegister(){ closeLogin(); openRegister(); }
+    function switchToLogin(){ closeRegister(); openLogin(); }
 
-/* ======================
-   PASSWORD TOGGLE
-====================== */
-function togglePw(id){
-  const input = document.getElementById(id);
-  input.type = input.type === "password" ? "text" : "password";
-}
+    /* ======================
+       PASSWORD TOGGLE
+    ====================== */
+    function togglePw(id){
+      const input = document.getElementById(id);
+      input.type = (input.type === "password") ? "text" : "password";
+    }
 
-/* ======================
-   LOGIN
-====================== */
-function submitLogin(){
-  const email = document.getElementById("loginEmail").value.trim();
-  const pw = document.getElementById("loginPassword").value.trim();
+    /* ======================
+       GOOGLE LOGIN (stub)
+    ====================== */
+    function fakeGoogleLogin(){
+      showBanner("Google giriş", "Henüz bağlı değil.", 2500);
+    }
 
-  if(!email || !pw){
-    showBanner("Eksik alan","Email ve şifre giriniz.");
-    return;
-  }
+    /* ======================
+       LOGIN
+    ====================== */
+    function submitLogin(){
+      const email = document.getElementById("loginEmail").value.trim();
+      const pw = document.getElementById("loginPassword").value.trim();
 
-  showBanner("Giriş denemesi","Backend bağlanınca kontrol edilecek.");
-}
+      if(!email || !pw){
+        showBanner("Eksik alan","Email ve şifre giriniz.", 3500);
+        return;
+      }
 
-/* ======================
-   REGISTER + SHEET + EMAIL
-====================== */
-function submitRegister(){
+      showBanner("Giriş denemesi","Backend bağlanınca kontrol edilecek.", 3000);
+    }
 
-  const business = document.getElementById("regBusiness").value.trim();
-  const first = document.getElementById("regFirst").value.trim();
-  const last  = document.getElementById("regLast").value.trim();
-  const phone = document.getElementById("regPhone").value.trim();
-  const email = document.getElementById("regEmail").value.trim();
-  const email2= document.getElementById("regEmail2").value.trim();
-  const pw    = document.getElementById("regPw").value.trim();
-  const pw2   = document.getElementById("regPw2").value.trim();
+    /* ======================
+       REGISTER + SHEET + EMAIL
+    ====================== */
+    function submitRegister(){
+      const business = document.getElementById("regBusiness").value.trim();
+      const first = document.getElementById("regFirst").value.trim();
+      const last  = document.getElementById("regLast").value.trim();
+      const phone = document.getElementById("regPhone").value.trim();
+      const email = document.getElementById("regEmail").value.trim();
+      const email2= document.getElementById("regEmail2").value.trim();
+      const pw    = document.getElementById("regPw").value.trim();
+      const pw2   = document.getElementById("regPw2").value.trim();
 
-  if(!business || !first || !last || !phone || !email || !email2 || !pw || !pw2){
-    showBanner("Eksik alan","Tüm alanları doldurun.");
-    return;
-  }
+      if(!business || !first || !last || !phone || !email || !email2 || !pw || !pw2){
+        showBanner("Eksik alan","Tüm alanları doldurun.", 3500);
+        return;
+      }
+      if(email.toLowerCase() !== email2.toLowerCase()){
+        showBanner("Email uyuşmuyor","Email ve tekrar aynı olmalı.", 4000);
+        return;
+      }
+      if(pw !== pw2){
+        showBanner("Şifre uyuşmuyor","Şifreler aynı olmalı.", 4000);
+        return;
+      }
+      if(pw.length < 6){
+        showBanner("Şifre kısa","En az 6 karakter.", 4000);
+        return;
+      }
+      if(phone.replaceAll(" ","").length < 10){
+        showBanner("Telefon hatalı","Numarayı kontrol edin.", 4000);
+        return;
+      }
 
-  if(email.toLowerCase() !== email2.toLowerCase()){
-    showBanner("Email uyuşmuyor");
-    return;
-  }
+      showBanner("Kayıt kontrol ediliyor...", "", 2000);
 
-  if(pw !== pw2){
-    showBanner("Şifre uyuşmuyor");
-    return;
-  }
+      fetch("https://script.google.com/macros/s/AKfycbwqQ-RayoySk1zKjgS8X1-t3zxXxj97KdmE0-zLV8bTESQ_OgLoh0Bq9OWKI8YyswAx/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ business, first, last, phone, email })
+      })
+      .then(r => r.json())
+      .then(data => {
+        console.log("Sunucu cevap:", data);
 
-  if(pw.length < 6){
-    showBanner("Şifre en az 6 karakter olmalı");
-    return;
-  }
+        if(data.status === "exists"){
+          showBanner("Bu email zaten kayıtlı", "Giriş yapmayı deneyin.", 4000);
+          return;
+        }
 
-  showBanner("Kayıt kontrol ediliyor...");
+        if(data.status === "ok"){
+          const code = Math.floor(100000 + Math.random() * 900000).toString();
+          localStorage.setItem("flow_verify_code", code);
+          localStorage.setItem("flow_register_email", email);
 
-  fetch("https://script.google.com/macros/s/AKfycbwqQ-RayoySk1zKjgS8X1-t3zxXxj97KdmE0-zLV8bTESQ_OgLoh0Bq9OWKI8YyswAx/exec", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    business: business,
-    first: first,
-    last: last,
-    phone: phone,
-    email: email
-  })
-})
-.then(response => response.json())
-.then(data => {
+          emailjs.send("service_8qoocwi", "template_08wro98", {
+            to_email: email,
+            verification_code: code,
+            full_name: first + " " + last
+          })
+          .then(() => {
+            closeRegister();
+            showBanner("Kod gönderildi 📩", "Email adresinizi kontrol edin.", 4000);
+            setTimeout(() => window.location.href = "verify.html", 2000);
+          })
+          .catch(() => {
+            showBanner("Mail gönderilemedi", "Lütfen tekrar deneyin.", 4000);
+          });
 
-  console.log("Sunucu cevap:", data);
+          return;
+        }
 
-  if (data.status === "exists") {
-    showBanner("Bu email zaten kayıtlı", "Giriş yapmayı deneyin.", 4000);
-    return;
-  }
+        showBanner("Sunucu cevap hatası", "Beklenmeyen durum.", 4000);
+      })
+      .catch(err => {
+        console.error("Fetch hata:", err);
+        showBanner("Sunucu bağlantı hatası", "Tekrar deneyin.", 4000);
+      });
+    }
+  </script>
 
-  if (data.status === "ok") {
-
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-    localStorage.setItem("flow_verify_code", code);
-    localStorage.setItem("flow_register_email", email);
-
-    emailjs.send("service_8qoocwi", "template_08wro98", {
-      to_email: email,
-      verification_code: code,
-      full_name: first + " " + last
-    })
-    .then(() => {
-      closeRegister();
-      showBanner("Kod gönderildi 📩", "Email adresinizi kontrol edin.", 4000);
-      setTimeout(() => {
-        window.location.href = "verify.html";
-      }, 2000);
-    })
-    .catch(() => {
-      showBanner("Mail gönderilemedi", "Lütfen tekrar deneyin.", 4000);
-    });
-  }
-
-})
-.catch(error => {
-  console.error("Fetch hata:", error);
-  showBanner("Sunucu bağlantı hatası", "Tekrar deneyin.", 4000);
-});
-
-</script>
+</body>
+</html>
