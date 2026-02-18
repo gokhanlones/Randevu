@@ -415,19 +415,14 @@ emailjs.init("bUqxAYFWuXWTy5nKT");
   </div>
 <script>
 
+<script>
+
 /* ======================
    MENU
 ====================== */
-document.addEventListener("DOMContentLoaded", function(){
-
-  const menuBtn = document.querySelector(".menu-btn");
-  if(menuBtn){
-    menuBtn.addEventListener("click", function(){
-      document.body.classList.toggle("menu-open");
-    });
-  }
-
-});
+function toggleMenu(){
+  document.body.classList.toggle("menu-open");
+}
 
 /* ======================
    BANNER
@@ -446,16 +441,14 @@ function showBanner(title, detail="", ms=3000){
   banner.style.display = "block";
 
   if (bannerTimer) clearTimeout(bannerTimer);
-  if (ms && ms > 0){
-    bannerTimer = setTimeout(() => hideBanner(), ms);
+  if (ms > 0){
+    bannerTimer = setTimeout(hideBanner, ms);
   }
 }
 
 function hideBanner(){
-  const banner = document.getElementById("banner");
-  banner.style.display = "none";
+  document.getElementById("banner").style.display = "none";
   if (bannerTimer) clearTimeout(bannerTimer);
-  bannerTimer = null;
 }
 
 function escapeHtml(str){
@@ -507,15 +500,15 @@ function submitLogin(){
   const pw = document.getElementById("loginPassword").value.trim();
 
   if(!email || !pw){
-    showBanner("Eksik alan", "Email ve şifre giriniz.", 3500);
+    showBanner("Eksik alan","Email ve şifre giriniz.");
     return;
   }
 
-  showBanner("Giriş denemesi", "Backend bağlanınca kontrol edilecek.", 3000);
+  showBanner("Giriş denemesi","Backend bağlanınca kontrol edilecek.");
 }
 
 /* ======================
-   REGISTER + EMAIL + SHEET
+   REGISTER + SHEET + EMAIL
 ====================== */
 function submitRegister(){
 
@@ -529,63 +522,74 @@ function submitRegister(){
   const pw2   = document.getElementById("regPw2").value.trim();
 
   if(!business || !first || !last || !phone || !email || !email2 || !pw || !pw2){
-    showBanner("Eksik alan", "Tüm alanları doldurun.", 3500);
+    showBanner("Eksik alan","Tüm alanları doldurun.");
     return;
   }
 
   if(email.toLowerCase() !== email2.toLowerCase()){
-    showBanner("Email uyuşmuyor", "Email ve tekrar aynı olmalı.", 4000);
+    showBanner("Email uyuşmuyor");
     return;
   }
 
   if(pw !== pw2){
-    showBanner("Şifre uyuşmuyor", "Şifreler aynı olmalı.", 4000);
+    showBanner("Şifre uyuşmuyor");
     return;
   }
 
   if(pw.length < 6){
-    showBanner("Şifre kısa", "En az 6 karakter.", 4000);
+    showBanner("Şifre en az 6 karakter olmalı");
     return;
   }
 
-  if(phone.replaceAll(" ","").length < 10){
-    showBanner("Telefon hatalı", "Numarayı kontrol edin.", 4000);
-    return;
-  }
+  showBanner("Kayıt kontrol ediliyor...");
 
-  showBanner("Kayıt kontrol ediliyor...", "", 2000);
-
-  // 1️⃣ Önce Sheet'e sor
   fetch("https://script.google.com/macros/s/AKfycbyDIBQblHiRUOAggxm_h9YP2JZQSqfad9MPeyyfNxSHNw8pAaNN3_ps0ZyfKssLeHpi/exec",{
-  method:"POST",
-  headers:{ "Content-Type":"application/json" },
-  body:JSON.stringify({
-    business: business,
-    first: first,
-    last: last,
-    phone: phone,
-    email: email
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({
+      business,
+      first,
+      last,
+      phone,
+      email
+    })
   })
-})
-.then(res=>res.json())
-.then(data=>{
-  console.log("Sheet cevap:",data);
+  .then(res=>res.json())
+  .then(data=>{
 
-  if(data.status==="exists"){
-    showBanner("Bu email zaten kayıtlı");
-    return;
-  }
+    if(data.status==="exists"){
+      showBanner("Bu email zaten kayıtlı","Giriş yapmayı deneyin.");
+      return;
+    }
 
-  if(data.status==="ok"){
-    console.log("Sheet kayıt başarılı");
-  }
+    if(data.status==="ok"){
 
-})
-.catch(err=>{
-  console.error("Fetch hata:",err);
-  showBanner("Sunucu bağlantı hatası");
-});
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+      localStorage.setItem("flow_verify_code", code);
+      localStorage.setItem("flow_register_email", email);
+
+      emailjs.send("service_8qoocwi","template_08wro98",{
+        to_email: email,
+        verification_code: code,
+        full_name: first + " " + last
+      })
+      .then(()=>{
+        closeRegister();
+        showBanner("Kod gönderildi 📩","Email adresinizi kontrol edin.");
+        setTimeout(()=> window.location.href="verify.html",2000);
+      })
+      .catch(()=>{
+        showBanner("Mail gönderilemedi");
+      });
+
+    }
+
+  })
+  .catch(()=>{
+    showBanner("Sunucu bağlantı hatası");
+  });
+
+} // ✅ BURASI FONKSİYONUN KAPANIŞI
 
 </script>
-</body>
-</html>
