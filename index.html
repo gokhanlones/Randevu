@@ -422,11 +422,79 @@ function showBanner(title, detail="", ms=3000){
   const banner = document.getElementById("banner");
   const text = document.getElementById("bannerText");
 
-  text.innerHTML = "<b>"+title+"</b><br><small>"+detail+"</small>";
+  text.innerHTML =
+    "<div><b>"+escapeHtml(title)+"</b></div>" +
+    (detail ? "<small>"+escapeHtml(detail)+"</small>" : "");
+
   banner.style.display = "block";
 
-  if(bannerTimer) clearTimeout(bannerTimer);
-  bannerTimer = setTimeout(()=>banner.style.display="none", ms);
+  if (bannerTimer) clearTimeout(bannerTimer);
+  if (ms > 0){
+    bannerTimer = setTimeout(hideBanner, ms);
+  }
+}
+
+function hideBanner(){
+  const banner = document.getElementById("banner");
+  banner.style.display = "none";
+  if (bannerTimer) clearTimeout(bannerTimer);
+}
+
+function escapeHtml(str){
+  return String(str)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+/* ================= MODALS ================= */
+function openLogin(){
+  document.getElementById("loginModal").classList.add("open");
+}
+
+function closeLogin(){
+  document.getElementById("loginModal").classList.remove("open");
+}
+
+function openRegister(){
+  document.getElementById("registerModal").classList.add("open");
+}
+
+function closeRegister(){
+  document.getElementById("registerModal").classList.remove("open");
+}
+
+function switchToRegister(){
+  closeLogin();
+  openRegister();
+}
+
+function switchToLogin(){
+  closeRegister();
+  openLogin();
+}
+
+/* ================= PASSWORD TOGGLE ================= */
+function togglePw(id){
+  const input = document.getElementById(id);
+  if(input){
+    input.type = input.type === "password" ? "text" : "password";
+  }
+}
+
+/* ================= LOGIN ================= */
+function submitLogin(){
+  const email = document.getElementById("loginEmail").value.trim();
+  const pw = document.getElementById("loginPassword").value.trim();
+
+  if(!email || !pw){
+    showBanner("Eksik alan","Email ve şifre giriniz.");
+    return;
+  }
+
+  showBanner("Giriş denemesi","Backend bağlanınca kontrol edilecek.");
 }
 
 /* ================= REGISTER ================= */
@@ -447,54 +515,64 @@ function submitRegister(){
   }
 
   if(email.toLowerCase() !== email2.toLowerCase()){
-    showBanner("Email uyuşmuyor","");
+    showBanner("Email uyuşmuyor");
     return;
   }
 
   if(pw !== pw2){
-    showBanner("Şifre uyuşmuyor","");
+    showBanner("Şifre uyuşmuyor");
     return;
   }
 
-  showBanner("Kayıt kontrol ediliyor...","");
+  if(pw.length < 6){
+    showBanner("Şifre en az 6 karakter olmalı");
+    return;
+  }
+
+  showBanner("Kayıt kontrol ediliyor...");
 
   fetch("https://script.google.com/macros/s/AKfycbzyMzKuN4Y1wRYyb1_Un-qmKQpfXBCWagOR2smNmiS6JaU5NpMufNHkahbSV0yLJy8/exec",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      business:business,
-      first:first,
-      last:last,
-      phone:phone,
-      email:email
-    })
+    body:JSON.stringify({ business, first, last, phone, email })
   })
-  .then(response => response.text())  // JSON yerine text alıyoruz
-  .then(result => {
+  .then(res=>{
+    if(!res.ok) throw new Error("Server error");
+    return res.json();
+  })
+  .then(data=>{
 
-    console.log("Sunucu cevap:", result);
-
-    let data;
-    try{
-      data = JSON.parse(result);
-    }catch(e){
-      showBanner("Sunucu JSON hatası","");
+    if(data.status==="exists"){
+      showBanner("Bu email zaten kayıtlı","Giriş yapmayı deneyin.");
       return;
     }
 
-    if(data.status === "exists"){
-      showBanner("Bu email zaten kayıtlı","");
-      return;
-    }
+    if(data.status==="ok"){
 
-    if(data.status === "ok"){
-      showBanner("Kayıt başarılı","");
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+      localStorage.setItem("flow_verify_code", code);
+      localStorage.setItem("flow_register_email", email);
+
+      emailjs.send("service_8qoocwi","template_08wro98",{
+        to_email: email,
+        verification_code: code,
+        full_name: first + " " + last
+      })
+      .then(()=>{
+        closeRegister();
+        showBanner("Kod gönderildi 📩","Email adresinizi kontrol edin.");
+        setTimeout(()=> window.location.href="verify.html",2000);
+      })
+      .catch(()=>{
+        showBanner("Mail gönderilemedi");
+      });
+
     }
 
   })
-  .catch(error=>{
-    console.error(error);
-    showBanner("Sunucu bağlantı hatası","");
+  .catch(()=>{
+    showBanner("Sunucu bağlantı hatası");
   });
 
 }
