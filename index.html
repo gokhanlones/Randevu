@@ -530,48 +530,47 @@
 
       showBanner("Kayıt kontrol ediliyor...", "", 2000);
 
-      fetch("https://script.google.com/macros/s/AKfycbwQ-RayoySk1zKjgS8X1-t3zxXxj97KdmE0-zLV8bTESQ_OgLoh0Bq9OWKI8YyswAx/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ business, first, last, phone, email })
-      })
-      .then(r => r.json())
-      .then(data => {
-        console.log("Sunucu cevap:", data);
+fetch("https://script.google.com/macros/s/AKfycbykjsA4bXsjgDQlKeNKbV6SpVdMR1pPH-E1aKpN13muziLGB4Z1Ga5n8L31zTsthbFT/exec", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    business,
+    first,
+    last,
+    phone,
+    email
+  })
+})
+.then(res => res.text()) // 🔥 json yerine text al
+.then(text => {
 
-        if(data.status === "exists"){
-          showBanner("Bu email zaten kayıtlı", "Giriş yapmayı deneyin.", 4000);
-          return;
-        }
+  console.log("Raw cevap:", text);
 
-        if(data.status === "ok"){
-          const code = Math.floor(100000 + Math.random() * 900000).toString();
-          localStorage.setItem("flow_verify_code", code);
-          localStorage.setItem("flow_register_email", email);
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    showBanner("Sunucu hatası", "Geçersiz cevap döndü.", 4000);
+    return;
+  }
 
-          emailjs.send("service_8qoocwi", "template_08wro98", {
-            to_email: email,
-            verification_code: code,
-            full_name: first + " " + last
-          })
-          .then(() => {
-            closeRegister();
-            showBanner("Kod gönderildi 📩", "Email adresinizi kontrol edin.", 4000);
-            setTimeout(() => window.location.href = "verify.html", 2000);
-          })
-          .catch(() => {
-            showBanner("Mail gönderilemedi", "Lütfen tekrar deneyin.", 4000);
-          });
+  if (data.status === "exists") {
+    showBanner("Bu email zaten kayıtlı", "", 4000);
+    return;
+  }
 
-          return;
-        }
+  if (data.status === "ok") {
+    showBanner("Kayıt başarılı", "", 3000);
+    return;
+  }
 
-        showBanner("Sunucu cevap hatası", "Beklenmeyen durum.", 4000);
-      })
-      .catch(err => {
-        console.error("Fetch hata:", err);
-        showBanner("Sunucu bağlantı hatası", "Tekrar deneyin.", 4000);
-      });
+})
+.catch(err => {
+  console.error("Gerçek fetch hata:", err);
+  showBanner("Gerçek bağlantı hatası", "", 4000);
+});
     }
   </script>
 
