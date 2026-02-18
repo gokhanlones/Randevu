@@ -553,47 +553,61 @@ function submitRegister(){
     return;
   }
 
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  showBanner("Kayıt kontrol ediliyor...", "", 2000);
 
-  localStorage.setItem("flow_verify_code", code);
-  localStorage.setItem("flow_register_email", email);
-
-  showBanner("Doğrulama kodu gönderiliyor...", "", 2000);
-
-  emailjs.send("service_8qoocwi","template_08wro98",{
-      to_email: email,
-      verification_code: code,
-      full_name: first + " " + last
+  // 1️⃣ Önce Sheet'e sor
+  fetch("https://script.google.com/macros/s/AKfycbw1T_f4PMI6Og4J9tkaORUBvlT3miUWj9t4mW1Qt6o9njWneN4xP8NDmZBKP8g5JQAm/exec", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+          business: business,
+          first: first,
+          last: last,
+          phone: phone,
+          email: email
+      })
   })
-  .then(function(){
+  .then(res => res.json())
+  .then(data => {
 
-      // GOOGLE SHEET KAYIT
-      fetch("https://script.google.com/macros/s/AKfycbw1T_f4PMI6Og4J9tkaORUBvlT3miUWj9t4mW1Qt6o9njWneN4xP8NDmZBKP8g5JQAm/exec", {
-          method: "POST",
-          mode: "no-cors",
-          body: JSON.stringify({
-              business: business,
-              first: first,
-              last: last,
-              phone: phone,
-              email: email
+      if(data.status === "exists"){
+          showBanner("Bu email zaten kayıtlı", "Giriş yapmayı deneyin.", 4000);
+          return;
+      }
+
+      if(data.status === "ok"){
+
+          // 2️⃣ Email yoksa doğrulama kodu gönder
+          const code = Math.floor(100000 + Math.random() * 900000).toString();
+          localStorage.setItem("flow_verify_code", code);
+          localStorage.setItem("flow_register_email", email);
+
+          emailjs.send("service_8qoocwi","template_08wro98",{
+              to_email: email,
+              verification_code: code,
+              full_name: first + " " + last
           })
-      });
+          .then(function(){
 
-      closeRegister();
+              closeRegister();
 
-      showBanner("Kod gönderildi 📩","Email adresinizi kontrol edin.",4000);
+              showBanner("Kod gönderildi 📩","Email adresinizi kontrol edin.",4000);
 
-      setTimeout(function(){
-        window.location.href = "verify.html";
-      },2000);
+              setTimeout(function(){
+                window.location.href = "verify.html";
+              },2000);
+
+          })
+          .catch(function(){
+              showBanner("Mail gönderilemedi","Lütfen tekrar deneyin.",4000);
+          });
+
+      }
 
   })
-  .catch(function(error){
-
-      console.error("MAIL ERROR:", error);
-      showBanner("Mail gönderilemedi","Lütfen tekrar deneyin.",4000);
-
+  .catch(err => {
+      console.error("Sheet Hatası:", err);
+      showBanner("Sunucu hatası", "Tekrar deneyin.", 4000);
   });
 
 }
