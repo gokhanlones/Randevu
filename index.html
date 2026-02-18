@@ -531,53 +531,57 @@ function submitRegister(){
 
   showBanner("Kayıt kontrol ediliyor...");
 
-  fetch("https://script.google.com/macros/s/AKfycbzyMzKuN4Y1wRYyb1_Un-qmKQpfXBCWagOR2smNmiS6JaU5NpMufNHkahbSV0yLJy8/exec",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ business, first, last, phone, email })
+  fetch("BURAYA_SCRIPT_LINKINI_YAPIŞTIR", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      business,
+      first,
+      last,
+      phone,
+      email
+    })
   })
-  .then(res=>{
-    if(!res.ok) throw new Error("Server error");
-    return res.json();
+  .then(res => res.text())
+  .then(text => {
+      const data = JSON.parse(text);
+
+      if(data.status === "exists"){
+        showBanner("Bu email zaten kayıtlı","Giriş yapmayı deneyin.");
+        return;
+      }
+
+      if(data.status === "ok"){
+
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+        localStorage.setItem("flow_verify_code", code);
+        localStorage.setItem("flow_register_email", email);
+
+        emailjs.send("service_8qoocwi","template_08wro98",{
+          to_email: email,
+          verification_code: code,
+          full_name: first + " " + last
+        })
+        .then(()=>{
+          closeRegister();
+          showBanner("Kod gönderildi 📩","Email adresinizi kontrol edin.");
+          setTimeout(()=>{
+            window.location.href="verify.html";
+          },2000);
+        })
+        .catch(()=>{
+          showBanner("Mail gönderilemedi");
+        });
+
+      }
+
   })
-  .then(data=>{
-
-    if(data.status==="exists"){
-      showBanner("Bu email zaten kayıtlı","Giriş yapmayı deneyin.");
-      return;
-    }
-
-    if(data.status==="ok"){
-
-      const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-      localStorage.setItem("flow_verify_code", code);
-      localStorage.setItem("flow_register_email", email);
-
-      emailjs.send("service_8qoocwi","template_08wro98",{
-        to_email: email,
-        verification_code: code,
-        full_name: first + " " + last
-      })
-      .then(()=>{
-        closeRegister();
-        showBanner("Kod gönderildi 📩","Email adresinizi kontrol edin.");
-        setTimeout(()=> window.location.href="verify.html",2000);
-      })
-      .catch(()=>{
-        showBanner("Mail gönderilemedi");
-      });
-
-    }
-
-  })
-  .catch(()=>{
-    showBanner("Sunucu bağlantı hatası");
+  .catch(error => {
+      console.error("Sunucu hata:", error);
+      showBanner("Sunucu bağlantı hatası");
   });
 
 }
-
-</script>
-
-</body>
-</html>
