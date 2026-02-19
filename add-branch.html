@@ -16,6 +16,7 @@
 :root{
     --primary-gradient:linear-gradient(135deg,#667eea,#764ba2);
     --success-gradient:linear-gradient(135deg,#4caf50,#66bb6a);
+    --danger-bg:#eeeeee;
     --bg:#f5f5f5;
     --card:#ffffff;
     --border:#e0e0e0;
@@ -26,7 +27,6 @@ body{
     background:var(--bg);
 }
 
-/* Navbar */
 .navbar{
     height:60px;
     background:var(--primary-gradient);
@@ -38,14 +38,12 @@ body{
     font-weight:600;
 }
 
-/* Main */
 .main{
     padding:40px 20px;
     display:flex;
     justify-content:center;
 }
 
-/* Card */
 .card{
     background:var(--card);
     width:100%;
@@ -59,14 +57,12 @@ body{
     margin-bottom:25px;
 }
 
-/* Section */
 .section-title{
     font-weight:600;
     margin:25px 0 12px;
     color:#333;
 }
 
-/* Inputs */
 .input-group{
     margin-bottom:16px;
 }
@@ -96,37 +92,55 @@ body{
     outline:none;
 }
 
-/* Row Grid */
 .row{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:15px;
 }
 
-/* Button */
-.btn{
+/* Buttons Row */
+.button-row{
+    display:flex;
+    gap:15px;
     margin-top:25px;
-    width:100%;
+}
+
+.btn{
+    flex:1;
     padding:15px;
     border:none;
     border-radius:12px;
     font-size:1rem;
     font-weight:600;
     cursor:pointer;
-    background:var(--success-gradient);
-    color:#fff;
     transition:0.2s;
 }
 
-.btn:hover{
+.btn-success{
+    background:var(--success-gradient);
+    color:#fff;
+}
+
+.btn-success:hover{
     transform:translateY(-2px);
     box-shadow:0 6px 20px rgba(76,175,80,0.3);
 }
 
-/* Responsive */
+.btn-cancel{
+    background:var(--danger-bg);
+    color:#444;
+}
+
+.btn-cancel:hover{
+    background:#dddddd;
+}
+
 @media(max-width:600px){
     .row{
         grid-template-columns:1fr;
+    }
+    .button-row{
+        flex-direction:column;
     }
 }
 </style>
@@ -196,6 +210,11 @@ body{
 </div>
 
 <div class="input-group">
+<label>Bina No</label>
+<input type="text">
+</div>
+
+<div class="input-group">
 <label>Bina Adı</label>
 <input type="text">
 </div>
@@ -211,9 +230,15 @@ body{
 </div>
 </div>
 
-<button class="btn">
+<div class="button-row">
+<button type="submit" class="btn btn-success">
 <i class="fas fa-check"></i> Kaydet
 </button>
+
+<button type="button" class="btn btn-cancel" onclick="history.back()">
+<i class="fas fa-times"></i> İptal
+</button>
+</div>
 
 </form>
 
