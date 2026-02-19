@@ -468,252 +468,216 @@
     </div>
 
     <script>
-        // ==========================================
-        // AYARLAR
-        // ==========================================
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyoCnb1_a3nFjOkbk51btfzqSYp09T75IbTNgyvEKYQUbWXP__l2mpKpmraoAmZxOd0/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyoCnb1_a3nFjOkbk51btfzqSYp09T75IbTNgyvEKYQUbWXP__l2mpKpmraoAmZxOd0/exec';
+    
+    let userData = {
+        ad: '',
+        soyad: '',
+        email: '',
+        telefon: ''
+    };
+
+    function goToStep(step) {
+        document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
         
-        let userData = {
-            ad: '',
-            soyad: '',
-            email: '',
-            telefon: ''
-        };
-
-        // ==========================================
-        // ADIM YÖNETİMİ
-        // ==========================================
-        function goToStep(step) {
-            // Tüm adımları gizle
-            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+        for (let i = 1; i <= 3; i++) {
+            const indicator = document.getElementById('step' + i + '-indicator');
+            indicator.classList.remove('active', 'completed', 'inactive');
             
-            // İndikatörleri güncelle
-            for (let i = 1; i <= 3; i++) {
-                const indicator = document.getElementById('step' + i + '-indicator');
-                indicator.classList.remove('active', 'completed');
-                
-                if (i < step) {
-                    indicator.classList.add('completed');
-                    indicator.innerHTML = '<i class="fas fa-check"></i>';
-                } else if (i === step) {
-                    indicator.classList.add('active');
-                    indicator.innerHTML = i;
-                } else {
-                    indicator.classList.add('inactive');
-                    indicator.innerHTML = i;
-                }
+            if (i < step) {
+                indicator.classList.add('completed');
+                indicator.innerHTML = '<i class="fas fa-check"></i>';
+            } else if (i === step) {
+                indicator.classList.add('active');
+                indicator.innerHTML = i;
+            } else {
+                indicator.classList.add('inactive');
+                indicator.innerHTML = i;
             }
-            
-            // Hedef adımı göster
-            document.getElementById('step' + step).classList.add('active');
-            
-            // Hata mesajını temizle
-            hideError();
+        }
+        
+        document.getElementById('step' + step).classList.add('active');
+        hideError();
+    }
+
+    function showError(message) {
+        const errorEl = document.getElementById('error-message');
+        errorEl.textContent = message;
+        errorEl.classList.add('show');
+    }
+
+    function hideError() {
+        document.getElementById('error-message').classList.remove('show');
+    }
+
+    function showSuccess(message) {
+        const successEl = document.getElementById('success-message');
+        successEl.textContent = message;
+        successEl.classList.add('show');
+    }
+
+    function showLoader() {
+        document.getElementById('loader').classList.add('show');
+    }
+
+    function hideLoader() {
+        document.getElementById('loader').classList.remove('show');
+    }
+
+    function sendCode() {
+        hideError();
+        
+        userData.ad = document.getElementById('ad').value.trim();
+        userData.soyad = document.getElementById('soyad').value.trim();
+        userData.email = document.getElementById('email').value.trim();
+        const emailTekrar = document.getElementById('email-tekrar').value.trim();
+        userData.telefon = document.getElementById('telefon').value.trim();
+
+        if (!userData.ad || !userData.soyad) {
+            showError('Ad ve soyad zorunludur');
+            return;
         }
 
-        // ==========================================
-        // HATA / BAŞARI MESAJLARI
-        // ==========================================
-        function showError(message) {
-            const errorEl = document.getElementById('error-message');
-            errorEl.textContent = message;
-            errorEl.classList.add('show');
+        if (!userData.email || !emailTekrar) {
+            showError('E-posta adreslerini girin');
+            return;
         }
 
-        function hideError() {
-            document.getElementById('error-message').classList.remove('show');
+        if (userData.email !== emailTekrar) {
+            showError('E-posta adresleri eşleşmiyor');
+            return;
         }
 
-        function showSuccess(message) {
-            const successEl = document.getElementById('success-message');
-            successEl.textContent = message;
-            successEl.classList.add('show');
+        if (!userData.telefon || userData.telefon.length < 10) {
+            showError('Geçerli bir telefon numarası girin');
+            return;
         }
 
-        // ==========================================
-        // LOADER
-        // ==========================================
-        function showLoader() {
-            document.getElementById('loader').classList.add('show');
-        }
+        showLoader();
 
-        function hideLoader() {
-            document.getElementById('loader').classList.remove('show');
-        }
-
-        // ==========================================
-        // ADIM 1: KOD GÖNDER
-        // ==========================================
-        function sendCode() {
-            hideError();
-            
-            // Verileri al
-            userData.ad = document.getElementById('ad').value.trim();
-            userData.soyad = document.getElementById('soyad').value.trim();
-            userData.email = document.getElementById('email').value.trim();
-            const emailTekrar = document.getElementById('email-tekrar').value.trim();
-            userData.telefon = document.getElementById('telefon').value.trim();
-
-            // Validasyon
-            if (!userData.ad || !userData.soyad) {
-                showError('Ad ve soyad zorunludur');
-                return;
-            }
-
-            if (!userData.email || !emailTekrar) {
-                showError('E-posta adreslerini girin');
-                return;
-            }
-
-            if (userData.email !== emailTekrar) {
-                showError('E-posta adresleri eşleşmiyor');
-                return;
-            }
-
-            if (!userData.telefon || userData.telefon.length < 10) {
-                showError('Geçerli bir telefon numarası girin');
-                return;
-            }
-
-            showLoader();
-
-            // API çağrısı
-            fetch(API_URL + '?action=sendCode', {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'sendCode',
-                    data: userData
-                })
+        fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                action: 'sendCode',
+                data: userData
             })
-            .then(response => response.json())
-            .then(data => {
-                hideLoader();
-                
-                if (data.success) {
-                    // Masked email göster
-                    document.getElementById('masked-email').textContent = data.emailMasked;
-                    goToStep(2);
-                } else {
-                    showError(data.message || 'Bir hata oluştu');
-                }
-            })
-            .catch(error => {
-                hideLoader();
-                showError('Bağlantı hatası: ' + error.message);
-            });
-        }
+        })
+        .then(() => {
+            hideLoader();
+            document.getElementById('masked-email').textContent = userData.email;
+            goToStep(2);
+        })
+        .catch(error => {
+            hideLoader();
+            showError('Bağlantı hatası');
+        });
+    }
 
-        // ==========================================
-        // ADIM 2: KOD DOĞRULAMA
-        // ==========================================
-        function moveNext(input, index) {
-            if (input.value.length === 1) {
-                const inputs = document.querySelectorAll('.code-digit');
-                if (index < 5) {
-                    inputs[index + 1].focus();
-                }
+    function moveNext(input, index) {
+        if (input.value.length === 1) {
+            const inputs = document.querySelectorAll('.code-digit');
+            if (index < 5) {
+                inputs[index + 1].focus();
             }
         }
+    }
 
-        function getCode() {
-            let code = '';
-            document.querySelectorAll('.code-digit').forEach(input => {
-                code += input.value;
-            });
-            return code;
+    function getCode() {
+        let code = '';
+        document.querySelectorAll('.code-digit').forEach(input => {
+            code += input.value;
+        });
+        return code;
+    }
+
+    function verifyCode() {
+        hideError();
+        
+        const code = getCode();
+        
+        if (code.length !== 6) {
+            showError('6 haneli kodu girin');
+            return;
         }
 
-        function verifyCode() {
-            hideError();
-            
-            const code = getCode();
-            
-            if (code.length !== 6) {
-                showError('6 haneli kodu girin');
-                return;
-            }
+        showLoader();
 
-            showLoader();
-
-            fetch(API_URL + '?action=verifyCode', {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'verifyCode',
-                    data: {
-                        email: userData.email,
-                        kod: code
-                    }
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                hideLoader();
-                
-                if (data.success) {
-                    goToStep(3);
-                } else {
-                    showError(data.message || 'Kod hatalı');
+        fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                action: 'verifyCode',
+                data: {
+                    email: userData.email,
+                    kod: code
                 }
             })
-            .catch(error => {
-                hideLoader();
-                showError('Bağlantı hatası: ' + error.message);
-            });
+        })
+        .then(() => {
+            hideLoader();
+            goToStep(3);
+        })
+        .catch(error => {
+            hideLoader();
+            showError('Bağlantı hatası');
+        });
+    }
+
+    function resendCode() {
+        sendCode();
+    }
+
+    function completeRegister() {
+        hideError();
+        
+        const sifre = document.getElementById('sifre').value;
+        const sifreTekrar = document.getElementById('sifre-tekrar').value;
+
+        if (!sifre || sifre.length < 6) {
+            showError('Şifre en az 6 karakter olmalı');
+            return;
         }
 
-        function resendCode() {
-            sendCode();
+        if (sifre !== sifreTekrar) {
+            showError('Şifreler eşleşmiyor');
+            return;
         }
 
-        // ==========================================
-        // ADIM 3: KAYIT TAMAMLA
-        // ==========================================
-        function completeRegister() {
-            hideError();
-            
-            const sifre = document.getElementById('sifre').value;
-            const sifreTekrar = document.getElementById('sifre-tekrar').value;
+        showLoader();
 
-            if (!sifre || sifre.length < 6) {
-                showError('Şifre en az 6 karakter olmalı');
-                return;
-            }
-
-            if (sifre !== sifreTekrar) {
-                showError('Şifreler eşleşmiyor');
-                return;
-            }
-
-            showLoader();
-
-            fetch(API_URL + '?action=register', {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'register',
-                    data: {
-                        ...userData,
-                        sifre: sifre
-                    }
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                hideLoader();
-                
-                if (data.success) {
-                    showSuccess('Kayıt başarılı! Yönlendiriliyorsunuz...');
-                    setTimeout(() => {
-                        window.location.href = 'business-login.html';
-                    }, 2000);
-                } else {
-                    showError(data.message || 'Kayıt başarısız');
+        fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                action: 'register',
+                data: {
+                    ...userData,
+                    sifre: sifre
                 }
             })
-            .catch(error => {
-                hideLoader();
-                showError('Bağlantı hatası: ' + error.message);
-            });
-        }
-    </script>
+        })
+        .then(() => {
+            hideLoader();
+            showSuccess('Kayıt başarılı! Yönlendiriliyorsunuz...');
+            setTimeout(() => {
+                window.location.href = 'business-login.html';
+            }, 2000);
+        })
+        .catch(error => {
+            hideLoader();
+            showError('Bağlantı hatası');
+        });
+    }
+</script>
 </body>
 </html>
