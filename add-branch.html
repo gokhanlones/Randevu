@@ -1,134 +1,209 @@
-<form id="branchForm">
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Şube Ekle - Stilix</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <!-- Şube Adı -->
-    <div class="form-section">
-        <h3><i class="fas fa-store"></i> Şube Bilgisi</h3>
+<style>
+:root {
+    --primary-gradient: linear-gradient(135deg,#667eea,#764ba2);
+    --success-gradient: linear-gradient(135deg,#4caf50,#66bb6a);
+    --bg-light:#f5f5f5;
+    --card-bg:#ffffff;
+    --border-color:#e0e0e0;
+}
 
-        <div class="form-group">
-            <label>Şube Adı *</label>
-            <input type="text" id="branchName" placeholder="Örn: Stilix Başiskele" required>
-        </div>
-    </div>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:var(--bg-light);
+}
 
-    <!-- Adres -->
-    <div class="form-section">
-        <h3><i class="fas fa-location-dot"></i> Adres Bilgisi</h3>
+.navbar{
+    height:60px;
+    background:var(--primary-gradient);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    color:#fff;
+    font-weight:600;
+}
 
-        <div class="form-group">
-            <label>Ülke</label>
-            <select id="country">
-                <option value="Türkiye" selected>Türkiye</option>
-            </select>
-        </div>
+.main{
+    padding:40px 20px;
+    display:flex;
+    justify-content:center;
+}
 
-        <div class="form-group">
-            <label>İl *</label>
-            <select id="city" required>
-                <option value="">Seçiniz</option>
-            </select>
-        </div>
+.card{
+    background:var(--card-bg);
+    width:100%;
+    max-width:600px;
+    border-radius:20px;
+    padding:30px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
 
-        <div class="form-group">
-            <label>İlçe *</label>
-            <select id="district" required disabled>
-                <option value="">Önce İl Seçiniz</option>
-            </select>
-        </div>
+.card h2{
+    margin-bottom:25px;
+}
 
-        <div class="form-group">
-            <label>Mahalle *</label>
-            <select id="neighborhood" required disabled>
-                <option value="">Önce İlçe Seçiniz</option>
-            </select>
-        </div>
+.section-title{
+    font-weight:600;
+    margin:25px 0 10px;
+    color:#333;
+}
 
-        <div class="form-group">
-            <label>Cadde</label>
-            <input type="text" id="street">
-        </div>
+.input-group{
+    margin-bottom:15px;
+}
 
-        <div class="form-group">
-            <label>Sokak</label>
-            <input type="text" id="road">
-        </div>
+.input-group label{
+    display:block;
+    margin-bottom:6px;
+    font-size:0.9rem;
+    color:#555;
+}
 
-        <div class="form-group">
-            <label>Bina Adı</label>
-            <input type="text" id="building">
-        </div>
+.input-group input,
+.input-group select{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:2px solid var(--border-color);
+    font-size:0.95rem;
+    background:#fafafa;
+    transition:0.3s;
+}
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Kat</label>
-                <input type="text" id="floor">
-            </div>
-            <div class="form-group">
-                <label>Daire</label>
-                <input type="text" id="apartment">
-            </div>
-        </div>
-    </div>
+.input-group input:focus,
+.input-group select:focus{
+    border-color:#667eea;
+    background:#fff;
+    outline:none;
+}
 
-    <button type="submit" class="btn-primary">
-        <i class="fas fa-check"></i> Kaydet
-    </button>
+.row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.btn{
+    margin-top:20px;
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    font-size:1rem;
+    font-weight:600;
+    cursor:pointer;
+    background:var(--success-gradient);
+    color:#fff;
+    transition:0.3s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 20px rgba(76,175,80,0.3);
+}
+
+@media(max-width:600px){
+    .row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div><i class="fas fa-cut"></i> Stilix</div>
+    <div>Şube Ekle</div>
+</div>
+
+<div class="main">
+<div class="card">
+
+<h2><i class="fas fa-store"></i> Yeni Şube</h2>
+
+<form>
+
+<div class="section-title">Şube Bilgisi</div>
+
+<div class="input-group">
+<label>Şube Adı *</label>
+<input type="text" placeholder="Örn: Stilix Başiskele" required>
+</div>
+
+<div class="section-title">Adres Bilgisi</div>
+
+<div class="input-group">
+<label>Ülke</label>
+<select>
+<option selected>Türkiye</option>
+</select>
+</div>
+
+<div class="input-group">
+<label>İl *</label>
+<select>
+<option>Seçiniz</option>
+<option>Kocaeli</option>
+<option>İstanbul</option>
+</select>
+</div>
+
+<div class="input-group">
+<label>İlçe *</label>
+<select>
+<option>Önce İl Seçiniz</option>
+</select>
+</div>
+
+<div class="input-group">
+<label>Mahalle *</label>
+<select>
+<option>Önce İlçe Seçiniz</option>
+</select>
+</div>
+
+<div class="input-group">
+<label>Cadde</label>
+<input type="text">
+</div>
+
+<div class="input-group">
+<label>Sokak</label>
+<input type="text">
+</div>
+
+<div class="input-group">
+<label>Bina Adı</label>
+<input type="text">
+</div>
+
+<div class="row">
+<div class="input-group">
+<label>Kat</label>
+<input type="text">
+</div>
+<div class="input-group">
+<label>Daire</label>
+<input type="text">
+</div>
+</div>
+
+<button class="btn">
+<i class="fas fa-check"></i> Kaydet
+</button>
 
 </form>
-<script>
-const cityData = {
-    "Kocaeli": {
-        "Başiskele": ["Bahçecik", "Yuvacık", "Servetiye"],
-        "Gölcük": ["Değirmendere", "Halidere"]
-    },
-    "İstanbul": {
-        "Kadıköy": ["Fenerbahçe", "Moda"],
-        "Beşiktaş": ["Levent", "Etiler"]
-    }
-};
 
-const citySelect = document.getElementById("city");
-const districtSelect = document.getElementById("district");
-const neighborhoodSelect = document.getElementById("neighborhood");
+</div>
+</div>
 
-// İlleri yükle
-Object.keys(cityData).forEach(city => {
-    const option = document.createElement("option");
-    option.value = city;
-    option.textContent = city;
-    citySelect.appendChild(option);
-});
-
-// İl değişince ilçeleri yükle
-citySelect.addEventListener("change", function() {
-    districtSelect.innerHTML = '<option value="">Seçiniz</option>';
-    neighborhoodSelect.innerHTML = '<option value="">Önce İlçe Seçiniz</option>';
-    neighborhoodSelect.disabled = true;
-
-    if (!this.value) return;
-
-    districtSelect.disabled = false;
-
-    Object.keys(cityData[this.value]).forEach(district => {
-        const option = document.createElement("option");
-        option.value = district;
-        option.textContent = district;
-        districtSelect.appendChild(option);
-    });
-});
-
-// İlçe değişince mahalleleri yükle
-districtSelect.addEventListener("change", function() {
-    neighborhoodSelect.innerHTML = '<option value="">Seçiniz</option>';
-
-    if (!this.value) return;
-
-    neighborhoodSelect.disabled = false;
-
-    cityData[citySelect.value][this.value].forEach(neigh => {
-        const option = document.createElement("option");
-        option.value = neigh;
-        option.textContent = neigh;
-        neighborhoodSelect.appendChild(option);
-    });
-});
-</script>
+</body>
+</html>
