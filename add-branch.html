@@ -222,24 +222,36 @@ const API = 'https://script.google.com/macros/s/AKfycbxnqeVMnJR7P8RTgQ2ghOp8V6Gg
 let addressData = {};
 
 async function loadAddress() {
+    try {
+        const res = await fetch(`${API}?action=getAddress`, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const json = await res.json();
 
-    const res = await fetch(`${API}?action=getAddress`);
-    const json = await res.json();
+        if (!json.success) {
+            alert("Adres verisi alınamadı: " + (json.message || "Bilinmeyen hata"));
+            return;
+        }
 
-    if (!json.success) {
-        alert("Adres verisi alınamadı");
-        return;
+        delete json.success;
+        addressData = json;
+
+        const ilSelect = document.getElementById("il");
+        ilSelect.innerHTML = '<option value="">İl Seçiniz</option>';
+
+        Object.keys(addressData).forEach(il => {
+            ilSelect.innerHTML += `<option value="${il}">${il}</option>`;
+        });
+        
+    } catch (err) {
+        console.error("Hata:", err);
+        alert("Adres verisi alınamadı: " + err.message);
     }
-
-    delete json.success;
-    addressData = json;
-
-    const ilSelect = document.getElementById("il");
-    ilSelect.innerHTML = '<option value="">İl Seçiniz</option>';
-
-    Object.keys(addressData).forEach(il => {
-        ilSelect.innerHTML += `<option value="${il}">${il}</option>`;
-    });
 }
 
 function loadIlce() {
