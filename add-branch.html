@@ -1,186 +1,134 @@
-            <h1><i class="fas fa-store"></i> Şube Ekle</h1>
-            <p>Yeni şube bilgilerini doldur ve kaydet</p>
-        </div>
+<form id="branchForm">
 
-        <div class="form-card">
-            <div id="errorBox" class="error-message"></div>
-            <div id="successBox" class="success-message"></div>
+    <!-- Şube Adı -->
+    <div class="form-section">
+        <h3><i class="fas fa-store"></i> Şube Bilgisi</h3>
 
-            <form id="branchForm">
-                <!-- ŞUBE BİLGİLERİ -->
-                <div class="form-section">
-                    <h3><i class="fas fa-building"></i> Şube Bilgileri</h3>
-
-                    <div class="form-group">
-                        <label for="branchName">Şube Adı *</label>
-                        <input type="text" id="branchName" name="branchName" placeholder="Örn: Stilix İzmit" required>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="branchCode">Şube Kodu</label>
-                            <input type="text" id="branchCode" name="branchCode" placeholder="Örn: IZMT01">
-                        </div>
-                        <div class="form-group">
-                            <label for="status">Durum</label>
-                            <select id="status" name="status">
-                                <option value="active" selected>Aktif</option>
-                                <option value="passive">Pasif</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- İLETİŞİM -->
-                <div class="form-section">
-                    <h3><i class="fas fa-phone"></i> İletişim</h3>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="phone">Telefon *</label>
-                            <input type="tel" id="phone" name="phone" placeholder="05xx xxx xx xx" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">E-posta</label>
-                            <input type="email" id="email" name="email" placeholder="sube@stilix.com">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ADRES -->
-                <div class="form-section">
-                    <h3><i class="fas fa-location-dot"></i> Adres</h3>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="city">Şehir *</label>
-                            <input type="text" id="city" name="city" placeholder="Örn: Kocaeli" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="district">İlçe *</label>
-                            <input type="text" id="district" name="district" placeholder="Örn: Başiskele" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="address">Açık Adres *</label>
-                        <input type="text" id="address" name="address" placeholder="Mahalle, cadde, sokak, no..." required>
-                    </div>
-                </div>
-
-                <!-- SORUMLU -->
-                <div class="form-section">
-                    <h3><i class="fas fa-user-tie"></i> Şube Sorumlusu</h3>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="managerName">Ad Soyad *</label>
-                            <input type="text" id="managerName" name="managerName" placeholder="Örn: Ayşe Yılmaz" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="managerPhone">Sorumlu Telefonu</label>
-                            <input type="tel" id="managerPhone" name="managerPhone" placeholder="05xx xxx xx xx">
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-primary">
-                    <i class="fas fa-check"></i> Şubeyi Kaydet
-                </button>
-
-                <a href="index.html" class="btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Geri Dön
-                </a>
-            </form>
+        <div class="form-group">
+            <label>Şube Adı *</label>
+            <input type="text" id="branchName" placeholder="Örn: Stilix Başiskele" required>
         </div>
     </div>
 
-    <script>
-        // Senin Apps Script URL'in (örnek)
-        const API_URL = "https://script.google.com/macros/s/AKfycbyoCnb1_a3nFjOkbk51btfzqSYp09T75IbTNgyvEKYQUbWXP__l2mpKpmraoAmZxOd0/exec";
+    <!-- Adres -->
+    <div class="form-section">
+        <h3><i class="fas fa-location-dot"></i> Adres Bilgisi</h3>
 
-        const form = document.getElementById("branchForm");
-        const errorBox = document.getElementById("errorBox");
-        const successBox = document.getElementById("successBox");
+        <div class="form-group">
+            <label>Ülke</label>
+            <select id="country">
+                <option value="Türkiye" selected>Türkiye</option>
+            </select>
+        </div>
 
-        function showError(msg) {
-            successBox.classList.remove("show");
-            errorBox.textContent = msg;
-            errorBox.classList.add("show");
-        }
+        <div class="form-group">
+            <label>İl *</label>
+            <select id="city" required>
+                <option value="">Seçiniz</option>
+            </select>
+        </div>
 
-        function showSuccess(msg) {
-            errorBox.classList.remove("show");
-            successBox.textContent = msg;
-            successBox.classList.add("show");
-        }
+        <div class="form-group">
+            <label>İlçe *</label>
+            <select id="district" required disabled>
+                <option value="">Önce İl Seçiniz</option>
+            </select>
+        </div>
 
-        function getFormData() {
-            return {
-                branchName: document.getElementById("branchName").value.trim(),
-                branchCode: document.getElementById("branchCode").value.trim(),
-                status: document.getElementById("status").value,
-                phone: document.getElementById("phone").value.trim(),
-                email: document.getElementById("email").value.trim(),
-                city: document.getElementById("city").value.trim(),
-                district: document.getElementById("district").value.trim(),
-                address: document.getElementById("address").value.trim(),
-                managerName: document.getElementById("managerName").value.trim(),
-                managerPhone: document.getElementById("managerPhone").value.trim(),
-            };
-        }
+        <div class="form-group">
+            <label>Mahalle *</label>
+            <select id="neighborhood" required disabled>
+                <option value="">Önce İlçe Seçiniz</option>
+            </select>
+        </div>
 
-        function validate(data) {
-            if (!data.branchName) return "Şube adı zorunlu.";
-            if (!data.phone) return "Telefon zorunlu.";
-            if (!data.city) return "Şehir zorunlu.";
-            if (!data.district) return "İlçe zorunlu.";
-            if (!data.address) return "Adres zorunlu.";
-            if (!data.managerName) return "Şube sorumlusu adı zorunlu.";
-            return null;
-        }
+        <div class="form-group">
+            <label>Cadde</label>
+            <input type="text" id="street">
+        </div>
 
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
+        <div class="form-group">
+            <label>Sokak</label>
+            <input type="text" id="road">
+        </div>
 
-            const data = getFormData();
-            const err = validate(data);
-            if (err) return showError(err);
+        <div class="form-group">
+            <label>Bina Adı</label>
+            <input type="text" id="building">
+        </div>
 
-            // UI
-            const btn = form.querySelector("button[type='submit']");
-            const oldHtml = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Kaydediliyor...`;
+        <div class="form-row">
+            <div class="form-group">
+                <label>Kat</label>
+                <input type="text" id="floor">
+            </div>
+            <div class="form-group">
+                <label>Daire</label>
+                <input type="text" id="apartment">
+            </div>
+        </div>
+    </div>
 
-            try {
-                // Burada action adını senin API'ne göre ayarlarsın:
-                // örn: action: "addBranch" / "createBranch" vs.
-                const payload = { action: "addBranch", data };
+    <button type="submit" class="btn-primary">
+        <i class="fas fa-check"></i> Kaydet
+    </button>
 
-                const res = await fetch(API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload),
-                });
+</form>
+<script>
+const cityData = {
+    "Kocaeli": {
+        "Başiskele": ["Bahçecik", "Yuvacık", "Servetiye"],
+        "Gölcük": ["Değirmendere", "Halidere"]
+    },
+    "İstanbul": {
+        "Kadıköy": ["Fenerbahçe", "Moda"],
+        "Beşiktaş": ["Levent", "Etiler"]
+    }
+};
 
-                const json = await res.json().catch(() => null);
+const citySelect = document.getElementById("city");
+const districtSelect = document.getElementById("district");
+const neighborhoodSelect = document.getElementById("neighborhood");
 
-                if (!json) {
-                    showError("Sunucudan geçerli yanıt alınamadı.");
-                } else if (json.success) {
-                    showSuccess(json.message || "Şube başarıyla kaydedildi.");
-                    form.reset();
-                } else {
-                    showError(json.message || "Şube kaydedilemedi.");
-                }
-            } catch (ex) {
-                showError("Bağlantı hatası. Lütfen tekrar dene.");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = oldHtml;
-            }
-        });
-    </script>
-</body>
-</html>
+// İlleri yükle
+Object.keys(cityData).forEach(city => {
+    const option = document.createElement("option");
+    option.value = city;
+    option.textContent = city;
+    citySelect.appendChild(option);
+});
+
+// İl değişince ilçeleri yükle
+citySelect.addEventListener("change", function() {
+    districtSelect.innerHTML = '<option value="">Seçiniz</option>';
+    neighborhoodSelect.innerHTML = '<option value="">Önce İlçe Seçiniz</option>';
+    neighborhoodSelect.disabled = true;
+
+    if (!this.value) return;
+
+    districtSelect.disabled = false;
+
+    Object.keys(cityData[this.value]).forEach(district => {
+        const option = document.createElement("option");
+        option.value = district;
+        option.textContent = district;
+        districtSelect.appendChild(option);
+    });
+});
+
+// İlçe değişince mahalleleri yükle
+districtSelect.addEventListener("change", function() {
+    neighborhoodSelect.innerHTML = '<option value="">Seçiniz</option>';
+
+    if (!this.value) return;
+
+    neighborhoodSelect.disabled = false;
+
+    cityData[citySelect.value][this.value].forEach(neigh => {
+        const option = document.createElement("option");
+        option.value = neigh;
+        option.textContent = neigh;
+        neighborhoodSelect.appendChild(option);
+    });
+});
+</script>
