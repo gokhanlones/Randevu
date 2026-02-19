@@ -7,11 +7,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 :root{
     --primary-gradient:linear-gradient(135deg,#667eea,#764ba2);
@@ -22,10 +18,7 @@
     --border:#e0e0e0;
 }
 
-body{
-    font-family:'Segoe UI',sans-serif;
-    background:var(--bg);
-}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);}
 
 .navbar{
     height:60px;
@@ -38,11 +31,7 @@ body{
     font-weight:600;
 }
 
-.main{
-    padding:40px 20px;
-    display:flex;
-    justify-content:center;
-}
+.main{padding:40px 20px;display:flex;justify-content:center;}
 
 .card{
     background:var(--card);
@@ -53,9 +42,7 @@ body{
     box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
-.card h2{
-    margin-bottom:25px;
-}
+.card h2{margin-bottom:25px;}
 
 .section-title{
     font-weight:600;
@@ -63,9 +50,7 @@ body{
     color:#333;
 }
 
-.input-group{
-    margin-bottom:16px;
-}
+.input-group{margin-bottom:16px;}
 
 .input-group label{
     display:block;
@@ -98,7 +83,6 @@ body{
     gap:15px;
 }
 
-/* Buttons Row */
 .button-row{
     display:flex;
     gap:15px;
@@ -131,17 +115,11 @@ body{
     color:#444;
 }
 
-.btn-cancel:hover{
-    background:#dddddd;
-}
+.btn-cancel:hover{background:#dddddd;}
 
 @media(max-width:600px){
-    .row{
-        grid-template-columns:1fr;
-    }
-    .button-row{
-        flex-direction:column;
-    }
+    .row{grid-template-columns:1fr;}
+    .button-row{flex-direction:column;}
 }
 </style>
 </head>
@@ -164,7 +142,7 @@ body{
 
 <div class="input-group">
 <label>Şube Adı *</label>
-<input type="text" placeholder="Örn: Stilix Başiskele" required>
+<input type="text" placeholder="Örn: Stilix Taksim" required>
 </div>
 
 <div class="section-title">Adres Bilgisi</div>
@@ -178,25 +156,17 @@ body{
 
 <div class="input-group">
 <label>İl *</label>
-<select>
-<option>Seçiniz</option>
-<option>Kocaeli</option>
-<option>İstanbul</option>
-</select>
+<select id="il" onchange="loadIlce()"></select>
 </div>
 
 <div class="input-group">
 <label>İlçe *</label>
-<select>
-<option>Önce İl Seçiniz</option>
-</select>
+<select id="ilce" onchange="loadMahalle()"></select>
 </div>
 
 <div class="input-group">
 <label>Mahalle *</label>
-<select>
-<option>Önce İlçe Seçiniz</option>
-</select>
+<select id="mahalle"></select>
 </div>
 
 <div class="input-group">
@@ -244,6 +214,68 @@ body{
 
 </div>
 </div>
+
+<script>
+
+const API = 'https://script.google.com/macros/s/AKfycbxlnobSeBmU1g5wNPEHZW3nCPksKYcH36hu6j7hFAJ8h8aZeKvBW_1RtbHtJTt7MTs3/exec';
+
+let addressData = {};
+
+async function loadAddress() {
+
+    const res = await fetch(`${API}?action=getAddress`);
+    const json = await res.json();
+
+    if (!json.success) {
+        alert("Adres verisi alınamadı");
+        return;
+    }
+
+    delete json.success;
+    addressData = json;
+
+    const ilSelect = document.getElementById("il");
+    ilSelect.innerHTML = '<option value="">İl Seçiniz</option>';
+
+    Object.keys(addressData).forEach(il => {
+        ilSelect.innerHTML += `<option value="${il}">${il}</option>`;
+    });
+}
+
+function loadIlce() {
+
+    const il = document.getElementById("il").value;
+    const ilceSelect = document.getElementById("ilce");
+    const mahalleSelect = document.getElementById("mahalle");
+
+    ilceSelect.innerHTML = '<option value="">İlçe Seçiniz</option>';
+    mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
+
+    if (!il) return;
+
+    Object.keys(addressData[il]).forEach(ilce => {
+        ilceSelect.innerHTML += `<option value="${ilce}">${ilce}</option>`;
+    });
+}
+
+function loadMahalle() {
+
+    const il = document.getElementById("il").value;
+    const ilce = document.getElementById("ilce").value;
+    const mahalleSelect = document.getElementById("mahalle");
+
+    mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
+
+    if (!il || !ilce) return;
+
+    addressData[il][ilce].forEach(mahalle => {
+        mahalleSelect.innerHTML += `<option value="${mahalle}">${mahalle}</option>`;
+    });
+}
+
+window.onload = loadAddress;
+
+</script>
 
 </body>
 </html>
