@@ -223,14 +223,7 @@ let addressData = {};
 
 async function loadAddress() {
     try {
-        const res = await fetch(`${API}?action=getAddress`, {
-            method: 'GET',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
+        const res = await fetch(API + '?action=getAddress');
         const json = await res.json();
 
         if (!json.success) {
@@ -238,8 +231,8 @@ async function loadAddress() {
             return;
         }
 
-        delete json.success;
-        addressData = json;
+        const { success, ...data } = json;
+        addressData = data;
 
         const ilSelect = document.getElementById("il");
         ilSelect.innerHTML = '<option value="">İl Seçiniz</option>';
@@ -247,9 +240,8 @@ async function loadAddress() {
         Object.keys(addressData).forEach(il => {
             ilSelect.innerHTML += `<option value="${il}">${il}</option>`;
         });
-        
+
     } catch (err) {
-        console.error("Hata:", err);
         alert("Adres verisi alınamadı: " + err.message);
     }
 }
