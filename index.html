@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stilix - Kuaför Randevu Sistemi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #d4a574;
+            --accent: #ff6b9d;
+            --secondary: #2c2c2c;
+            --light: #faf7f2;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Arkaplan animasyonu */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        /* Hamburger Buton */
+        .hamburger {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+            transition: transform 0.3s ease;
+        }
+
+        .hamburger.active {
+            transform: rotate(90deg);
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 998;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Sidebar - SOLDAN KAYAN */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 320px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 999;
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 5px 0 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        /* Sidebar Header */
+        .sidebar-header {
+            padding: 30px;
+            background: linear-gradient(135deg, var(--accent), #ff8fab);
+            color: white;
+        }
+
+        .sidebar-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Sidebar Menu */
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+            color: var(--secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 107, 157, 0.1);
+            border-left-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .menu-item i {
+            width: 30px;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+
+        .menu-item span {
+            font-weight: 500;
+        }
+
+        /* İŞLETME GİRİŞİ - En üstte özel */
+        .business-login {
+            margin: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--secondary), #444);
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-decoration: none;
+            display: block;
+        }
+
+        .business-login:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .business-login i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .business-login h4 {
+            margin-bottom: 5px;
+        }
+
+        .business-login p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Sidebar Footer */
+        .sidebar-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #eee;
+        }
+
+        .sidebar-footer p {
+            font-size: 0.8rem;
+            color: #999;
+            text-align: center;
+        }
+
+        /* Ana İçerik */
+        .main-content {
+            padding: 100px 20px 20px;
+            min-height: 100vh;
+        }
+
+        .hero {
+            text-align: center;
+            color: white;
+            padding: 50px 20px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent), #ff8fab);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.6);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobil uyumlu */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .sidebar {
+                width: 280px;
+                left: -280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Arkaplan -->
+    <div class="bg-animation"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="index.html" class="logo">
+            <i class="fas fa-cut"></i>
+            Stilix
+        </a>
+        
+        <button class="hamburger" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+
+    <!-- Overlay (sidebar dışına tıklayınca kapat) -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- SOLDAN KAYAN SIDEBAR -->
+    <div class="sidebar">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header">
+            <h3><i class="fas fa-spa"></i> Stilix</h3>
+            <p>Kuaför Randevu Sistemi</p>
+        </div>
+
+        <!-- İŞLETME GİRİŞİ - En Üstte -->
+        <a href="pages/business-login.html" class="business-login" onclick="toggleSidebar()">
+            <i class="fas fa-store"></i>
+            <h4>İşletme Girişi</h4>
+            <p>Salonunuzu yönetmek için tıklayın</p>
+        </a>
+
+        <!-- Menü -->
+        <div class="sidebar-menu">
+            <a href="index.html" class="menu-item" onclick="toggleSidebar()">
+                <i class="fas fa-home"></i>
+                <span>Ana Sayfa</span>
+            </a>
+            
+            <a href="pages/services.html" class="menu-item" onclick="toggleSidebar()">
+                <i class="fas fa-cut"></i>
+                <span>Hizmetlerimiz</span>
+            </a>
+            
+            <a href="pages/gallery.html" class="menu-item" onclick="toggleSidebar()">
+                <i class="fas fa-images"></i>
+                <span>Galeri</span>
+            </a>
+            
+            <a href="pages/about.html" class="menu-item" onclick="toggleSidebar()">
+                <i class="fas fa-info-circle"></i>
+                <span>Hakkımızda</span>
+            </a>
+            
+            <a href="pages/contact.html" class="menu-item" onclick="toggleSidebar()">
+                <i class="fas fa-phone"></i>
+                <span>İletişim</span>
+            </a>
+            
+            <a href="pages/appointment.html" class="menu-item" onclick="toggleSidebar()">
+                <i class="fas fa-calendar-check"></i>
+                <span>Randevu Al</span>
+            </a>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+            <p>&copy; 2024 Stilix</p>
+        </div>
+    </div>
+
+    <!-- Ana İçerik -->
+    <div class="main-content">
+        <div class="hero">
+            <h1>Stilinizi Keşfedin</h1>
+            <p>Profesyonel kuaförlerimizle yeni bir görünüme kavuşun</p>
+            <a href="pages/appointment.html" class="btn-primary">
+                Hemen Randevu Al
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar aç/kapa
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const hamburger = document.querySelector('.hamburger');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            hamburger.classList.toggle('active');
+            
+            // İkon değiştir
+            const icon = hamburger.querySelector('i');
+            if (sidebar.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        // ESC tuşu ile kapatma
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebar.classList.contains('active')) {
+                    toggleSidebar();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
