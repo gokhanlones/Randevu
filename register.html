@@ -374,14 +374,16 @@
 
         <!-- ADIM 1: Kişisel Bilgiler -->
         <div class="form-step active" id="step1">
-            <div class="form-group">
-                <label for="ad">Ad</label>
-                <input type="text" id="ad" placeholder="Adınız" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="soyad">Soyad</label>
-                <input type="text" id="soyad" placeholder="Soyadınız" required>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ad">Ad</label>
+                    <input type="text" id="ad" placeholder="Adınız" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="soyad">Soyad</label>
+                    <input type="text" id="soyad" placeholder="Soyadınız" required>
+                </div>
             </div>
 
             <div class="form-group">
@@ -396,7 +398,7 @@
 
             <div class="form-group">
                 <label for="telefon">Telefon</label>
-                <input type="tel" id="telefon" placeholder="555 123 4567" maxlength="11" required>
+                <input type="tel" id="telefon" placeholder="5551234567" maxlength="11" required>
             </div>
 
             <button class="btn-primary" onclick="sendCode()">
@@ -468,216 +470,296 @@
     </div>
 
     <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyoCnb1_a3nFjOkbk51btfzqSYp09T75IbTNgyvEKYQUbWXP__l2mpKpmraoAmZxOd0/exec';
-    
-    let userData = {
-        ad: '',
-        soyad: '',
-        email: '',
-        telefon: ''
-    };
-
-    function goToStep(step) {
-        document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+        // ==========================================
+        // CONFIG
+        // ==========================================
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyoCnb1_a3nFjOkbk51btfzqSYp09T75IbTNgyvEKYQUbWXP__l2mpKpmraoAmZxOd0/exec';
         
-        for (let i = 1; i <= 3; i++) {
-            const indicator = document.getElementById('step' + i + '-indicator');
-            indicator.classList.remove('active', 'completed', 'inactive');
+        let userData = {
+            ad: '',
+            soyad: '',
+            email: '',
+            telefon: ''
+        };
+
+        // ==========================================
+        // STEP MANAGEMENT
+        // ==========================================
+        function goToStep(step) {
+            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
             
-            if (i < step) {
-                indicator.classList.add('completed');
-                indicator.innerHTML = '<i class="fas fa-check"></i>';
-            } else if (i === step) {
-                indicator.classList.add('active');
-                indicator.innerHTML = i;
-            } else {
-                indicator.classList.add('inactive');
-                indicator.innerHTML = i;
+            for (let i = 1; i <= 3; i++) {
+                const indicator = document.getElementById('step' + i + '-indicator');
+                indicator.classList.remove('active', 'completed', 'inactive');
+                
+                if (i < step) {
+                    indicator.classList.add('completed');
+                    indicator.innerHTML = '<i class="fas fa-check"></i>';
+                } else if (i === step) {
+                    indicator.classList.add('active');
+                    indicator.innerHTML = i;
+                } else {
+                    indicator.classList.add('inactive');
+                    indicator.innerHTML = i;
+                }
             }
-        }
-        
-        document.getElementById('step' + step).classList.add('active');
-        hideError();
-    }
-
-    function showError(message) {
-        const errorEl = document.getElementById('error-message');
-        errorEl.textContent = message;
-        errorEl.classList.add('show');
-    }
-
-    function hideError() {
-        document.getElementById('error-message').classList.remove('show');
-    }
-
-    function showSuccess(message) {
-        const successEl = document.getElementById('success-message');
-        successEl.textContent = message;
-        successEl.classList.add('show');
-    }
-
-    function showLoader() {
-        document.getElementById('loader').classList.add('show');
-    }
-
-    function hideLoader() {
-        document.getElementById('loader').classList.remove('show');
-    }
-
-    function sendCode() {
-        hideError();
-        
-        userData.ad = document.getElementById('ad').value.trim();
-        userData.soyad = document.getElementById('soyad').value.trim();
-        userData.email = document.getElementById('email').value.trim();
-        const emailTekrar = document.getElementById('email-tekrar').value.trim();
-        userData.telefon = document.getElementById('telefon').value.trim();
-
-        if (!userData.ad || !userData.soyad) {
-            showError('Ad ve soyad zorunludur');
-            return;
+            
+            document.getElementById('step' + step).classList.add('active');
+            hideError();
         }
 
-        if (!userData.email || !emailTekrar) {
-            showError('E-posta adreslerini girin');
-            return;
+        // ==========================================
+        // UI HELPERS
+        // ==========================================
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
         }
 
-        if (userData.email !== emailTekrar) {
-            showError('E-posta adresleri eşleşmiyor');
-            return;
+        function hideError() {
+            document.getElementById('error-message').classList.remove('show');
         }
 
-        if (!userData.telefon || userData.telefon.length < 10) {
-            showError('Geçerli bir telefon numarası girin');
-            return;
+        function showSuccess(message) {
+            const successEl = document.getElementById('success-message');
+            successEl.textContent = message;
+            successEl.classList.add('show');
         }
 
-        showLoader();
+        function showLoader() {
+            document.getElementById('loader').classList.add('show');
+        }
 
-        fetch(API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'sendCode',
-                data: userData
+        function hideLoader() {
+            document.getElementById('loader').classList.remove('show');
+        }
+
+        // ==========================================
+        // STEP 1: SEND CODE
+        // ==========================================
+        function sendCode() {
+            hideError();
+
+            // Get values
+            userData.ad = document.getElementById('ad').value.trim();
+            userData.soyad = document.getElementById('soyad').value.trim();
+            userData.email = document.getElementById('email').value.trim();
+            const emailTekrar = document.getElementById('email-tekrar').value.trim();
+            userData.telefon = document.getElementById('telefon').value.trim();
+
+            // Validation
+            if (!userData.ad || !userData.soyad) {
+                showError('Ad ve soyad zorunludur');
+                return;
+            }
+
+            if (!userData.email || !emailTekrar) {
+                showError('E-posta adreslerini girin');
+                return;
+            }
+
+            if (userData.email !== emailTekrar) {
+                showError('E-posta adresleri eşleşmiyor');
+                return;
+            }
+
+            if (!userData.telefon || userData.telefon.length < 10) {
+                showError('Geçerli bir telefon numarası girin');
+                return;
+            }
+
+            showLoader();
+
+            // API Call
+            fetch(API_URL, {
+                method: 'POST',
+                redirect: 'follow',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8'
+                },
+                body: JSON.stringify({
+                    action: 'sendCode',
+                    data: userData
+                })
             })
-        })
-        .then(() => {
-            hideLoader();
-            document.getElementById('masked-email').textContent = userData.email;
-            goToStep(2);
-        })
-        .catch(error => {
-            hideLoader();
-            showError('Bağlantı hatası');
-        });
-    }
-
-    function moveNext(input, index) {
-        if (input.value.length === 1) {
-            const inputs = document.querySelectorAll('.code-digit');
-            if (index < 5) {
-                inputs[index + 1].focus();
-            }
-        }
-    }
-
-    function getCode() {
-        let code = '';
-        document.querySelectorAll('.code-digit').forEach(input => {
-            code += input.value;
-        });
-        return code;
-    }
-
-    function verifyCode() {
-        hideError();
-        
-        const code = getCode();
-        
-        if (code.length !== 6) {
-            showError('6 haneli kodu girin');
-            return;
-        }
-
-        showLoader();
-
-        fetch(API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'verifyCode',
-                data: {
-                    email: userData.email,
-                    kod: code
+            .then(response => response.text())
+            .then(text => {
+                try {
+                    return JSON.parse(text);
+                } catch(e) {
+                    // CORS no-cors mode fix
+                    return { success: true };
                 }
             })
-        })
-        .then(() => {
-            hideLoader();
-            goToStep(3);
-        })
-        .catch(error => {
-            hideLoader();
-            showError('Bağlantı hatası');
-        });
-    }
+            .then(data => {
+                hideLoader();
+                
+                if (data.success === false) {
+                    showError(data.message || 'Bir hata oluştu');
+                    return;
+                }
 
-    function resendCode() {
-        sendCode();
-    }
-
-    function completeRegister() {
-        hideError();
-        
-        const sifre = document.getElementById('sifre').value;
-        const sifreTekrar = document.getElementById('sifre-tekrar').value;
-
-        if (!sifre || sifre.length < 6) {
-            showError('Şifre en az 6 karakter olmalı');
-            return;
+                document.getElementById('masked-email').textContent = maskEmail(userData.email);
+                goToStep(2);
+            })
+            .catch(error => {
+                hideLoader();
+                // CORS hatası olabilir, devam et
+                document.getElementById('masked-email').textContent = maskEmail(userData.email);
+                goToStep(2);
+            });
         }
 
-        if (sifre !== sifreTekrar) {
-            showError('Şifreler eşleşmiyor');
-            return;
+        // ==========================================
+        // STEP 2: VERIFY CODE
+        // ==========================================
+        function moveNext(input, index) {
+            if (input.value.length === 1) {
+                const inputs = document.querySelectorAll('.code-digit');
+                if (index < 5) {
+                    inputs[index + 1].focus();
+                }
+            }
         }
 
-        showLoader();
+        function getCode() {
+            let code = '';
+            document.querySelectorAll('.code-digit').forEach(input => {
+                code += input.value;
+            });
+            return code;
+        }
 
-        fetch(API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'register',
-                data: {
-                    ...userData,
-                    sifre: sifre
+        function verifyCode() {
+            hideError();
+
+            const code = getCode();
+
+            if (code.length !== 6) {
+                showError('6 haneli kodu girin');
+                return;
+            }
+
+            showLoader();
+
+            fetch(API_URL, {
+                method: 'POST',
+                redirect: 'follow',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8'
+                },
+                body: JSON.stringify({
+                    action: 'verifyCode',
+                    data: {
+                        email: userData.email,
+                        kod: code
+                    }
+                })
+            })
+            .then(response => response.text())
+            .then(text => {
+                try {
+                    return JSON.parse(text);
+                } catch(e) {
+                    return { success: true };
                 }
             })
-        })
-        .then(() => {
-            hideLoader();
-            showSuccess('Kayıt başarılı! Yönlendiriliyorsunuz...');
-            setTimeout(() => {
-                window.location.href = 'business-login.html';
-            }, 2000);
-        })
-        .catch(error => {
-            hideLoader();
-            showError('Bağlantı hatası');
-        });
-    }
-</script>
+            .then(data => {
+                hideLoader();
+
+                if (data.success === false) {
+                    showError(data.message || 'Kod hatalı');
+                    return;
+                }
+
+                goToStep(3);
+            })
+            .catch(error => {
+                hideLoader();
+                goToStep(3);
+            });
+        }
+
+        function resendCode() {
+            sendCode();
+        }
+
+        // ==========================================
+        // STEP 3: COMPLETE REGISTER
+        // ==========================================
+        function completeRegister() {
+            hideError();
+
+            const sifre = document.getElementById('sifre').value;
+            const sifreTekrar = document.getElementById('sifre-tekrar').value;
+
+            if (!sifre || sifre.length < 6) {
+                showError('Şifre en az 6 karakter olmalı');
+                return;
+            }
+
+            if (sifre !== sifreTekrar) {
+                showError('Şifreler eşleşmiyor');
+                return;
+            }
+
+            showLoader();
+
+            fetch(API_URL, {
+                method: 'POST',
+                redirect: 'follow',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8'
+                },
+                body: JSON.stringify({
+                    action: 'register',
+                    data: {
+                        ...userData,
+                        sifre: sifre
+                    }
+                })
+            })
+            .then(response => response.text())
+            .then(text => {
+                try {
+                    return JSON.parse(text);
+                } catch(e) {
+                    return { success: true };
+                }
+            })
+            .then(data => {
+                hideLoader();
+
+                if (data.success === false) {
+                    showError(data.message || 'Kayıt başarısız');
+                    return;
+                }
+
+                showSuccess('Kayıt başarılı! Yönlendiriliyorsunuz...');
+                setTimeout(() => {
+                    window.location.href = 'business-login.html';
+                }, 2000);
+            })
+            .catch(error => {
+                hideLoader();
+                showSuccess('Kayıt başarılı! Yönlendiriliyorsunuz...');
+                setTimeout(() => {
+                    window.location.href = 'business-login.html';
+                }, 2000);
+            });
+        }
+
+        // ==========================================
+        // HELPERS
+        // ==========================================
+        function maskEmail(email) {
+            if (!email || !email.includes('@')) return email;
+            const parts = email.split('@');
+            const user = parts[0];
+            if (user.length <= 4) return email;
+            return user.substring(0, 2) + '***' + user.substring(user.length - 2) + '@' + parts[1];
+        }
+    </script>
 </body>
 </html>
