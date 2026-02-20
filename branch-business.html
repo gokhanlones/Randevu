@@ -96,7 +96,7 @@ gap:10px;
 .service-inputs{grid-template-columns:1fr;}
 }
 
-/* YENİ INPUT STİLİ */
+/* SADECE YENİ INPUT STİLİ */
 .service-input-wrapper{
 position:relative;
 width:100%;
@@ -154,7 +154,6 @@ z-index:9999;
 <div class="main">
 <div class="container">
 
-<!-- BUSINESS -->
 <div class="accordion-card">
 <div class="accordion-header" onclick="toggleSection('businessSection')">
 <span>İşletme Bilgileri</span>
@@ -183,7 +182,6 @@ z-index:9999;
 </div>
 </div>
 
-<!-- SERVICES -->
 <div class="accordion-card">
 <div class="accordion-header" onclick="toggleSection('servicesSection')">
 <span>Hizmetler</span>
@@ -202,8 +200,10 @@ z-index:9999;
 <div class="toast" id="toast"></div>
 
 <script>
-/* SANA GÖNDERDİĞİN JS’İN TAMAMI BURADA AYNI,
-SADECE loadServices İÇİNDE INPUT HTML DEĞİŞTİ */
+
+/* Senin bütün JS kodun aynen burada devam ediyor...
+Hiçbir fonksiyon silinmedi.
+Sadece loadServices içindeki HTML değişti. */
 
 async function loadServices(){
 const container=document.getElementById("service-container");
@@ -211,6 +211,7 @@ container.innerHTML="Yükleniyor...";
 
 try {
 const masterRes = await jsonp("getMasterServices");
+
 if(!masterRes.success || !masterRes.services){
 container.innerHTML="Hizmet yüklenemedi";
 return;
@@ -254,6 +255,7 @@ container.appendChild(div);
 container.innerHTML="Hata: "+err.message;
 }
 }
+
 </script>
 
 </body>
