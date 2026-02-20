@@ -82,7 +82,6 @@ outline:none;
 .input-group input:focus,
 .input-group select:focus{border-color:#667eea;}
 
-/* ✅ DÜZELTILDI: Service card responsive */
 .service-card{
 padding:15px 0;
 border-bottom:1px solid #eee;
@@ -237,10 +236,8 @@ z-index:9999;
 <div class="toast" id="toast"></div>
 
 <script>
-// ✅ DÜZELTILDI: Boşluk kaldırıldı
-const API = "https://script.google.com/macros/s/AKfycbzyCj2sTpj-g3fR9LQqp_6wd7C5Wsf-iSYh-V04vtfmfQATc2OOipspttdg7v6lUzpW/exec";
+const API = "https://script.google.com/macros/s/AKfycbwMeRJZdr-aukEM20KETi7cw2WQ1wjDZGIfH_gZRzx7vSJ2zXQ4Ijul6kRSDn3oVGZm/exec";
 
-// Accordion
 function toggleSection(id){
 const contents=document.querySelectorAll(".accordion-content");
 const headers=document.querySelectorAll(".accordion-header");
@@ -263,16 +260,24 @@ function toast(msg){
 const t=document.getElementById("toast");
 t.textContent=msg;
 t.style.display="block";
-setTimeout(()=>t.style.display="none",2000);
+setTimeout(()=>t.style.display="none",2500);
 }
 
 function jsonp(action,params={}){
-return new Promise(resolve=>{
+return new Promise((resolve, reject)=>{
 const cb="cb_"+Date.now();
-window[cb]=d=>{delete window[cb];document.body.removeChild(s);resolve(d);};
+window[cb]=d=>{
+  delete window[cb];
+  if(document.body.contains(s)) document.body.removeChild(s);
+  resolve(d);
+};
 const q=new URLSearchParams({action,callback:cb,...params}).toString();
 const s=document.createElement("script");
 s.src=API+"?"+q;
+s.onerror=()=>{
+  delete window[cb];
+  reject(new Error('API cagrisi basarisiz'));
+};
 document.body.appendChild(s);
 });
 }
@@ -280,7 +285,6 @@ document.body.appendChild(s);
 function getToken(){return localStorage.getItem("stilix_token");}
 function getSubeId(){return localStorage.getItem("selectedBranch");}
 
-// ADDRESS LOAD
 async function loadIller(selectedIl){
 const res=await jsonp("getIller");
 const ilSelect=document.getElementById("il");
@@ -294,6 +298,7 @@ ilSelect.appendChild(o);
 }
 
 async function loadIlceler(il,selectedIlce){
+if(!il) return;
 const res=await jsonp("getIlceler",{il});
 const s=document.getElementById("ilce");
 s.innerHTML="<option value=''>Seçiniz</option>";
@@ -306,6 +311,7 @@ s.appendChild(o);
 }
 
 async function loadMahalleler(il,ilce,selectedMah){
+if(!il || !ilce) return;
 const res=await jsonp("getMahalleler",{il,ilce});
 const s=document.getElementById("mahalle");
 s.innerHTML="<option value=''>Seçiniz</option>";
@@ -317,10 +323,12 @@ s.appendChild(o);
 });
 }
 
-// BRANCH LOAD
 async function loadBranchInfo(){
 const res=await jsonp("getBranch",{token:getToken(),subeId:getSubeId()});
-if(!res.success)return;
+if(!res.success){
+console.error("Sube bilgisi alinamadi:", res.message);
+return;
+}
 const b=res.branch;
 
 document.getElementById("sube_adi").value=b.sube_adi||"";
@@ -338,32 +346,34 @@ document.getElementById("kat").value=b.kat||"";
 document.getElementById("daire").value=b.daire||"";
 }
 
-// SERVICES LOAD - ✅ GÜNCELLENDİ: Mevcut hizmetleri de yükle
 async function loadServices(){
 const container=document.getElementById("service-container");
 container.innerHTML="Yükleniyor...";
 
-// Hem master hizmetleri hem de şube hizmetlerini paralel çek
-const [masterRes, subeRes] = await Promise.all([
-    jsonp("getMasterServices"),
-    jsonp("getSubeServices", {token:getToken(), subeId:getSubeId()})
-]);
-
-if(!masterRes.success){
+try {
+  // Master hizmetleri çek
+  const masterRes = await jsonp("getMasterServices");
+  
+  if(!masterRes.success || !masterRes.services){
     container.innerHTML="Hizmet yüklenemedi";
     return;
-}
+  }
 
-// Şube hizmetlerini map'e ata (hizmetId -> {sure, fiyat})
-const subeServices = {};
-if(subeRes.success && subeRes.services){
-    subeRes.services.forEach(s => {
+  // Şube hizmetlerini çek (hata olursa boş devam et)
+  let subeServices = {};
+  try {
+    const subeRes = await jsonp("getSubeServices", {token:getToken(), subeId:getSubeId()});
+    if(subeRes.success && subeRes.services){
+      subeRes.services.forEach(s => {
         subeServices[s.hizmetId] = {sure: s.sure, fiyat: s.fiyat};
-    });
-}
+      });
+    }
+  } catch(e) {
+    console.log("Sube hizmetleri alınamadı:", e);
+  }
 
-container.innerHTML="";
-masterRes.services.forEach(s=>{
+  container.innerHTML="";
+  masterRes.services.forEach(s=>{
     const existing = subeServices[s.hizmetId] || {sure: '', fiyat: ''};
     
     const div=document.createElement("div");
@@ -376,69 +386,78 @@ masterRes.services.forEach(s=>{
     </div>
     `;
     container.appendChild(div);
-});
+  });
+} catch(err) {
+  container.innerHTML="Hata: " + err.message;
+}
 }
 
-// SAVE ALL - ✅ GÜNCELLENDİ: Düzgün hata kontrolü ve detaylı mesaj
 async function saveAll(){
-    // 1. Şube bilgilerini güncelle
-    const branchPayload={
-        token:getToken(),
-        subeId:getSubeId(),
-        subeAdi:sube_adi.value,
-        ulke:ulke.value,
-        il:il.value,
-        ilce:ilce.value,
-        mahalle:mahalle.value,
-        cadde:cadde.value,
-        sokak:sokak.value,
-        binaNo:bina_no.value,
-        binaAdi:bina_adi.value,
-        kat:kat.value,
-        daire:daire.value
-    };
+  // 1. Şube bilgilerini güncelle
+  const branchPayload={
+    token:getToken(),
+    subeId:getSubeId(),
+    subeAdi:sube_adi.value,
+    ulke:ulke.value,
+    il:il.value,
+    ilce:ilce.value,
+    mahalle:mahalle.value,
+    cadde:cadde.value,
+    sokak:sokak.value,
+    binaNo:bina_no.value,
+    binaAdi:bina_adi.value,
+    kat:kat.value,
+    daire:daire.value
+  };
 
+  try {
     const branchResult = await jsonp("updateBranch",branchPayload);
     
     if(!branchResult.success){
-        toast("Şube güncellenemedi: " + (branchResult.message || 'Bilinmeyen hata'));
-        return;
+      toast("Şube güncellenemedi: " + (branchResult.message || 'Bilinmeyen hata'));
+      return;
     }
 
     // 2. Hizmetleri topla
     const services=[];
     document.querySelectorAll(".sure").forEach(input=>{
-        const id=input.dataset.id;
-        const sure=input.value.trim();
-        const fiyatInput = document.querySelector(`.fiyat[data-id="${id}"]`);
-        const fiyat = fiyatInput ? fiyatInput.value.trim() : '';
-        
-        // En az biri doluysa kaydet
-        if(sure !== '' || fiyat !== ''){
-            services.push({hizmetId:id, sure, fiyat});
-        }
+      const id=input.dataset.id;
+      const sure=input.value.trim();
+      const fiyatInput = document.querySelector(`.fiyat[data-id="${id}"]`);
+      const fiyat = fiyatInput ? fiyatInput.value.trim() : '';
+      
+      if(sure !== '' || fiyat !== ''){
+        services.push({hizmetId:id, sure, fiyat});
+      }
     });
 
-    // 3. Hizmetleri kaydet/güncelle - ✅ DOĞRU FONKSİYON ADI
+    // 3. Hizmetleri kaydet/güncelle
     const serviceResult = await jsonp("saveSubeServices",{
-        token:getToken(),
-        subeId:getSubeId(),
-        services:JSON.stringify(services)
+      token:getToken(),
+      subeId:getSubeId(),
+      services:JSON.stringify(services)
     });
 
     if(!serviceResult.success){
-        toast("Hizmetler kaydedilemedi: " + (serviceResult.message || 'Bilinmeyen hata'));
-        return;
+      toast("Hizmetler kaydedilemedi: " + (serviceResult.message || 'Bilinmeyen hata'));
+      return;
     }
 
-    // ✅ Detaylı başarı mesajı
     const msg = `Kaydedildi ✓ Güncellenen: ${serviceResult.updated || 0}, Yeni: ${serviceResult.added || 0}`;
     toast(msg);
+    
+  } catch(err) {
+    toast("Hata: " + err.message);
+  }
 }
 
 document.addEventListener("DOMContentLoaded",async()=>{
-await loadBranchInfo();
-await loadServices();
+  if(!getToken() || !getSubeId()){
+    window.location.href = "business-login.html";
+    return;
+  }
+  await loadBranchInfo();
+  await loadServices();
 });
 </script>
 
