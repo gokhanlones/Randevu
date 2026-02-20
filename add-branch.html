@@ -250,70 +250,69 @@ function loadIller() {
   document.head.appendChild(script);
 }
 
-async function loadIlce() {
+function loadIlce() {
 
-    const il = document.getElementById("il").value;
-    const ilceSelect = document.getElementById("ilce");
-    const mahalleSelect = document.getElementById("mahalle");
+  const il = document.getElementById("il").value;
+  const ilceSelect = document.getElementById("ilce");
+  const mahalleSelect = document.getElementById("mahalle");
 
-    ilceSelect.innerHTML = '<option value="">Yükleniyor...</option>';
-    mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
+  ilceSelect.innerHTML = '<option value="">Yükleniyor...</option>';
+  mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
 
-    if (!il) return;
+  if (!il) return;
 
-    try {
-        const json = await postAPI({
-            action: "getIlceler",
-            il: il
-        });
+  const script = document.createElement('script');
 
-        if (!json.success) {
-            alert(json.message);
-            return;
-        }
-
-        ilceSelect.innerHTML = '<option value="">İlçe Seçiniz</option>';
-
-        json.ilceler.forEach(ilce => {
-            ilceSelect.innerHTML += `<option value="${ilce}">${ilce}</option>`;
-        });
-
-    } catch (err) {
-        alert("İlçeler alınamadı: " + err.message);
+  window.ilceCallback = function(data) {
+    if (data.success) {
+      ilceSelect.innerHTML = '<option value="">İlçe Seçiniz</option>';
+      data.ilceler.forEach(ilce => {
+        ilceSelect.innerHTML += `<option value="${ilce}">${ilce}</option>`;
+      });
+    } else {
+      alert(data.message);
     }
+
+    delete window.ilceCallback;
+    document.head.removeChild(script);
+  };
+
+  script.src = API + '?action=getIlceler&il=' + encodeURIComponent(il) + '&callback=ilceCallback';
+  document.head.appendChild(script);
 }
 
-async function loadMahalle() {
+function loadMahalle() {
 
-    const il = document.getElementById("il").value;
-    const ilce = document.getElementById("ilce").value;
-    const mahalleSelect = document.getElementById("mahalle");
+  const il = document.getElementById("il").value;
+  const ilce = document.getElementById("ilce").value;
+  const mahalleSelect = document.getElementById("mahalle");
 
-    mahalleSelect.innerHTML = '<option value="">Yükleniyor...</option>';
+  mahalleSelect.innerHTML = '<option value="">Yükleniyor...</option>';
 
-    if (!il || !ilce) return;
+  if (!il || !ilce) return;
 
-    try {
-        const json = await postAPI({
-            action: "getMahalleler",
-            il: il,
-            ilce: ilce
-        });
+  const script = document.createElement('script');
 
-        if (!json.success) {
-            alert(json.message);
-            return;
-        }
-
-        mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
-
-        json.mahalleler.forEach(mahalle => {
-            mahalleSelect.innerHTML += `<option value="${mahalle}">${mahalle}</option>`;
-        });
-
-    } catch (err) {
-        alert("Mahalleler alınamadı: " + err.message);
+  window.mahalleCallback = function(data) {
+    if (data.success) {
+      mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
+      data.mahalleler.forEach(mahalle => {
+        mahalleSelect.innerHTML += `<option value="${mahalle}">${mahalle}</option>`;
+      });
+    } else {
+      alert(data.message);
     }
+
+    delete window.mahalleCallback;
+    document.head.removeChild(script);
+  };
+
+  script.src = API + '?action=getMahalleler'
+    + '&il=' + encodeURIComponent(il)
+    + '&ilce=' + encodeURIComponent(ilce)
+    + '&callback=mahalleCallback';
+
+  document.head.appendChild(script);
 }
 
 document.addEventListener("DOMContentLoaded", loadIller);
