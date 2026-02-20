@@ -231,25 +231,23 @@ async function postAPI(payload) {
     return await response.json();
 }
 
-async function loadIller() {
-    try {
-        const json = await postAPI({ action: "getIller" });
-
-        if (!json.success) {
-            alert(json.message);
-            return;
-        }
-
-        const ilSelect = document.getElementById("il");
-        ilSelect.innerHTML = '<option value="">İl Seçiniz</option>';
-
-        json.iller.forEach(il => {
-            ilSelect.innerHTML += `<option value="${il}">${il}</option>`;
-        });
-
-    } catch (err) {
-        alert("İller alınamadı: " + err.message);
+function loadIller() {
+  const script = document.createElement('script');
+  
+  window.illerCallback = function(data) {
+    if (data.success) {
+      const select = document.getElementById('il');
+      select.innerHTML = '<option value="">İl Seçiniz</option>';
+      data.iller.forEach(il => {
+        select.innerHTML += `<option value="${il}">${il}</option>`;
+      });
     }
+    delete window.illerCallback;
+    document.head.removeChild(script);
+  };
+  
+  script.src = API + '?action=getIller&callback=illerCallback';
+  document.head.appendChild(script);
 }
 
 async function loadIlce() {
