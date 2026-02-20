@@ -53,30 +53,79 @@ color:#fff;font-weight:600;cursor:pointer;
 .branch-list{padding:15px;}
 .branch-list h4{color:#666;font-size:0.8rem;margin-bottom:10px;}
 
-.branch-item{
-display:flex;align-items:center;gap:10px;padding:12px;
-border-radius:8px;margin-bottom:8px;cursor:pointer;
-transition:0.2s;border:2px solid transparent;
+/* ✅ KART ŞUBE TASARIMI */
+.branch-card{
+background:#fff;
+padding:14px 14px;
+border-radius:12px;
+margin-bottom:10px;
+cursor:pointer;
+transition:0.2s;
+border:2px solid transparent;
+box-shadow:0 4px 10px rgba(0,0,0,0.05);
 }
-.branch-item:hover{background:#f5f5f5;}
-.branch-item.active{background:#e3f2fd;border-color:#2196f3;}
-
-.branch-icon{
-width:35px;height:35px;border-radius:8px;
+.branch-card:hover{
+transform:translateY(-2px);
+box-shadow:0 6px 14px rgba(0,0,0,0.10);
+}
+.branch-card.active{
+border-color:#667eea;
+background:#f3f4ff;
+}
+.branch-title{
+font-weight:700;
+color:#333;
+margin-bottom:6px;
+display:flex;
+align-items:center;
+gap:10px;
+}
+.branch-badge{
+width:34px;height:34px;border-radius:10px;
 background:linear-gradient(135deg,#ff6b9d,#ff8fab);
-display:flex;align-items:center;justify-content:center;color:#fff;
+display:flex;align-items:center;justify-content:center;
+color:#fff;
+flex:0 0 auto;
+}
+.branch-location{
+font-size:0.85rem;color:#666;
 }
 
-.branch-name{font-weight:600;}
-.branch-address{font-size:0.8rem;color:#666;}
-
+/* FOOTER */
 .sidebar-footer{padding:15px;border-top:1px solid #eee;}
-
 .menu-item{display:flex;align-items:center;gap:10px;padding:10px;text-decoration:none;color:#666;border-radius:6px;}
 .menu-item:hover{background:#f5f5f5;}
 
 .main-content{margin-top:60px;padding:30px;}
 .welcome-card{background:#fff;border-radius:15px;padding:40px;text-align:center;}
+
+/* ✅ Şube seçilince görünecek butonlar */
+.branch-actions{
+display:flex;
+gap:15px;
+justify-content:center;
+margin-top:10px;
+}
+.action-btn{
+flex:1;
+max-width:220px;
+padding:16px;
+border:none;
+border-radius:14px;
+font-size:1rem;
+font-weight:700;
+cursor:pointer;
+transition:0.2s;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+color:#fff;
+}
+.btn-edit{background:linear-gradient(135deg,#ff9800,#ffb74d);}
+.btn-edit:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,152,0,0.30);}
+.btn-dash{background:linear-gradient(135deg,#667eea,#764ba2);}
+.btn-dash:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(102,126,234,0.30);}
 </style>
 </head>
 
@@ -118,9 +167,23 @@ display:flex;align-items:center;justify-content:center;color:#fff;
 </aside>
 
 <main class="main-content">
-<div class="welcome-card">
-<h2>Hoş Geldiniz 👋</h2>
-<p>Sol menüden şube seçebilir veya yeni şube ekleyebilirsiniz.</p>
+<!-- ✅ Bu kart beyaz kalacak, içerik şube seçimine göre değişecek -->
+<div class="welcome-card" id="main-card">
+    <div id="pre-branch">
+        <h2>Hoş Geldiniz 👋</h2>
+        <p>Sol menüden şube seçebilir veya yeni şube ekleyebilirsiniz.</p>
+    </div>
+
+    <div id="after-branch" style="display:none;">
+        <div class="branch-actions">
+            <button class="action-btn btn-edit" onclick="editBranch()">
+                <i class="fas fa-pen"></i> Düzenle
+            </button>
+            <button class="action-btn btn-dash" onclick="openBranchDashboard()">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </button>
+        </div>
+    </div>
 </div>
 </main>
 
@@ -141,6 +204,11 @@ const script = document.createElement("script");
 script.src = API + "?" + query;
 document.body.appendChild(script);
 });
+}
+
+function showBranchActions(){
+document.getElementById("pre-branch").style.display="none";
+document.getElementById("after-branch").style.display="block";
 }
 
 window.onload = async function(){
@@ -167,7 +235,7 @@ container.innerHTML="Yükleniyor...";
 const data=await jsonp("getBranches",{token});
 container.innerHTML="";
 
-if(!data.success || data.branches.length===0){
+if(!data.success || !data.branches || data.branches.length===0){
 container.innerHTML="<div style='padding:10px;color:#777;'>Henüz şube eklenmedi</div>";
 return;
 }
@@ -176,32 +244,34 @@ const saved=localStorage.getItem("selectedBranch");
 
 data.branches.forEach(branch=>{
 
-const div=document.createElement("div");
-div.className="branch-item";
-div.dataset.id=branch.subeId;
+const card=document.createElement("div");
+card.className="branch-card";
+card.dataset.id=branch.subeId;
 
-div.innerHTML=`
-<div class="branch-icon"><i class="fas fa-store"></i></div>
-<div>
-<div class="branch-name">${branch.subeAdi}</div>
-<div class="branch-address">${branch.il}, ${branch.ilce}</div>
-</div>
+card.innerHTML=`
+    <div class="branch-title">
+        <div class="branch-badge"><i class="fas fa-store"></i></div>
+        <div>${branch.subeAdi}</div>
+    </div>
+    <div class="branch-location">${branch.il}, ${branch.ilce}, ${branch.mahalle}</div>
 `;
 
 if(saved===branch.subeId){
-div.classList.add("active");
+card.classList.add("active");
 document.getElementById("selected-branch-name").textContent=branch.subeAdi;
+showBranchActions();
 }
 
-div.onclick=function(){
-document.querySelectorAll(".branch-item").forEach(i=>i.classList.remove("active"));
-div.classList.add("active");
+card.onclick=function(){
+document.querySelectorAll(".branch-card").forEach(i=>i.classList.remove("active"));
+card.classList.add("active");
 localStorage.setItem("selectedBranch",branch.subeId);
 document.getElementById("selected-branch-name").textContent=branch.subeAdi;
+showBranchActions();
 toggleSidebar();
 };
 
-container.appendChild(div);
+container.appendChild(card);
 });
 }
 
@@ -218,6 +288,17 @@ function logout(){
 localStorage.clear();
 sessionStorage.clear();
 window.location.href="business-login.html";
+}
+
+/* Şimdilik sadece aksiyon */
+function editBranch(){
+const id = localStorage.getItem("selectedBranch");
+alert("Düzenle (Şube ID): " + id);
+}
+
+function openBranchDashboard(){
+const id = localStorage.getItem("selectedBranch");
+alert("Dashboard (Şube ID): " + id);
 }
 
 </script>
