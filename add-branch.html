@@ -288,7 +288,12 @@ async function loadMahalle(){
 
     if(!il || !ilce) return;
 
-    const json = await jsonp("getMahalleler",{il,ilce});
+    const json = await jsonp("getMahalleler",{
+        il: il,
+        ilce: ilce
+    });
+
+    console.log("Mahalle response:", json); // test için
 
     if(!json.success){
         alert(json.message);
@@ -297,11 +302,13 @@ async function loadMahalle(){
 
     mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
 
-    json.mahalleler.forEach(mahalle=>{
-        mahalleSelect.innerHTML += `<option value="${mahalle}">${mahalle}</option>`;
+    json.mahalleler.forEach(function(mahalle){
+        const opt = document.createElement("option");
+        opt.value = mahalle;
+        opt.textContent = mahalle;
+        mahalleSelect.appendChild(opt);
     });
 }
-
 // =====================
 // FORM SUBMIT
 // =====================
