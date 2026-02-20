@@ -221,63 +221,93 @@ const API = 'https://script.google.com/macros/s/AKfycbzLi9tMq7RCvNv23Nup2xBnZuMv
 
 let addressData = {};
 
-async function loadAddress() {
+async function loadIller() {
     try {
-        const res = await fetch(API + '?action=getAddress');
+        const res = await fetch(API + '?action=getIller');
         const json = await res.json();
 
         if (!json.success) {
-            alert("Adres verisi alınamadı: " + (json.message || "Bilinmeyen hata"));
+            alert(json.message);
             return;
         }
-
-        const { success, ...data } = json;
-        addressData = data;
 
         const ilSelect = document.getElementById("il");
         ilSelect.innerHTML = '<option value="">İl Seçiniz</option>';
 
-        Object.keys(addressData).forEach(il => {
+        json.iller.forEach(il => {
             ilSelect.innerHTML += `<option value="${il}">${il}</option>`;
         });
 
     } catch (err) {
-        alert("Adres verisi alınamadı: " + err.message);
+        alert("İller alınamadı: " + err.message);
     }
 }
-
-function loadIlce() {
+async function loadIlce() {
 
     const il = document.getElementById("il").value;
     const ilceSelect = document.getElementById("ilce");
     const mahalleSelect = document.getElementById("mahalle");
 
-    ilceSelect.innerHTML = '<option value="">İlçe Seçiniz</option>';
+    ilceSelect.innerHTML = '<option value="">Yükleniyor...</option>';
     mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
 
     if (!il) return;
 
-    Object.keys(addressData[il]).forEach(ilce => {
-        ilceSelect.innerHTML += `<option value="${ilce}">${ilce}</option>`;
-    });
+    try {
+        const res = await fetch(API + '?action=getIlceler&il=' + encodeURIComponent(il));
+        const json = await res.json();
+
+        if (!json.success) {
+            alert(json.message);
+            return;
+        }
+
+        ilceSelect.innerHTML = '<option value="">İlçe Seçiniz</option>';
+
+        json.ilceler.forEach(ilce => {
+            ilceSelect.innerHTML += `<option value="${ilce}">${ilce}</option>`;
+        });
+
+    } catch (err) {
+        alert("İlçeler alınamadı");
+    }
 }
 
-function loadMahalle() {
+async function loadMahalle() {
 
     const il = document.getElementById("il").value;
     const ilce = document.getElementById("ilce").value;
     const mahalleSelect = document.getElementById("mahalle");
 
-    mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
+    mahalleSelect.innerHTML = '<option value="">Yükleniyor...</option>';
 
     if (!il || !ilce) return;
 
-    addressData[il][ilce].forEach(mahalle => {
-        mahalleSelect.innerHTML += `<option value="${mahalle}">${mahalle}</option>`;
-    });
+    try {
+        const res = await fetch(
+            API + '?action=getMahalleler&il=' + encodeURIComponent(il) +
+            '&ilce=' + encodeURIComponent(ilce)
+        );
+
+        const json = await res.json();
+
+        if (!json.success) {
+            alert(json.message);
+            return;
+        }
+
+        mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
+
+        json.mahalleler.forEach(mahalle => {
+            mahalleSelect.innerHTML += `<option value="${mahalle}">${mahalle}</option>`;
+        });
+
+    } catch (err) {
+        alert("Mahalleler alınamadı");
+    }
 }
 
-window.onload = loadAddress;
+document.addEventListener("DOMContentLoaded", loadIller);
 
 </script>
 
