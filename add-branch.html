@@ -235,7 +235,80 @@ function jsonp(action, params = {}) {
     });
 }
 
+// =====================
+// ADRES YÜKLEME
+// =====================
+
+async function loadIller(){
+    const json = await jsonp("getIller");
+
+    if(!json.success){
+        alert(json.message);
+        return;
+    }
+
+    const ilSelect = document.getElementById("il");
+    ilSelect.innerHTML = '<option value="">İl Seçiniz</option>';
+
+    json.iller.forEach(il=>{
+        ilSelect.innerHTML += `<option value="${il}">${il}</option>`;
+    });
+}
+
+async function loadIlce(){
+    const il = document.getElementById("il").value;
+    const ilceSelect = document.getElementById("ilce");
+    const mahalleSelect = document.getElementById("mahalle");
+
+    ilceSelect.innerHTML = '<option value="">Yükleniyor...</option>';
+    mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
+
+    if(!il) return;
+
+    const json = await jsonp("getIlceler",{il});
+
+    if(!json.success){
+        alert(json.message);
+        return;
+    }
+
+    ilceSelect.innerHTML = '<option value="">İlçe Seçiniz</option>';
+
+    json.ilceler.forEach(ilce=>{
+        ilceSelect.innerHTML += `<option value="${ilce}">${ilce}</option>`;
+    });
+}
+
+async function loadMahalle(){
+    const il = document.getElementById("il").value;
+    const ilce = document.getElementById("ilce").value;
+    const mahalleSelect = document.getElementById("mahalle");
+
+    mahalleSelect.innerHTML = '<option value="">Yükleniyor...</option>';
+
+    if(!il || !ilce) return;
+
+    const json = await jsonp("getMahalleler",{il,ilce});
+
+    if(!json.success){
+        alert(json.message);
+        return;
+    }
+
+    mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
+
+    json.mahalleler.forEach(mahalle=>{
+        mahalleSelect.innerHTML += `<option value="${mahalle}">${mahalle}</option>`;
+    });
+}
+
+// =====================
+// FORM SUBMIT
+// =====================
+
 document.addEventListener("DOMContentLoaded", function(){
+
+    loadIller();
 
     const form = document.getElementById("branchForm");
 
@@ -250,23 +323,26 @@ document.addEventListener("DOMContentLoaded", function(){
             return;
         }
 
-        const subeAdi = form.querySelector('input[placeholder*="Stilix"]').value.trim();
+        const inputs = form.querySelectorAll("input");
+
+        const subeAdi = inputs[0].value.trim();
         const il = document.getElementById("il").value;
         const ilce = document.getElementById("ilce").value;
         const mahalle = document.getElementById("mahalle").value;
-        const cadde = form.querySelectorAll("input")[1].value;
-        const sokak = form.querySelectorAll("input")[2].value;
-        const binaNo = form.querySelectorAll("input")[3].value;
-        const binaAdi = form.querySelectorAll("input")[4].value;
-        const kat = form.querySelectorAll("input")[5].value;
-        const daire = form.querySelectorAll("input")[6].value;
+
+        const cadde = inputs[1].value;
+        const sokak = inputs[2].value;
+        const binaNo = inputs[3].value;
+        const binaAdi = inputs[4].value;
+        const kat = inputs[5].value;
+        const daire = inputs[6].value;
 
         if(!subeAdi || !il || !ilce || !mahalle){
             alert("Zorunlu alanları doldurun");
             return;
         }
 
-        const result = await jsonp("addBranch", {
+        const result = await jsonp("addBranch",{
             token,
             subeAdi,
             ulke:"Türkiye",
@@ -286,16 +362,13 @@ document.addEventListener("DOMContentLoaded", function(){
             return;
         }
 
-        // Yeni oluşturulan şubeyi seçili yap
         localStorage.setItem("selectedBranch", result.subeId);
 
         alert("Şube başarıyla oluşturuldu");
-
         window.location.href="dashboard.html";
     });
 
 });
-
 </script>
 
 </body>
