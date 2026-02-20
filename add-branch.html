@@ -136,7 +136,7 @@ body{font-family:'Segoe UI',sans-serif;background:var(--bg);}
 
 <h2><i class="fas fa-store"></i> Yeni Şube</h2>
 
-<form>
+<form id="branchForm">
 
 <div class="section-title">Şube Bilgisi</div>
 
@@ -217,105 +217,84 @@ body{font-family:'Segoe UI',sans-serif;background:var(--bg);}
 
 <script>
 
-const API = 'https://script.google.com/macros/s/AKfycbzj6Iq0P3VGgvfeVkI1oXHhuPtN_n8GhEYGCY5PkDvWI7C6tGgqsl1MzSeawqwvWSOv/exec';
+const API = "https://script.google.com/macros/s/AKfycbzj6Iq0P3VGgvfeVkI1oXHhuPtN_n8GhEYGCY5PkDvWI7C6tGgqsl1MzSeawqwvWSOv/exec";
 
-async function postAPI(payload) {
-    const response = await fetch(API, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
+// JSONP helper
+function jsonp(action, params = {}) {
+    return new Promise(resolve => {
+        const cb = "cb_" + Date.now();
+        window[cb] = function(data){
+            delete window[cb];
+            document.body.removeChild(script);
+            resolve(data);
+        };
+        const query = new URLSearchParams({action,callback:cb,...params}).toString();
+        const script = document.createElement("script");
+        script.src = API + "?" + query;
+        document.body.appendChild(script);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.getElementById("branchForm");
+
+    form.addEventListener("submit", async function(e){
+        e.preventDefault();
+
+        const token = localStorage.getItem("stilix_token") || sessionStorage.getItem("stilix_token");
+
+        if(!token){
+            alert("Oturum bulunamadı");
+            window.location.href="business-login.html";
+            return;
+        }
+
+        const subeAdi = form.querySelector('input[placeholder*="Stilix"]').value.trim();
+        const il = document.getElementById("il").value;
+        const ilce = document.getElementById("ilce").value;
+        const mahalle = document.getElementById("mahalle").value;
+        const cadde = form.querySelectorAll("input")[1].value;
+        const sokak = form.querySelectorAll("input")[2].value;
+        const binaNo = form.querySelectorAll("input")[3].value;
+        const binaAdi = form.querySelectorAll("input")[4].value;
+        const kat = form.querySelectorAll("input")[5].value;
+        const daire = form.querySelectorAll("input")[6].value;
+
+        if(!subeAdi || !il || !ilce || !mahalle){
+            alert("Zorunlu alanları doldurun");
+            return;
+        }
+
+        const result = await jsonp("addBranch", {
+            token,
+            subeAdi,
+            ulke:"Türkiye",
+            il,
+            ilce,
+            mahalle,
+            cadde,
+            sokak,
+            binaNo,
+            binaAdi,
+            kat,
+            daire
+        });
+
+        if(!result.success){
+            alert(result.message || "Kayıt başarısız");
+            return;
+        }
+
+        // Yeni oluşturulan şubeyi seçili yap
+        localStorage.setItem("selectedBranch", result.subeId);
+
+        alert("Şube başarıyla oluşturuldu");
+
+        window.location.href="dashboard.html";
     });
 
-    return await response.json();
-}
-
-function loadIller() {
-  const script = document.createElement('script');
-  
-  window.illerCallback = function(data) {
-    if (data.success) {
-      const select = document.getElementById('il');
-      select.innerHTML = '<option value="">İl Seçiniz</option>';
-      data.iller.forEach(il => {
-        select.innerHTML += `<option value="${il}">${il}</option>`;
-      });
-    }
-    delete window.illerCallback;
-    document.head.removeChild(script);
-  };
-  
-  script.src = API + '?action=getIller&callback=illerCallback';
-  document.head.appendChild(script);
-}
-
-function loadIlce() {
-
-  const il = document.getElementById("il").value;
-  const ilceSelect = document.getElementById("ilce");
-  const mahalleSelect = document.getElementById("mahalle");
-
-  ilceSelect.innerHTML = '<option value="">Yükleniyor...</option>';
-  mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
-
-  if (!il) return;
-
-  const script = document.createElement('script');
-
-  window.ilceCallback = function(data) {
-    if (data.success) {
-      ilceSelect.innerHTML = '<option value="">İlçe Seçiniz</option>';
-      data.ilceler.forEach(ilce => {
-        ilceSelect.innerHTML += `<option value="${ilce}">${ilce}</option>`;
-      });
-    } else {
-      alert(data.message);
-    }
-
-    delete window.ilceCallback;
-    document.head.removeChild(script);
-  };
-
-  script.src = API + '?action=getIlceler&il=' + encodeURIComponent(il) + '&callback=ilceCallback';
-  document.head.appendChild(script);
-}
-
-function loadMahalle() {
-
-  const il = document.getElementById("il").value;
-  const ilce = document.getElementById("ilce").value;
-  const mahalleSelect = document.getElementById("mahalle");
-
-  mahalleSelect.innerHTML = '<option value="">Yükleniyor...</option>';
-
-  if (!il || !ilce) return;
-
-  const script = document.createElement('script');
-
-  window.mahalleCallback = function(data) {
-    if (data.success) {
-      mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
-      data.mahalleler.forEach(mahalle => {
-        mahalleSelect.innerHTML += `<option value="${mahalle}">${mahalle}</option>`;
-      });
-    } else {
-      alert(data.message);
-    }
-
-    delete window.mahalleCallback;
-    document.head.removeChild(script);
-  };
-
-  script.src = API + '?action=getMahalleler'
-    + '&il=' + encodeURIComponent(il)
-    + '&ilce=' + encodeURIComponent(ilce)
-    + '&callback=mahalleCallback';
-
-  document.head.appendChild(script);
-}
-
-document.addEventListener("DOMContentLoaded", loadIller);
+});
 
 </script>
 
