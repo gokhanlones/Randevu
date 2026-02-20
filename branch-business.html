@@ -9,7 +9,6 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
-
 .navbar{
   height:60px;
   background:linear-gradient(135deg,#667eea,#764ba2);
@@ -17,16 +16,13 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
   padding:0 20px;color:#fff;gap:15px;
 }
 .navbar i{cursor:pointer}
-
 .main{padding:25px;display:flex;justify-content:center;}
 .container{width:100%;max-width:900px;}
-
 .card{
   background:#fff;border-radius:20px;padding:25px;margin-bottom:20px;
   box-shadow:0 8px 25px rgba(0,0,0,0.06);
 }
 .card h3{margin-bottom:15px;color:#222}
-
 .grid2{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -35,46 +31,35 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 @media (max-width:820px){
   .grid2{grid-template-columns:1fr;}
 }
-
 .input-group{margin-bottom:12px;}
 .input-group label{display:block;font-size:0.9rem;margin-bottom:4px;color:#333;}
-.input-group input{
+.input-group input,
+.input-group select{
   width:100%;padding:10px;border-radius:10px;border:2px solid #ddd;
   outline:none;
 }
-.input-group input:focus{border-color:#667eea;}
-
+.input-group input:focus,
+.input-group select:focus{border-color:#667eea;}
 .hr{height:1px;background:#eee;margin:12px 0;}
-
 .service-card{padding:14px 0;border-bottom:1px solid #eee;}
 .service-title{font-weight:600;margin-bottom:8px;color:#333;}
-
 .service-inputs{display:flex;gap:10px;}
-@media (max-width:520px){
-  .service-inputs{flex-direction:column;}
-}
-
 .input-wrapper{flex:1;position:relative;}
 .input-wrapper input{
   width:100%;
   padding:10px 10px 10px 34px;
   border-radius:10px;border:2px solid #ddd;
-  outline:none;
 }
-.input-wrapper input:focus{border-color:#667eea;}
 .input-prefix{
   position:absolute;left:10px;top:50%;
   transform:translateY(-50%);
   font-size:0.85rem;color:#666;
 }
-
 .save-btn{
   width:100%;padding:18px;border:none;border-radius:14px;
   background:linear-gradient(135deg,#4caf50,#66bb6a);
   color:#fff;font-weight:700;font-size:1rem;cursor:pointer;
 }
-.save-btn:disabled{opacity:.6;cursor:not-allowed;}
-
 .toast{
   position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
   background:#111;color:#fff;padding:10px 14px;border-radius:12px;
@@ -90,268 +75,213 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 </div>
 
 <div class="main">
-  <div class="container">
+<div class="container">
 
-    <div class="card">
-      <h3>İşletme Bilgileri</h3>
+<div class="card">
+<h3>İşletme Bilgileri</h3>
 
-      <div class="input-group">
-        <label>İşletme Adı (Şube Adı)</label>
-        <input type="text" id="sube_adi" placeholder="Örn: Flow Ataşehir">
-      </div>
+<div class="input-group">
+<label>Şube Adı</label>
+<input type="text" id="sube_adi">
+</div>
 
-      <div class="hr"></div>
+<div class="hr"></div>
 
-      <div class="grid2">
-        <div class="input-group">
-          <label>Ülke</label>
-          <input type="text" id="ulke" placeholder="Türkiye">
-        </div>
+<div class="grid2">
 
-        <div class="input-group">
-          <label>İl</label>
-          <input type="text" id="il" placeholder="İstanbul">
-        </div>
+<div class="input-group">
+<label>Ülke</label>
+<input type="text" id="ulke" value="Türkiye">
+</div>
 
-        <div class="input-group">
-          <label>İlçe</label>
-          <input type="text" id="ilce" placeholder="Ataşehir">
-        </div>
+<div class="input-group">
+<label>İl</label>
+<select id="il"></select>
+</div>
 
-        <div class="input-group">
-          <label>Mahalle</label>
-          <input type="text" id="mahalle" placeholder="Örn: İnönü Mah.">
-        </div>
+<div class="input-group">
+<label>İlçe</label>
+<select id="ilce"></select>
+</div>
 
-        <div class="input-group">
-          <label>Cadde</label>
-          <input type="text" id="cadde" placeholder="Örn: Cumhuriyet Cd.">
-        </div>
+<div class="input-group">
+<label>Mahalle</label>
+<select id="mahalle"></select>
+</div>
 
-        <div class="input-group">
-          <label>Sokak</label>
-          <input type="text" id="sokak" placeholder="Örn: 3. Sok.">
-        </div>
+<div class="input-group">
+<label>Cadde</label>
+<input type="text" id="cadde">
+</div>
 
-        <div class="input-group">
-          <label>Bina No</label>
-          <input type="text" id="bina_no" placeholder="Örn: 12">
-        </div>
+<div class="input-group">
+<label>Sokak</label>
+<input type="text" id="sokak">
+</div>
 
-        <div class="input-group">
-          <label>Bina Adı</label>
-          <input type="text" id="bina_adi" placeholder="Örn: A Blok">
-        </div>
+<div class="input-group">
+<label>Bina No</label>
+<input type="text" id="bina_no">
+</div>
 
-        <div class="input-group">
-          <label>Kat</label>
-          <input type="text" id="kat" placeholder="Örn: 2">
-        </div>
+<div class="input-group">
+<label>Bina Adı</label>
+<input type="text" id="bina_adi">
+</div>
 
-        <div class="input-group">
-          <label>Daire</label>
-          <input type="text" id="daire" placeholder="Örn: 5">
-        </div>
-      </div>
-    </div>
+<div class="input-group">
+<label>Kat</label>
+<input type="text" id="kat">
+</div>
 
-    <div class="card">
-      <h3>Hizmetler</h3>
-      <div id="service-container">Yükleniyor...</div>
-    </div>
+<div class="input-group">
+<label>Daire</label>
+<input type="text" id="daire">
+</div>
 
-    <button class="save-btn" id="btnSave" onclick="saveAll()">Kaydet</button>
-  </div>
+</div>
+</div>
+
+<div class="card">
+<h3>Hizmetler</h3>
+<div id="service-container">Yükleniyor...</div>
+</div>
+
+<button class="save-btn" onclick="saveAll()">Kaydet</button>
+
+</div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxubPVNJG1qKvQPcz5qR3mBvwX5zXfKWHCjuuqJLqC0iCK3l_wNU1yD94-_D8_wyaGc/exec";
+const API="YOUR_DEPLOY_URL";
 
-function goBack(){ window.location.href="branch-edit.html"; }
-
-function getToken(){
-  return localStorage.getItem("stilix_token") || sessionStorage.getItem("stilix_token") || "";
-}
-function getSubeId(){
-  return localStorage.getItem("selectedBranch") || "";
-}
-
+function goBack(){window.location.href="branch-edit.html";}
 function toast(msg){
-  const t=document.getElementById("toast");
-  t.textContent=msg;
-  t.style.display="block";
-  setTimeout(()=>t.style.display="none",1600);
+ const t=document.getElementById("toast");
+ t.textContent=msg;
+ t.style.display="block";
+ setTimeout(()=>t.style.display="none",1500);
+}
+function jsonp(action,params={}){
+ return new Promise(resolve=>{
+  const cb="cb_"+Date.now();
+  window[cb]=d=>{delete window[cb];document.body.removeChild(s);resolve(d);};
+  const q=new URLSearchParams({action,callback:cb,...params}).toString();
+  const s=document.createElement("script");
+  s.src=API+"?"+q;
+  document.body.appendChild(s);
+ });
 }
 
-function jsonp(action, params = {}) {
-  return new Promise(resolve => {
-    const cb = "cb_" + Date.now() + "_" + Math.floor(Math.random()*9999);
-    window[cb] = function(data){
-      try{ delete window[cb]; }catch(e){}
-      try{ document.body.removeChild(script); }catch(e){}
-      resolve(data);
-    };
+function getToken(){return localStorage.getItem("stilix_token");}
+function getSubeId(){return localStorage.getItem("selectedBranch");}
 
-    const query = new URLSearchParams({ action, callback: cb, ...params }).toString();
-    const script = document.createElement("script");
-    script.src = API + "?" + query;
-    script.onerror = ()=>resolve({success:false,message:"API çağrısı başarısız"});
-    document.body.appendChild(script);
-  });
+// ------------------
+// ADDRESS DROPDOWN
+// ------------------
+async function loadIller(selectedIl){
+ const res=await jsonp("getIller");
+ const ilSelect=document.getElementById("il");
+ ilSelect.innerHTML="<option value=''>Seçiniz</option>";
+ res.iller.forEach(il=>{
+  const o=document.createElement("option");
+  o.value=il;o.textContent=il;
+  if(il===selectedIl)o.selected=true;
+  ilSelect.appendChild(o);
+ });
 }
 
-// --------------------
-// ŞUBE BİLGİSİ YÜKLE
-// --------------------
+async function loadIlceler(il,selectedIlce){
+ const res=await jsonp("getIlceler",{il});
+ const s=document.getElementById("ilce");
+ s.innerHTML="<option value=''>Seçiniz</option>";
+ res.ilceler.forEach(x=>{
+  const o=document.createElement("option");
+  o.value=x;o.textContent=x;
+  if(x===selectedIlce)o.selected=true;
+  s.appendChild(o);
+ });
+}
+
+async function loadMahalleler(il,ilce,selectedMah){
+ const res=await jsonp("getMahalleler",{il,ilce});
+ const s=document.getElementById("mahalle");
+ s.innerHTML="<option value=''>Seçiniz</option>";
+ res.mahalleler.forEach(x=>{
+  const o=document.createElement("option");
+  o.value=x;o.textContent=x;
+  if(x===selectedMah)o.selected=true;
+  s.appendChild(o);
+ });
+}
+
+// ------------------
+// LOAD BRANCH
+// ------------------
 async function loadBranchInfo(){
-  const token=getToken();
-  const subeId=getSubeId();
-  if(!token || !subeId){ window.location.href="dashboard.html"; return; }
+ const token=getToken();
+ const subeId=getSubeId();
+ const res=await jsonp("getBranch",{token,subeId});
+ if(!res.success)return;
+ const b=res.branch;
+ document.getElementById("sube_adi").value=b.sube_adi||"";
+ document.getElementById("ulke").value=b.ulke||"Türkiye";
 
-  const res = await jsonp("getBranch", { token, subeId });
-  if(!res.success){ toast(res.message || "Şube bilgisi alınamadı"); return; }
+ await loadIller(b.il);
+ if(b.il) await loadIlceler(b.il,b.ilce);
+ if(b.il&&b.ilce) await loadMahalleler(b.il,b.ilce,b.mahalle);
 
-  const b = res.branch || {};
-  document.getElementById("sube_adi").value = b.sube_adi || "";
-  document.getElementById("ulke").value    = b.ulke || "";
-  document.getElementById("il").value      = b.il || "";
-  document.getElementById("ilce").value    = b.ilce || "";
-  document.getElementById("mahalle").value = b.mahalle || "";
-  document.getElementById("cadde").value   = b.cadde || "";
-  document.getElementById("sokak").value   = b.sokak || "";
-  document.getElementById("bina_no").value = b.bina_no || "";
-  document.getElementById("bina_adi").value= b.bina_adi || "";
-  document.getElementById("kat").value     = b.kat || "";
-  document.getElementById("daire").value   = b.daire || "";
+ document.getElementById("cadde").value=b.cadde||"";
+ document.getElementById("sokak").value=b.sokak||"";
+ document.getElementById("bina_no").value=b.bina_no||"";
+ document.getElementById("bina_adi").value=b.bina_adi||"";
+ document.getElementById("kat").value=b.kat||"";
+ document.getElementById("daire").value=b.daire||"";
 }
 
-// --------------------
-// HİZMETLERİ YÜKLE
-// --------------------
-async function loadServices(){
-  const token=getToken();
-  const subeId=getSubeId();
+// ------------------
+// EVENTS
+// ------------------
+document.getElementById("il").addEventListener("change",async e=>{
+ await loadIlceler(e.target.value);
+ document.getElementById("mahalle").innerHTML="";
+});
+document.getElementById("ilce").addEventListener("change",async e=>{
+ await loadMahalleler(document.getElementById("il").value,e.target.value);
+});
 
-  const master = await jsonp("getMasterServices"); // HIZMETLER_MASTER
-  const sube   = await jsonp("getSubeServices", { token, subeId });
-
-  const container = document.getElementById("service-container");
-  container.innerHTML = "";
-
-  if(!master.success || !Array.isArray(master.services)){
-    container.innerHTML = "Hizmet listesi alınamadı";
-    return;
-  }
-
-  const existing = {};
-  if(sube.success && Array.isArray(sube.services)){
-    sube.services.forEach(x => existing[String(x.hizmetId)] = x);
-  }
-
-  master.services.forEach(svc => {
-    const hizmetId = String(svc.hizmetId || "").trim();
-    const hizmet   = String(svc.hizmet || "").trim();
-    if(!hizmetId || !hizmet) return;
-
-    const saved = existing[hizmetId] || {};
-    const card = document.createElement("div");
-    card.className = "service-card";
-    card.innerHTML = `
-      <div class="service-title">${hizmet}</div>
-      <div class="service-inputs">
-        <div class="input-wrapper">
-          <span class="input-prefix">dk</span>
-          <input type="number" min="0" id="sure_${hizmetId}" value="${saved.sure || ""}" placeholder="Süre">
-        </div>
-        <div class="input-wrapper">
-          <span class="input-prefix">₺</span>
-          <input type="number" min="0" id="fiyat_${hizmetId}" value="${saved.fiyat || ""}" placeholder="Fiyat">
-        </div>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-
-  if(container.innerHTML.trim()===""){
-    container.innerHTML="Hizmet bulunamadı";
-  }
-}
-
-// --------------------
-// KAYDET: önce şube bilgisi update, sonra hizmetler
-// --------------------
+// ------------------
+// SAVE
+// ------------------
 async function saveAll(){
-  const btn = document.getElementById("btnSave");
-  btn.disabled = true;
+ const token=getToken();
+ const subeId=getSubeId();
 
-  const token=getToken();
-  const subeId=getSubeId();
+ const payload={
+  token,subeId,
+  subeAdi:document.getElementById("sube_adi").value,
+  ulke:document.getElementById("ulke").value,
+  il:document.getElementById("il").value,
+  ilce:document.getElementById("ilce").value,
+  mahalle:document.getElementById("mahalle").value,
+  cadde:document.getElementById("cadde").value,
+  sokak:document.getElementById("sokak").value,
+  binaNo:document.getElementById("bina_no").value,
+  binaAdi:document.getElementById("bina_adi").value,
+  kat:document.getElementById("kat").value,
+  daire:document.getElementById("daire").value
+ };
 
-  // 1) Şube bilgilerini güncelle
-  const payloadBranch = {
-    token,
-    subeId,
-
-    // snake_case gönderiyoruz (backend ikisini de kabul edecek)
-    sube_adi: document.getElementById("sube_adi").value.trim(),
-    ulke:     document.getElementById("ulke").value.trim(),
-    il:       document.getElementById("il").value.trim(),
-    ilce:     document.getElementById("ilce").value.trim(),
-    mahalle:  document.getElementById("mahalle").value.trim(),
-    cadde:    document.getElementById("cadde").value.trim(),
-    sokak:    document.getElementById("sokak").value.trim(),
-    bina_no:  document.getElementById("bina_no").value.trim(),
-    bina_adi: document.getElementById("bina_adi").value.trim(),
-    kat:      document.getElementById("kat").value.trim(),
-    daire:    document.getElementById("daire").value.trim()
-  };
-
-  const up = await jsonp("updateBranch", payloadBranch);
-  if(!up.success){
-    btn.disabled = false;
-    alert(up.message || "Şube güncellenemedi");
-    return;
-  }
-
-  // 2) Hizmetleri hazırla
-  const services = [];
-  document.querySelectorAll(".service-card").forEach(card=>{
-    const inputSure = card.querySelector("input[id^='sure_']");
-    const inputFiyat= card.querySelector("input[id^='fiyat_']");
-    if(!inputSure || !inputFiyat) return;
-
-    const hizmetId = inputSure.id.replace("sure_","");
-    const sure  = (inputSure.value || "").trim();
-    const fiyat = (inputFiyat.value || "").trim();
-
-    if(sure || fiyat){
-      services.push({ hizmetId, sure, fiyat });
-    }
-  });
-
-  const sv = await jsonp("saveSubeServices", {
-    token,
-    subeId,
-    services: JSON.stringify(services)
-  });
-
-  btn.disabled = false;
-
-  if(!sv.success){
-    alert(sv.message || "Hizmetler kaydedilemedi");
-    return;
-  }
-
-  toast("Kaydedildi");
+ const up=await jsonp("updateBranch",payload);
+ if(!up.success){alert(up.message);return;}
+ toast("Kaydedildi");
 }
 
-document.addEventListener("DOMContentLoaded", async ()=>{
-  await loadBranchInfo();
-  await loadServices();
+document.addEventListener("DOMContentLoaded",async()=>{
+ await loadBranchInfo();
 });
 </script>
-
 </body>
 </html>
