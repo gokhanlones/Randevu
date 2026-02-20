@@ -43,32 +43,45 @@ box-shadow:0 8px 25px rgba(0,0,0,0.06);
 margin-bottom:15px;
 }
 
-.input-group{
-margin-bottom:12px;
+/* ====================== */
+/* HİZMET KART TASARIMI */
+/* ====================== */
+
+.service-card{
+padding:14px 0;
+border-bottom:1px solid #eee;
 }
 
-.input-group label{
-display:block;
-font-size:0.9rem;
-margin-bottom:4px;
+.service-title{
+font-weight:600;
+margin-bottom:8px;
+color:#333;
 }
 
-.input-group input,
-.input-group select{
+.service-inputs{
+display:flex;
+gap:10px;
+}
+
+.input-wrapper{
+flex:1;
+position:relative;
+}
+
+.input-wrapper input{
 width:100%;
-padding:10px;
+padding:10px 10px 10px 28px;
 border-radius:8px;
 border:2px solid #ddd;
 }
 
-.service-row{
-display:grid;
-grid-template-columns:1fr 120px 120px;
-gap:10px;
-align-items:center;
-margin-bottom:8px;
-padding:8px 0;
-border-bottom:1px solid #eee;
+.input-prefix{
+position:absolute;
+left:8px;
+top:50%;
+transform:translateY(-50%);
+font-size:0.85rem;
+color:#666;
 }
 
 .save-btn{
@@ -83,6 +96,9 @@ font-size:1rem;
 cursor:pointer;
 }
 
+.save-btn:hover{
+opacity:0.9;
+}
 </style>
 </head>
 <body>
@@ -94,49 +110,6 @@ cursor:pointer;
 
 <div class="main">
 <div class="container">
-
-<!-- ================== -->
-<!-- İşletme Bilgileri -->
-<!-- ================== -->
-
-<div class="card">
-<h3>İşletme Bilgileri</h3>
-
-<div class="input-group">
-<label>İşletme Adı</label>
-<input type="text" id="isletmeAdi">
-</div>
-
-<div class="input-group">
-<label>İl</label>
-<select id="il"></select>
-</div>
-
-<div class="input-group">
-<label>İlçe</label>
-<select id="ilce"></select>
-</div>
-
-<div class="input-group">
-<label>Mahalle</label>
-<select id="mahalle"></select>
-</div>
-
-<div class="input-group">
-<label>Cadde</label>
-<input type="text" id="cadde">
-</div>
-
-<div class="input-group">
-<label>Sokak</label>
-<input type="text" id="sokak">
-</div>
-
-</div>
-
-<!-- ================== -->
-<!-- Hizmetler -->
-<!-- ================== -->
 
 <div class="card">
 <h3>Hizmetler</h3>
@@ -156,44 +129,51 @@ function goBack(){
   window.location.href="branch-edit.html";
 }
 
-// ======================
-// İşletme Bilgisi
-// ======================
-
-function loadBusinessInfo(){
-  const selectedBranchName = localStorage.getItem("selectedBranchName");
-  document.getElementById("isletmeAdi").value = selectedBranchName || "";
-}
-
-// ======================
-// MASTER HİZMETLERİ YÜKLE
-// ======================
-
 async function loadServices(){
 
-  const json = await jsonp("getMasterServices");
+  const token = localStorage.getItem("stilix_token") || sessionStorage.getItem("stilix_token");
+  const subeId = localStorage.getItem("selectedBranch");
+
+  const master = await jsonp("getMasterServices");
+  const subeServices = await jsonp("getSubeServices", { token, subeId });
 
   const container = document.getElementById("service-container");
   container.innerHTML="";
 
-  json.services.forEach(service => {
+  const existing = {};
+  if(subeServices.success){
+    subeServices.services.forEach(s=>{
+      existing[s.hizmetId] = s;
+    });
+  }
 
-    const row=document.createElement("div");
-    row.className="service-row";
+  master.services.forEach(service => {
 
-    row.innerHTML=`
-      <div>${service.hizmet}</div>
-      <input type="number" placeholder="Süre (dk)" id="sure_${service.hizmetId}">
-      <input type="number" placeholder="Fiyat (₺)" id="fiyat_${service.hizmetId}">
+    const card=document.createElement("div");
+    card.className="service-card";
+
+    const saved = existing[service.hizmetId] || {};
+
+    card.innerHTML=`
+      <div class="service-title">${service.hizmet}</div>
+      <div class="service-inputs">
+
+        <div class="input-wrapper">
+          <span class="input-prefix">dk</span>
+          <input type="number" id="sure_${service.hizmetId}" value="${saved.sure || ""}">
+        </div>
+
+        <div class="input-wrapper">
+          <span class="input-prefix">₺</span>
+          <input type="number" id="fiyat_${service.hizmetId}" value="${saved.fiyat || ""}">
+        </div>
+
+      </div>
     `;
 
-    container.appendChild(row);
+    container.appendChild(card);
   });
 }
-
-// ======================
-// KAYDET (Backend Uyumlu)
-// ======================
 
 async function saveBusiness(){
 
@@ -202,19 +182,10 @@ async function saveBusiness(){
 
   let services=[];
 
-  document.querySelectorAll(".service-row").forEach(row=>{
+  document.querySelectorAll(".service-card").forEach(card=>{
 
-    const hizmetAdi = row.children[0].innerText;
-    const hizmetId = Object.keys(window).find(k => k.includes(hizmetAdi)); // gerek kalmayacak aşağıda düzeltiyoruz
-  });
-
-  // Doğru yöntem:
-  document.querySelectorAll(".service-row").forEach(row=>{
-
-    const hizmetText = row.children[0].innerText;
-
-    const inputSure = row.querySelector("input[placeholder='Süre (dk)']");
-    const inputFiyat = row.querySelector("input[placeholder='Fiyat (₺)']");
+    const inputSure = card.querySelector("input[id^='sure_']");
+    const inputFiyat = card.querySelector("input[id^='fiyat_']");
 
     const sure = inputSure.value;
     const fiyat = inputFiyat.value;
@@ -243,10 +214,6 @@ async function saveBusiness(){
   }
 }
 
-// ======================
-// JSONP
-// ======================
-
 function jsonp(action, params = {}) {
   return new Promise(resolve => {
     const cb = "cb_" + Date.now();
@@ -268,10 +235,7 @@ function jsonp(action, params = {}) {
   });
 }
 
-document.addEventListener("DOMContentLoaded",()=>{
-  loadBusinessInfo();
-  loadServices();
-});
+document.addEventListener("DOMContentLoaded", loadServices);
 
 </script>
 
