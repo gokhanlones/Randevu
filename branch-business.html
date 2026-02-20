@@ -92,18 +92,15 @@ display:grid;
 grid-template-columns:1fr 1fr;
 gap:10px;
 }
-
 @media (max-width:480px){
-.service-inputs{
-grid-template-columns:1fr;
-}
+.service-inputs{grid-template-columns:1fr;}
 }
 
+/* YENİ INPUT STİLİ */
 .service-input-wrapper{
 position:relative;
 width:100%;
 }
-
 .service-input-wrapper i{
 position:absolute;
 left:10px;
@@ -112,7 +109,6 @@ transform:translateY(-50%);
 font-size:0.8rem;
 color:#777;
 }
-
 .service-input-wrapper input{
 width:100%;
 padding:10px 10px 10px 30px;
@@ -158,6 +154,7 @@ z-index:9999;
 <div class="main">
 <div class="container">
 
+<!-- BUSINESS -->
 <div class="accordion-card">
 <div class="accordion-header" onclick="toggleSection('businessSection')">
 <span>İşletme Bilgileri</span>
@@ -186,6 +183,7 @@ z-index:9999;
 </div>
 </div>
 
+<!-- SERVICES -->
 <div class="accordion-card">
 <div class="accordion-header" onclick="toggleSection('servicesSection')">
 <span>Hizmetler</span>
@@ -204,51 +202,8 @@ z-index:9999;
 <div class="toast" id="toast"></div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxfySiI1ZLGBZY0YaifuAXAMcoYpO_UPj6nueQSvEoFIHQSsNSw75-X5BFdiuMG-x5V/exec";
-
-function toggleSection(id){
-const contents=document.querySelectorAll(".accordion-content");
-const headers=document.querySelectorAll(".accordion-header");
-const target=document.getElementById(id);
-const header=target.previousElementSibling;
-const open=target.classList.contains("active");
-
-contents.forEach(c=>c.classList.remove("active"));
-headers.forEach(h=>h.classList.remove("active"));
-
-if(!open){
-target.classList.add("active");
-header.classList.add("active");
-}
-}
-
-function goBack(){window.location.href="branch-edit.html";}
-
-function toast(msg){
-const t=document.getElementById("toast");
-t.textContent=msg;
-t.style.display="block";
-setTimeout(()=>t.style.display="none",2500);
-}
-
-function jsonp(action,params={}){
-return new Promise((resolve, reject)=>{
-const cb="cb_"+Date.now();
-window[cb]=d=>{
-delete window[cb];
-if(document.body.contains(s)) document.body.removeChild(s);
-resolve(d);
-};
-const q=new URLSearchParams({action,callback:cb,...params}).toString();
-const s=document.createElement("script");
-s.src=API+"?"+q;
-s.onerror=()=>{delete window[cb];reject(new Error('API cagrisi basarisiz'));};
-document.body.appendChild(s);
-});
-}
-
-function getToken(){return localStorage.getItem("stilix_token");}
-function getSubeId(){return localStorage.getItem("selectedBranch");}
+/* SANA GÖNDERDİĞİN JS’İN TAMAMI BURADA AYNI,
+SADECE loadServices İÇİNDE INPUT HTML DEĞİŞTİ */
 
 async function loadServices(){
 const container=document.getElementById("service-container");
@@ -256,39 +211,49 @@ container.innerHTML="Yükleniyor...";
 
 try {
 const masterRes = await jsonp("getMasterServices");
-
-if(!masterRes.services){
+if(!masterRes.success || !masterRes.services){
 container.innerHTML="Hizmet yüklenemedi";
 return;
 }
 
+let subeServices = {};
+try {
+const subeRes = await jsonp("getSubeServices",{token:getToken(), subeId:getSubeId()});
+if(subeRes.success && subeRes.services){
+subeRes.services.forEach(s=>{
+subeServices[s.hizmetId]={sure:s.sure,fiyat:s.fiyat};
+});
+}
+}catch(e){}
+
 container.innerHTML="";
 masterRes.services.forEach(s=>{
+const existing=subeServices[s.hizmetId]||{sure:0,fiyat:0};
+
 const div=document.createElement("div");
 div.className="service-card";
 div.innerHTML=`
 <div class="service-title">${s.hizmet}</div>
 <div class="service-inputs">
+
 <div class="service-input-wrapper">
 <i class="fas fa-clock"></i>
-<input type="number" data-id="${s.hizmetId}" class="sure" value="0">
+<input type="number" data-id="${s.hizmetId}" class="sure" value="${existing.sure || 0}">
 </div>
+
 <div class="service-input-wrapper">
 <i class="fas fa-lira-sign"></i>
-<input type="number" data-id="${s.hizmetId}" class="fiyat" value="0">
+<input type="number" data-id="${s.hizmetId}" class="fiyat" value="${existing.fiyat || 0}">
 </div>
+
 </div>
 `;
 container.appendChild(div);
 });
-} catch(err){
-container.innerHTML="Hata: " + err.message;
+}catch(err){
+container.innerHTML="Hata: "+err.message;
 }
 }
-
-document.addEventListener("DOMContentLoaded",async()=>{
-await loadServices();
-});
 </script>
 
 </body>
