@@ -9,89 +9,140 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
+
 .navbar{
-  height:60px;
-  background:linear-gradient(135deg,#667eea,#764ba2);
-  display:flex;align-items:center;
-  padding:0 20px;color:#fff;gap:15px;
+height:60px;
+background:linear-gradient(135deg,#667eea,#764ba2);
+display:flex;align-items:center;
+padding:0 20px;color:#fff;gap:15px;
 }
 .navbar i{cursor:pointer}
+
 .main{padding:25px;display:flex;justify-content:center;}
 .container{width:100%;max-width:900px;}
-.card{
-  background:#fff;border-radius:20px;padding:25px;margin-bottom:20px;
-  box-shadow:0 8px 25px rgba(0,0,0,0.06);
+
+.accordion-card{
+background:#fff;
+border-radius:20px;
+margin-bottom:20px;
+overflow:hidden;
+box-shadow:0 8px 25px rgba(0,0,0,0.06);
 }
-.card h3{margin-bottom:15px;color:#222}
+
+.accordion-header{
+padding:20px;
+font-weight:600;
+display:flex;
+justify-content:space-between;
+align-items:center;
+cursor:pointer;
+background:#f9f9f9;
+transition:0.3s;
+}
+
+.accordion-header i{
+transition:0.3s;
+}
+
+.accordion-header.active i{
+transform:rotate(180deg);
+}
+
+.accordion-content{
+max-height:0;
+overflow:hidden;
+transition:max-height 0.4s ease,padding 0.3s ease;
+padding:0 20px;
+}
+
+.accordion-content.active{
+max-height:2000px;
+padding:20px;
+}
+
 .grid2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
 }
+
 @media (max-width:820px){
-  .grid2{grid-template-columns:1fr;}
+.grid2{grid-template-columns:1fr;}
 }
+
 .input-group{margin-bottom:12px;}
 .input-group label{display:block;font-size:0.9rem;margin-bottom:4px;color:#333;}
+
 .input-group input,
 .input-group select{
-  width:100%;padding:10px;border-radius:10px;border:2px solid #ddd;
-  outline:none;
+width:100%;
+padding:10px;
+border-radius:10px;
+border:2px solid #ddd;
+outline:none;
 }
+
 .input-group input:focus,
 .input-group select:focus{border-color:#667eea;}
-.hr{height:1px;background:#eee;margin:12px 0;}
-.service-card{padding:14px 0;border-bottom:1px solid #eee;}
-.service-title{font-weight:600;margin-bottom:8px;color:#333;}
-.service-inputs{display:flex;gap:10px;}
-.input-wrapper{flex:1;position:relative;}
-.input-wrapper input{
-  width:100%;
-  padding:10px 10px 10px 34px;
-  border-radius:10px;border:2px solid #ddd;
-}
-.input-prefix{
-  position:absolute;left:10px;top:50%;
-  transform:translateY(-50%);
-  font-size:0.85rem;color:#666;
-}
+
 .save-btn{
-  width:100%;padding:18px;border:none;border-radius:14px;
-  background:linear-gradient(135deg,#4caf50,#66bb6a);
-  color:#fff;font-weight:700;font-size:1rem;cursor:pointer;
+width:100%;
+padding:18px;
+border:none;
+border-radius:14px;
+background:linear-gradient(135deg,#4caf50,#66bb6a);
+color:#fff;
+font-weight:700;
+font-size:1rem;
+cursor:pointer;
 }
+
 .toast{
-  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
-  background:#111;color:#fff;padding:10px 14px;border-radius:12px;
-  display:none;font-size:.95rem;
+position:fixed;
+left:50%;
+bottom:22px;
+transform:translateX(-50%);
+background:#111;
+color:#fff;
+padding:10px 14px;
+border-radius:12px;
+display:none;
+font-size:.95rem;
 }
 </style>
 </head>
 
 <body>
+
 <div class="navbar">
-  <i class="fas fa-arrow-left" onclick="goBack()"></i>
-  İşletme Ayarları
+<i class="fas fa-arrow-left" onclick="goBack()"></i>
+İşletme Ayarları
 </div>
 
 <div class="main">
 <div class="container">
 
-<div class="card">
-<h3>İşletme Bilgileri</h3>
+<!-- İŞLETME BİLGİLERİ -->
+<div class="accordion-card">
+<div class="accordion-header" onclick="toggleSection('businessSection')">
+<span>İşletme Bilgileri</span>
+<i class="fas fa-chevron-down"></i>
+</div>
+
+<div class="accordion-content" id="businessSection">
 
 <div class="input-group">
 <label>Şube Adı</label>
 <input type="text" id="sube_adi">
 </div>
 
-<div class="hr"></div>
-
 <div class="grid2">
 
 <div class="input-group">
 <label>Ülke</label>
-<input type="text" id="ulke" value="Türkiye">
+<select id="ulke">
+<option value="Türkiye">Türkiye</option>
+</select>
 </div>
 
 <div class="input-group">
@@ -141,10 +192,18 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 
 </div>
 </div>
+</div>
 
-<div class="card">
-<h3>Hizmetler</h3>
+<!-- HİZMETLER -->
+<div class="accordion-card">
+<div class="accordion-header" onclick="toggleSection('servicesSection')">
+<span>Hizmetler</span>
+<i class="fas fa-chevron-down"></i>
+</div>
+
+<div class="accordion-content" id="servicesSection">
 <div id="service-container">Yükleniyor...</div>
+</div>
 </div>
 
 <button class="save-btn" onclick="saveAll()">Kaydet</button>
@@ -157,130 +216,142 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 <script>
 const API="YOUR_DEPLOY_URL";
 
-function goBack(){window.location.href="branch-edit.html";}
-function toast(msg){
- const t=document.getElementById("toast");
- t.textContent=msg;
- t.style.display="block";
- setTimeout(()=>t.style.display="none",1500);
+function toggleSection(id){
+const allContents=document.querySelectorAll(".accordion-content");
+const allHeaders=document.querySelectorAll(".accordion-header");
+const target=document.getElementById(id);
+const header=target.previousElementSibling;
+const open=target.classList.contains("active");
+
+allContents.forEach(c=>c.classList.remove("active"));
+allHeaders.forEach(h=>h.classList.remove("active"));
+
+if(!open){
+target.classList.add("active");
+header.classList.add("active");
 }
+}
+
+function goBack(){window.location.href="branch-edit.html";}
+
+function toast(msg){
+const t=document.getElementById("toast");
+t.textContent=msg;
+t.style.display="block";
+setTimeout(()=>t.style.display="none",1500);
+}
+
 function jsonp(action,params={}){
- return new Promise(resolve=>{
-  const cb="cb_"+Date.now();
-  window[cb]=d=>{delete window[cb];document.body.removeChild(s);resolve(d);};
-  const q=new URLSearchParams({action,callback:cb,...params}).toString();
-  const s=document.createElement("script");
-  s.src=API+"?"+q;
-  document.body.appendChild(s);
- });
+return new Promise(resolve=>{
+const cb="cb_"+Date.now();
+window[cb]=d=>{delete window[cb];document.body.removeChild(s);resolve(d);};
+const q=new URLSearchParams({action,callback:cb,...params}).toString();
+const s=document.createElement("script");
+s.src=API+"?"+q;
+document.body.appendChild(s);
+});
 }
 
 function getToken(){return localStorage.getItem("stilix_token");}
 function getSubeId(){return localStorage.getItem("selectedBranch");}
 
-// ------------------
-// ADDRESS DROPDOWN
-// ------------------
+// ADDRESS
+
 async function loadIller(selectedIl){
- const res=await jsonp("getIller");
- const ilSelect=document.getElementById("il");
- ilSelect.innerHTML="<option value=''>Seçiniz</option>";
- res.iller.forEach(il=>{
-  const o=document.createElement("option");
-  o.value=il;o.textContent=il;
-  if(il===selectedIl)o.selected=true;
-  ilSelect.appendChild(o);
- });
+const res=await jsonp("getIller");
+const ilSelect=document.getElementById("il");
+ilSelect.innerHTML="<option value=''>Seçiniz</option>";
+res.iller.forEach(il=>{
+const o=document.createElement("option");
+o.value=il;o.textContent=il;
+if(il===selectedIl)o.selected=true;
+ilSelect.appendChild(o);
+});
 }
 
 async function loadIlceler(il,selectedIlce){
- const res=await jsonp("getIlceler",{il});
- const s=document.getElementById("ilce");
- s.innerHTML="<option value=''>Seçiniz</option>";
- res.ilceler.forEach(x=>{
-  const o=document.createElement("option");
-  o.value=x;o.textContent=x;
-  if(x===selectedIlce)o.selected=true;
-  s.appendChild(o);
- });
+const res=await jsonp("getIlceler",{il});
+const s=document.getElementById("ilce");
+s.innerHTML="<option value=''>Seçiniz</option>";
+res.ilceler.forEach(x=>{
+const o=document.createElement("option");
+o.value=x;o.textContent=x;
+if(x===selectedIlce)o.selected=true;
+s.appendChild(o);
+});
 }
 
 async function loadMahalleler(il,ilce,selectedMah){
- const res=await jsonp("getMahalleler",{il,ilce});
- const s=document.getElementById("mahalle");
- s.innerHTML="<option value=''>Seçiniz</option>";
- res.mahalleler.forEach(x=>{
-  const o=document.createElement("option");
-  o.value=x;o.textContent=x;
-  if(x===selectedMah)o.selected=true;
-  s.appendChild(o);
- });
+const res=await jsonp("getMahalleler",{il,ilce});
+const s=document.getElementById("mahalle");
+s.innerHTML="<option value=''>Seçiniz</option>";
+res.mahalleler.forEach(x=>{
+const o=document.createElement("option");
+o.value=x;o.textContent=x;
+if(x===selectedMah)o.selected=true;
+s.appendChild(o);
+});
 }
 
-// ------------------
 // LOAD BRANCH
-// ------------------
+
 async function loadBranchInfo(){
- const token=getToken();
- const subeId=getSubeId();
- const res=await jsonp("getBranch",{token,subeId});
- if(!res.success)return;
- const b=res.branch;
- document.getElementById("sube_adi").value=b.sube_adi||"";
- document.getElementById("ulke").value=b.ulke||"Türkiye";
+const token=getToken();
+const subeId=getSubeId();
+const res=await jsonp("getBranch",{token,subeId});
+if(!res.success)return;
+const b=res.branch;
 
- await loadIller(b.il);
- if(b.il) await loadIlceler(b.il,b.ilce);
- if(b.il&&b.ilce) await loadMahalleler(b.il,b.ilce,b.mahalle);
+document.getElementById("sube_adi").value=b.sube_adi||"";
+document.getElementById("ulke").value=b.ulke||"Türkiye";
 
- document.getElementById("cadde").value=b.cadde||"";
- document.getElementById("sokak").value=b.sokak||"";
- document.getElementById("bina_no").value=b.bina_no||"";
- document.getElementById("bina_adi").value=b.bina_adi||"";
- document.getElementById("kat").value=b.kat||"";
- document.getElementById("daire").value=b.daire||"";
+await loadIller(b.il);
+if(b.il) await loadIlceler(b.il,b.ilce);
+if(b.il&&b.ilce) await loadMahalleler(b.il,b.ilce,b.mahalle);
+
+document.getElementById("cadde").value=b.cadde||"";
+document.getElementById("sokak").value=b.sokak||"";
+document.getElementById("bina_no").value=b.bina_no||"";
+document.getElementById("bina_adi").value=b.bina_adi||"";
+document.getElementById("kat").value=b.kat||"";
+document.getElementById("daire").value=b.daire||"";
 }
 
-// ------------------
-// EVENTS
-// ------------------
 document.getElementById("il").addEventListener("change",async e=>{
- await loadIlceler(e.target.value);
- document.getElementById("mahalle").innerHTML="";
+await loadIlceler(e.target.value);
+document.getElementById("mahalle").innerHTML="";
 });
+
 document.getElementById("ilce").addEventListener("change",async e=>{
- await loadMahalleler(document.getElementById("il").value,e.target.value);
+await loadMahalleler(document.getElementById("il").value,e.target.value);
 });
 
-// ------------------
-// SAVE
-// ------------------
 async function saveAll(){
- const token=getToken();
- const subeId=getSubeId();
+const token=getToken();
+const subeId=getSubeId();
 
- const payload={
-  token,subeId,
-  subeAdi:document.getElementById("sube_adi").value,
-  ulke:document.getElementById("ulke").value,
-  il:document.getElementById("il").value,
-  ilce:document.getElementById("ilce").value,
-  mahalle:document.getElementById("mahalle").value,
-  cadde:document.getElementById("cadde").value,
-  sokak:document.getElementById("sokak").value,
-  binaNo:document.getElementById("bina_no").value,
-  binaAdi:document.getElementById("bina_adi").value,
-  kat:document.getElementById("kat").value,
-  daire:document.getElementById("daire").value
- };
+const payload={
+token,subeId,
+subeAdi:document.getElementById("sube_adi").value,
+ulke:document.getElementById("ulke").value,
+il:document.getElementById("il").value,
+ilce:document.getElementById("ilce").value,
+mahalle:document.getElementById("mahalle").value,
+cadde:document.getElementById("cadde").value,
+sokak:document.getElementById("sokak").value,
+binaNo:document.getElementById("bina_no").value,
+binaAdi:document.getElementById("bina_adi").value,
+kat:document.getElementById("kat").value,
+daire:document.getElementById("daire").value
+};
 
- const up=await jsonp("updateBranch",payload);
- if(!up.success){alert(up.message);return;}
- toast("Kaydedildi");
+const up=await jsonp("updateBranch",payload);
+if(!up.success){alert(up.message);return;}
+toast("Kaydedildi");
 }
 
 document.addEventListener("DOMContentLoaded",async()=>{
- await loadBranchInfo();
+await loadBranchInfo();
 });
 </script>
 </body>
