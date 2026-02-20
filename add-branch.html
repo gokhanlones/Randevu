@@ -219,12 +219,21 @@ body{font-family:'Segoe UI',sans-serif;background:var(--bg);}
 
 const API = 'https://script.google.com/macros/s/AKfycbz1yOSwFMwTbWPbWMcVjygTWaebDtrhT_2XD1rl1f_MK7DT5ZqjHAU2cbKUCEX7n9Zt/exec';
 
-let addressData = {};
+async function postAPI(payload) {
+    const response = await fetch(API, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    });
+
+    return await response.json();
+}
 
 async function loadIller() {
     try {
-        const res = await fetch(API + '?action=getIller');
-        const json = await res.json();
+        const json = await postAPI({ action: "getIller" });
 
         if (!json.success) {
             alert(json.message);
@@ -242,6 +251,7 @@ async function loadIller() {
         alert("İller alınamadı: " + err.message);
     }
 }
+
 async function loadIlce() {
 
     const il = document.getElementById("il").value;
@@ -254,8 +264,10 @@ async function loadIlce() {
     if (!il) return;
 
     try {
-        const res = await fetch(API + '?action=getIlceler&il=' + encodeURIComponent(il));
-        const json = await res.json();
+        const json = await postAPI({
+            action: "getIlceler",
+            il: il
+        });
 
         if (!json.success) {
             alert(json.message);
@@ -269,7 +281,7 @@ async function loadIlce() {
         });
 
     } catch (err) {
-        alert("İlçeler alınamadı");
+        alert("İlçeler alınamadı: " + err.message);
     }
 }
 
@@ -284,12 +296,11 @@ async function loadMahalle() {
     if (!il || !ilce) return;
 
     try {
-        const res = await fetch(
-            API + '?action=getMahalleler&il=' + encodeURIComponent(il) +
-            '&ilce=' + encodeURIComponent(ilce)
-        );
-
-        const json = await res.json();
+        const json = await postAPI({
+            action: "getMahalleler",
+            il: il,
+            ilce: ilce
+        });
 
         if (!json.success) {
             alert(json.message);
@@ -303,7 +314,7 @@ async function loadMahalle() {
         });
 
     } catch (err) {
-        alert("Mahalleler alınamadı");
+        alert("Mahalleler alınamadı: " + err.message);
     }
 }
 
