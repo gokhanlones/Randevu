@@ -150,80 +150,97 @@ cursor:pointer;
 
 <script>
 
-const API = "WEB_APP_URL"; // kendi URL'in
+const API = "https://script.google.com/macros/s/AKfycbXXXXXXXXXXXX/exec"; // GERÇEK URL
 
 function goBack(){
-window.location.href="branch-edit.html";
+  window.location.href="branch-edit.html";
 }
 
 // ======================
-// İşletme Bilgisi Yükle
+// İşletme Bilgisi
 // ======================
 
 function loadBusinessInfo(){
-
-const selectedBranchName = localStorage.getItem("selectedBranchName");
-document.getElementById("isletmeAdi").value = selectedBranchName || "";
+  const selectedBranchName = localStorage.getItem("selectedBranchName");
+  document.getElementById("isletmeAdi").value = selectedBranchName || "";
 }
 
 // ======================
-// Master Hizmetleri Yükle
+// MASTER HİZMETLERİ YÜKLE
 // ======================
 
 async function loadServices(){
 
-const json = await jsonp("getMasterServices");
+  const json = await jsonp("getMasterServices");
 
-const container = document.getElementById("service-container");
-container.innerHTML="";
+  const container = document.getElementById("service-container");
+  container.innerHTML="";
 
-for(let i=0;i<json.services.length;i++){
+  json.services.forEach(service => {
 
-const service = json.services[i];
+    const row=document.createElement("div");
+    row.className="service-row";
 
-const row=document.createElement("div");
-row.className="service-row";
+    row.innerHTML=`
+      <div>${service.hizmet}</div>
+      <input type="number" placeholder="Süre (dk)" id="sure_${service.hizmetId}">
+      <input type="number" placeholder="Fiyat (₺)" id="fiyat_${service.hizmetId}">
+    `;
 
-row.innerHTML=`
-<div>${service.name}</div>
-<input type="number" placeholder="Süre (dk)" id="sure_${service.id}">
-<input type="number" placeholder="Fiyat (₺)" id="fiyat_${service.id}">
-`;
-
-container.appendChild(row);
-}
+    container.appendChild(row);
+  });
 }
 
 // ======================
-// Kaydet
+// KAYDET (Backend Uyumlu)
 // ======================
 
-function saveBusiness(){
+async function saveBusiness(){
 
-const subeId = localStorage.getItem("selectedBranch");
+  const subeId = localStorage.getItem("selectedBranch");
+  const token = localStorage.getItem("stilix_token") || sessionStorage.getItem("stilix_token");
 
-let services=[];
+  let services=[];
 
-document.querySelectorAll(".service-row").forEach(row=>{
+  document.querySelectorAll(".service-row").forEach(row=>{
 
-const name = row.children[0].innerText;
-const id = name; // burada mapping yapacağız backend'de
+    const hizmetAdi = row.children[0].innerText;
+    const hizmetId = Object.keys(window).find(k => k.includes(hizmetAdi)); // gerek kalmayacak aşağıda düzeltiyoruz
+  });
 
-const sure = row.children[1].value;
-const fiyat = row.children[2].value;
+  // Doğru yöntem:
+  document.querySelectorAll(".service-row").forEach(row=>{
 
-if(sure && fiyat){
-services.push({
-hizmetAdi:name,
-sure,
-fiyat
-});
-}
-});
+    const hizmetText = row.children[0].innerText;
 
-console.log("Kaydedilecek:", services);
+    const inputSure = row.querySelector("input[placeholder='Süre (dk)']");
+    const inputFiyat = row.querySelector("input[placeholder='Fiyat (₺)']");
 
-alert("Şimdilik console'a yazdırılıyor");
+    const sure = inputSure.value;
+    const fiyat = inputFiyat.value;
+
+    const hizmetId = inputSure.id.replace("sure_","");
+
+    if(sure || fiyat){
+      services.push({
+        hizmetId,
+        sure,
+        fiyat
+      });
+    }
+  });
+
+  const response = await jsonp("saveSubeServices", {
+    token,
+    subeId,
+    services: JSON.stringify(services)
+  });
+
+  if(response.success){
+    alert("Hizmetler kaydedildi");
+  } else {
+    alert(response.message);
+  }
 }
 
 // ======================
@@ -231,23 +248,29 @@ alert("Şimdilik console'a yazdırılıyor");
 // ======================
 
 function jsonp(action, params = {}) {
-return new Promise(resolve => {
-const cb = "cb_" + Date.now();
-window[cb] = function(data){
-delete window[cb];
-document.body.removeChild(script);
-resolve(data);
-};
-const query = new URLSearchParams({action,callback:cb,...params}).toString();
-const script = document.createElement("script");
-script.src = API + "?" + query;
-document.body.appendChild(script);
-});
+  return new Promise(resolve => {
+    const cb = "cb_" + Date.now();
+    window[cb] = function(data){
+      delete window[cb];
+      document.body.removeChild(script);
+      resolve(data);
+    };
+
+    const query = new URLSearchParams({
+      action,
+      callback:cb,
+      ...params
+    }).toString();
+
+    const script = document.createElement("script");
+    script.src = API + "?" + query;
+    document.body.appendChild(script);
+  });
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
-loadBusinessInfo();
-loadServices();
+  loadBusinessInfo();
+  loadServices();
 });
 
 </script>
