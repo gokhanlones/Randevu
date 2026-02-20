@@ -132,6 +132,7 @@ color:#fff;
 padding:10px 14px;
 border-radius:12px;
 display:none;
+z-index:9999;
 }
 </style>
 </head>
@@ -236,6 +237,7 @@ display:none;
 <div class="toast" id="toast"></div>
 
 <script>
+// ✅ DÜZELTILDI: Boşluk kaldırıldı
 const API = "https://script.google.com/macros/s/AKfycbwMeRJZdr-aukEM20KETi7cw2WQ1wjDZGIfH_gZRzx7vSJ2zXQ4Ijul6kRSDn3oVGZm/exec";
 
 // Accordion
@@ -261,7 +263,7 @@ function toast(msg){
 const t=document.getElementById("toast");
 t.textContent=msg;
 t.style.display="block";
-setTimeout(()=>t.style.display="none",1500);
+setTimeout(()=>t.style.display="none",2000);
 }
 
 function jsonp(action,params={}){
@@ -336,66 +338,102 @@ document.getElementById("kat").value=b.kat||"";
 document.getElementById("daire").value=b.daire||"";
 }
 
-// SERVICES LOAD
+// SERVICES LOAD - ✅ GÜNCELLENDİ: Mevcut hizmetleri de yükle
 async function loadServices(){
 const container=document.getElementById("service-container");
 container.innerHTML="Yükleniyor...";
 
-const res=await jsonp("getMasterServices");
-if(!res.success){
-container.innerHTML="Hizmet yüklenemedi";
-return;
+// Hem master hizmetleri hem de şube hizmetlerini paralel çek
+const [masterRes, subeRes] = await Promise.all([
+    jsonp("getMasterServices"),
+    jsonp("getSubeServices", {token:getToken(), subeId:getSubeId()})
+]);
+
+if(!masterRes.success){
+    container.innerHTML="Hizmet yüklenemedi";
+    return;
+}
+
+// Şube hizmetlerini map'e ata (hizmetId -> {sure, fiyat})
+const subeServices = {};
+if(subeRes.success && subeRes.services){
+    subeRes.services.forEach(s => {
+        subeServices[s.hizmetId] = {sure: s.sure, fiyat: s.fiyat};
+    });
 }
 
 container.innerHTML="";
-res.services.forEach(s=>{
-const div=document.createElement("div");
-div.className="service-card";
-div.innerHTML=`
-<div class="service-title">${s.hizmet}</div>
-<div class="service-inputs">
-<input type="number" placeholder="Süre (dk)" data-id="${s.hizmetId}" class="sure">
-<input type="number" placeholder="Fiyat (₺)" data-id="${s.hizmetId}" class="fiyat">
-</div>
-`;
-container.appendChild(div);
+masterRes.services.forEach(s=>{
+    const existing = subeServices[s.hizmetId] || {sure: '', fiyat: ''};
+    
+    const div=document.createElement("div");
+    div.className="service-card";
+    div.innerHTML=`
+    <div class="service-title">${s.hizmet}</div>
+    <div class="service-inputs">
+    <input type="number" placeholder="Süre (dk)" data-id="${s.hizmetId}" class="sure" value="${existing.sure}">
+    <input type="number" placeholder="Fiyat (₺)" data-id="${s.hizmetId}" class="fiyat" value="${existing.fiyat}">
+    </div>
+    `;
+    container.appendChild(div);
 });
 }
 
-// SAVE ALL
+// SAVE ALL - ✅ GÜNCELLENDİ: Düzgün hata kontrolü ve detaylı mesaj
 async function saveAll(){
-const branchPayload={
-token:getToken(),
-subeId:getSubeId(),
-subeAdi:sube_adi.value,
-ulke:ulke.value,
-il:il.value,
-ilce:ilce.value,
-mahalle:mahalle.value,
-cadde:cadde.value,
-sokak:sokak.value,
-binaNo:bina_no.value,
-binaAdi:bina_adi.value,
-kat:kat.value,
-daire:daire.value
-};
+    // 1. Şube bilgilerini güncelle
+    const branchPayload={
+        token:getToken(),
+        subeId:getSubeId(),
+        subeAdi:sube_adi.value,
+        ulke:ulke.value,
+        il:il.value,
+        ilce:ilce.value,
+        mahalle:mahalle.value,
+        cadde:cadde.value,
+        sokak:sokak.value,
+        binaNo:bina_no.value,
+        binaAdi:bina_adi.value,
+        kat:kat.value,
+        daire:daire.value
+    };
 
-await jsonp("updateBranch",branchPayload);
+    const branchResult = await jsonp("updateBranch",branchPayload);
+    
+    if(!branchResult.success){
+        toast("Şube güncellenemedi: " + (branchResult.message || 'Bilinmeyen hata'));
+        return;
+    }
 
-// SERVICES
-const services=[];
-document.querySelectorAll(".sure").forEach(input=>{
-const id=input.dataset.id;
-const sure=input.value;
-const fiyat=document.querySelector(`.fiyat[data-id="${id}"]`).value;
-if(sure || fiyat){
-services.push({hizmetId:id,sure,fiyat});
-}
-});
+    // 2. Hizmetleri topla
+    const services=[];
+    document.querySelectorAll(".sure").forEach(input=>{
+        const id=input.dataset.id;
+        const sure=input.value.trim();
+        const fiyatInput = document.querySelector(`.fiyat[data-id="${id}"]`);
+        const fiyat = fiyatInput ? fiyatInput.value.trim() : '';
+        
+        // En az biri doluysa kaydet
+        if(sure !== '' || fiyat !== ''){
+            services.push({hizmetId:id, sure, fiyat});
+        }
+    });
 
-await jsonp("updateBranchServices",{token:getToken(),subeId:getSubeId(),services:JSON.stringify(services)});
+    // 3. Hizmetleri kaydet/güncelle - ✅ DOĞRU FONKSİYON ADI
+    const serviceResult = await jsonp("saveSubeServices",{
+        token:getToken(),
+        subeId:getSubeId(),
+        services:JSON.stringify(services)
+    });
 
-toast("Kaydedildi");
+    if(!serviceResult.success){
+        toast("Hizmetler kaydedilemedi: " + (serviceResult.message || 'Bilinmeyen hata'));
+        return;
+    }
+
+    // ✅ Detaylı başarı mesajı
+    const msg = `Kaydedildi ✓ Güncellenen: ${serviceResult.updated || 0}, Yeni: ${serviceResult.added || 0}`;
+    toast(msg);
 }
 
 document.addEventListener("DOMContentLoaded",async()=>{
