@@ -43,9 +43,24 @@ box-shadow:0 8px 25px rgba(0,0,0,0.06);
 margin-bottom:15px;
 }
 
-/* ====================== */
-/* HİZMET KART TASARIMI */
-/* ====================== */
+.input-group{
+margin-bottom:12px;
+}
+
+.input-group label{
+display:block;
+font-size:0.9rem;
+margin-bottom:4px;
+}
+
+.input-group input{
+width:100%;
+padding:10px;
+border-radius:8px;
+border:2px solid #ddd;
+}
+
+/* ===== HİZMET TASARIM ===== */
 
 .service-card{
 padding:14px 0;
@@ -95,10 +110,6 @@ font-weight:600;
 font-size:1rem;
 cursor:pointer;
 }
-
-.save-btn:hover{
-opacity:0.9;
-}
 </style>
 </head>
 <body>
@@ -110,6 +121,29 @@ opacity:0.9;
 
 <div class="main">
 <div class="container">
+
+<!-- ================== -->
+<!-- İşletme Bilgileri -->
+<!-- ================== -->
+
+<div class="card">
+<h3>İşletme Bilgileri</h3>
+
+<div class="input-group">
+<label>İşletme Adı</label>
+<input type="text" id="isletmeAdi">
+</div>
+
+<div class="input-group">
+<label>Adres</label>
+<input type="text" id="adres">
+</div>
+
+</div>
+
+<!-- ================== -->
+<!-- Hizmetler -->
+<!-- ================== -->
 
 <div class="card">
 <h3>Hizmetler</h3>
@@ -127,6 +161,23 @@ const API = "https://script.google.com/macros/s/AKfycbxubPVNJG1qKvQPcz5qR3mBvwX5
 
 function goBack(){
   window.location.href="branch-edit.html";
+}
+
+async function loadBranchInfo(){
+
+  const token = localStorage.getItem("stilix_token") || sessionStorage.getItem("stilix_token");
+  const subeId = localStorage.getItem("selectedBranch");
+
+  const json = await jsonp("getBranch", { token, subeId });
+
+  if(!json.success) return;
+
+  const b = json.branch;
+
+  document.getElementById("isletmeAdi").value = b.sube_adi || "";
+
+  const adres = `${b.il || ""} ${b.ilce || ""} ${b.mahalle || ""} ${b.cadde || ""} ${b.sokak || ""}`;
+  document.getElementById("adres").value = adres;
 }
 
 async function loadServices(){
@@ -208,7 +259,7 @@ async function saveBusiness(){
   });
 
   if(response.success){
-    alert("Hizmetler kaydedildi");
+    alert("Kaydedildi");
   } else {
     alert(response.message);
   }
@@ -235,7 +286,10 @@ function jsonp(action, params = {}) {
   });
 }
 
-document.addEventListener("DOMContentLoaded", loadServices);
+document.addEventListener("DOMContentLoaded", async ()=>{
+  await loadBranchInfo();
+  await loadServices();
+});
 
 </script>
 
