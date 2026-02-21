@@ -3,203 +3,142 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>İşletme Giriş</title>
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<title>SaaS Panel</title>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: #f4f6f9;
+        overflow-x: hidden;
+    }
 
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    .topbar {
+        position: relative;
+        z-index: 1000;
+        height: 60px;
+        background: #1f2937;
+        color: white;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
 
-.login-container {
-    width: 100%;
-    max-width: 400px;
-    padding: 20px;
-}
+    .hamburger {
+        font-size: 26px;
+        cursor: pointer;
+        margin-right: 15px;
+    }
 
-.login-card {
-    background: white;
-    padding: 35px 30px;
-    border-radius: 15px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-}
+    .title {
+        font-size: 18px;
+        font-weight: 500;
+    }
 
-.login-card h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    color: #333;
-}
+    .sidebar {
+        position: fixed;
+        top: 60px;
+        width: 260px;
+        height: calc(100% - 60px);
+        background: #111827;
+        color: white;
+        padding: 20px 15px;
+        z-index: 999;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
 
-.input-group {
-    position: relative;
-    margin-bottom: 18px;
-}
+    .sidebar.active {
+        transform: translateX(0);
+    }
 
-.input-group input {
-    width: 100%;
-    padding: 12px 40px 12px 40px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    outline: none;
-    transition: 0.3s;
-    font-size: 14px;
-}
+    .menu-card {
+        background: #374151;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 15px;
+        font-weight: 600;
+        font-size: 16px;
+        color: white;
+        cursor: pointer;
+        transition: 0.2s ease;
 
-.input-group input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102,126,234,0.2);
-}
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
 
-.input-group i {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #999;
-}
+    .menu-card:hover {
+        background: #4b5563;
+    }
 
-.input-group .left-icon {
-    left: 12px;
-}
+    .sidebar a {
+        display: block;
+        padding: 12px 15px;
+        color: #e5e7eb;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: 0.2s;
+        cursor: pointer;
+    }
 
-.input-group .right-icon {
-    right: 12px;
-    cursor: pointer;
-}
+    .sidebar a:hover {
+        background: #374151;
+    }
 
-.options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    margin-bottom: 20px;
-}
+    .overlay {
+        position: fixed;
+        display: none;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.3);
+        top: 0;
+        left: 0;
+        z-index: 998;
+    }
 
-.options label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-}
+    .overlay.active {
+        display: block;
+    }
 
-.options a {
-    text-decoration: none;
-    color: #667eea;
-}
-
-.login-btn {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    font-size: 15px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.login-btn:hover {
-    opacity: 0.9;
-}
-
-.register {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
-}
-
-.register a {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.loading {
-    display: none;
-    text-align: center;
-    margin-top: 15px;
-    font-size: 13px;
-    color: #667eea;
-}
+    .content {
+        padding: 30px;
+    }
 </style>
 </head>
-
 <body>
 
-<div class="login-container">
-    <div class="login-card">
-        <h2>İşletme Giriş</h2>
+<div class="topbar">
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="title">Ana Sayfa</div>
+</div>
 
-        <div class="input-group">
-            <i class="fa fa-envelope left-icon"></i>
-            <input type="text" id="email" placeholder="Email veya Telefon">
-        </div>
-
-        <div class="input-group">
-            <i class="fa fa-lock left-icon"></i>
-            <input type="password" id="password" placeholder="Şifre">
-            <i class="fa fa-eye right-icon" onclick="togglePassword()"></i>
-        </div>
-
-        <div class="options">
-            <label>
-                <input type="checkbox" id="remember">
-                Beni Hatırla
-            </label>
-            <a href="#">Şifremi Unuttum?</a>
-        </div>
-
-        <button class="login-btn" onclick="login()">Giriş Yap</button>
-
-        <div class="loading" id="loading">
-            Giriş yapılıyor...
-        </div>
-
-        <div class="register">
-            Hesabın yok mu?
-            <a href="Kayit.html">Kayıt Ol</a>
-        </div>
+<div id="sidebar" class="sidebar">
+    <div class="menu-card" onclick="closeMenu()">
+        <span>🏢</span>
+        <span>İşletme Girişi</span>
     </div>
+    <a onclick="closeMenu()">Çıkış</a>
+</div>
+
+<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+<div class="content">
 </div>
 
 <script>
-function togglePassword() {
-    const password = document.getElementById("password");
-    password.type = password.type === "password" ? "text" : "password";
+function toggleMenu() {
+    document.getElementById("sidebar").classList.toggle("active");
+    document.getElementById("overlay").classList.toggle("active");
 }
 
-function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const loading = document.getElementById("loading");
-
-    if (!email || !password) {
-        alert("Lütfen tüm alanları doldurun.");
-        return;
-    }
-
-    loading.style.display = "block";
-
-    // API entegrasyonu buraya gelecek
-    setTimeout(() => {
-        loading.style.display = "none";
-        alert("Giriş başarılı (demo)");
-        window.location.href = "Panel.html";
-    }, 1500);
+function closeMenu() {
+    document.getElementById("sidebar").classList.remove("active");
+    document.getElementById("overlay").classList.remove("active");
 }
 </script>
 
 </body>
-</html>sayfa geliyor ama hamburger menu kayboluyor
+</html>
