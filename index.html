@@ -10,6 +10,7 @@
         margin: 0;
         font-family: 'Segoe UI', sans-serif;
         background: #f4f6f9;
+        overflow-x: hidden; /* Kenardan görünmeyi engeller */
     }
 
     /* Top Bar */
@@ -48,15 +49,16 @@
         transition: 0.3s ease;
         z-index: 999;
         padding: 20px 15px;
+        overflow: hidden;
     }
 
     .sidebar.active {
         left: 0;
     }
 
-    /* Kart Buton */
+    /* Kart Buton (zeminden bir tık açık) */
     .menu-card {
-        background: #2563eb;
+        background: #374151; /* Zeminden biraz daha açık */
         border-radius: 12px;
         padding: 18px;
         margin-bottom: 15px;
@@ -65,13 +67,11 @@
         font-size: 16px;
         color: white;
         cursor: pointer;
-        box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
         transition: 0.2s ease;
     }
 
     .menu-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.5);
+        background: #4b5563;
     }
 
     /* Normal Menü */
@@ -82,6 +82,7 @@
         text-decoration: none;
         border-radius: 8px;
         transition: 0.2s;
+        cursor: pointer;
     }
 
     .sidebar a:hover {
@@ -118,8 +119,8 @@
 </div>
 
 <div id="sidebar" class="sidebar">
-    <div class="menu-card">İşletme Girişi</div>
-    <a href="#">Çıkış</a>
+    <div class="menu-card" onclick="closeMenu()">İşletme Girişi</div>
+    <a onclick="closeMenu()">Çıkış</a>
 </div>
 
 <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
@@ -132,6 +133,11 @@
 function toggleMenu() {
     document.getElementById("sidebar").classList.toggle("active");
     document.getElementById("overlay").classList.toggle("active");
+}
+
+function closeMenu() {
+    document.getElementById("sidebar").classList.remove("active");
+    document.getElementById("overlay").classList.remove("active");
 }
 </script>
 
