@@ -138,6 +138,14 @@ function closeMenu() {
     document.getElementById("sidebar").classList.remove("active");
     document.getElementById("overlay").classList.remove("active");
 }
+
+function goLogin() {
+    closeMenu(); // önce menüyü kapat
+
+    setTimeout(() => {
+        window.location.href = "giris.html";
+    }, 250); // animasyon süresi kadar bekle
+}
 </script>
 
 </body>
