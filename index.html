@@ -8,58 +8,95 @@
 <style>
     body {
         margin: 0;
-        font-family: Arial, sans-serif;
+        font-family: 'Segoe UI', sans-serif;
+        background: #f4f6f9;
     }
 
-    /* Hamburger */
+    /* Top Bar */
+    .topbar {
+        height: 60px;
+        background: #1f2937;
+        color: white;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
     .hamburger {
-        font-size: 28px;
+        font-size: 26px;
         cursor: pointer;
-        padding: 15px;
+        margin-right: 15px;
+    }
+
+    .title {
+        font-size: 18px;
+        font-weight: 500;
     }
 
     /* Sidebar */
     .sidebar {
         position: fixed;
         top: 0;
-        left: -250px;
-        width: 250px;
+        left: -260px;
+        width: 260px;
         height: 100%;
-        background: #222;
+        background: #111827;
         color: white;
-        transition: 0.3s;
-        padding-top: 60px;
+        transition: 0.3s ease;
+        padding-top: 70px;
     }
 
     .sidebar a {
         display: block;
-        padding: 15px;
-        color: white;
+        padding: 15px 20px;
+        color: #e5e7eb;
         text-decoration: none;
+        transition: 0.2s;
     }
 
     .sidebar a:hover {
-        background: #444;
+        background: #374151;
     }
 
     .sidebar.active {
         left: 0;
     }
 
-    /* Main content */
+    /* Overlay */
+    .overlay {
+        position: fixed;
+        display: none;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.3);
+        top: 0;
+        left: 0;
+    }
+
+    .overlay.active {
+        display: block;
+    }
+
+    /* Content */
     .content {
-        padding: 20px;
+        padding: 30px;
     }
 </style>
 </head>
 <body>
 
-<div class="hamburger" onclick="toggleMenu()">☰</div>
+<div class="topbar">
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="title">Ana Sayfa</div>
+</div>
 
 <div id="sidebar" class="sidebar">
     <a href="#">İşletme Girişi</a>
     <a href="#">Çıkış</a>
 </div>
+
+<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
 
 <div class="content">
     <!-- Şimdilik boş -->
@@ -68,6 +105,7 @@
 <script>
 function toggleMenu() {
     document.getElementById("sidebar").classList.toggle("active");
+    document.getElementById("overlay").classList.toggle("active");
 }
 </script>
 
