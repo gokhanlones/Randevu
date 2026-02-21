@@ -60,7 +60,6 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 .service-item:last-child{border-bottom:none;}
 .service-item input{transform:scale(1.05);}
 
-/* ✅ GÜNLER: küçült + daire garanti + tek sıra + taşarsa yana kaydır */
 .days{
   display:flex;
   gap:8px;
@@ -77,9 +76,9 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 .day-btn{
   width:34px;
   height:34px;
-  flex:0 0 34px;         /* sıkışıp elips olmasın */
-  border-radius:9999px;  /* daire */
-  aspect-ratio:1 / 1;    /* daire garanti */
+  flex:0 0 34px;
+  border-radius:9999px;
+  aspect-ratio:1 / 1;
   border:2px solid #ddd;
   display:flex;
   align-items:center;
@@ -141,7 +140,10 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 
 <body>
 
-<div class="navbar">Personel Yönetimi</div>
+<div class="navbar">
+  <i class="fas fa-arrow-left" onclick="goBack()" style="margin-right:15px;cursor:pointer;"></i>
+  Personel Yönetimi
+</div>
 
 <div class="main">
   <div class="container">
@@ -163,7 +165,6 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 
       <h4 style="margin:18px 0 10px 0;">Çalışma Günleri</h4>
       <div class="days" id="daysRow">
-        <!-- tek harf: Pazartesi= P, Salı= S, Çarşamba= Ç, Perşembe= P, Cuma= C, Cumartesi= C, Pazar= P -->
         <div class="day-btn" data-day="Pzt">P</div>
         <div class="day-btn" data-day="Sal">S</div>
         <div class="day-btn" data-day="Çar">Ç</div>
@@ -193,7 +194,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
         </div>
       </div>
 
-      <button class="save-btn">Kaydet</button>
+      <button class="save-btn" onclick="savePersonel()">Kaydet</button>
     </div>
   </div>
 </div>
@@ -201,11 +202,8 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 <div class="toast" id="toast"></div>
 
 <script>
-/* ✅ Burada iki farklı Script URL var — hangisi sende “hizmetleri getiriyorsa” o çalışacak */
-const API_LIST = [
-  "https://script.google.com/macros/s/AKfycbzYUCYSIhlgQ-GeFFpukJNUC8nqrF3tZQd3LJfZvH0QLY0pSiAqbjhE5-I4sjJbmV9M/exec",
-  "https://script.google.com/macros/s/AKfycbxfySiI1ZLGBZY0YaifuAXAMcoYpO_UPj6nueQSvEoFIHQSsNSw75-X5BFdiuMG-x5V/exec"
-];
+// ✅ DÜZELTILDI: Boşluk kaldırıldı, tek API
+const API = "https://script.google.com/macros/s/AKfycbzYUCYSIhlgQ-GeFFpukJNUC8nqrF3tZQd3LJfZvH0QLY0pSiAqbjhE5-I4sjJbmV9M/exec";
 
 function toast(msg){
   const t=document.getElementById("toast");
@@ -214,49 +212,31 @@ function toast(msg){
   setTimeout(()=>t.style.display="none",2200);
 }
 
-function jsonpWithApi(apiUrl, action, params = {}) {
-  return new Promise((resolve, reject) => {
-    const cb = "cb_" + Date.now() + "_" + Math.floor(Math.random()*1000);
+function goBack(){
+  window.location.href = "branch-edit.html";
+}
 
-    const s = document.createElement("script");
+function jsonp(action, params = {}) {
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Date.now();
+    
     window[cb] = (d) => {
       try { delete window[cb]; } catch(e){}
-      if (document.body.contains(s)) document.body.removeChild(s);
+      if (s.parentNode) s.parentNode.removeChild(s);
       resolve(d);
     };
 
     const q = new URLSearchParams({ action, callback: cb, ...params }).toString();
-    s.src = apiUrl + "?" + q;
-
+    const s = document.createElement("script");
+    s.src = API + "?" + q;
+    
     s.onerror = () => {
       try { delete window[cb]; } catch(e){}
-      if (document.body.contains(s)) document.body.removeChild(s);
       reject(new Error("API hatası"));
     };
-
+    
     document.body.appendChild(s);
   });
-}
-
-/* ✅ Aynı isteği sırayla API’lara at: ilk çalışan sonucu döndür */
-async function callApi(action, params = {}) {
-  let lastErr = null;
-  for (const api of API_LIST) {
-    try {
-      const res = await jsonpWithApi(api, action, params);
-
-      // bazen "success:false" döndürür; diğer API'yi de denemek için kontrol
-      if (res && (res.success === true || res.services || res.iller || res.branches || res.branch)) {
-        return res;
-      }
-
-      // burada "unknown action" / "yetkisiz" gibi şeyler varsa yine diğerini dene
-      lastErr = new Error(res?.message || "Geçersiz cevap");
-    } catch (e) {
-      lastErr = e;
-    }
-  }
-  throw lastErr || new Error("API çağrısı başarısız");
 }
 
 function getToken(){return localStorage.getItem("stilix_token");}
@@ -264,7 +244,7 @@ function getSubeId(){return localStorage.getItem("selectedBranch");}
 
 async function loadSubeServices() {
   const subeId = getSubeId();
-  const token  = getToken();
+  const token = getToken();
   const container = document.getElementById("servicesContainer");
 
   if (!subeId || !token) {
@@ -275,8 +255,10 @@ async function loadSubeServices() {
   container.innerHTML = "Yükleniyor...";
 
   try {
-    // 1) Master list (id->ad)
-    const masterRes = await callApi("getMasterServices", {});
+    // 1) Master listeyi al
+    const masterRes = await jsonp("getMasterServices", {});
+    console.log("Master:", masterRes); // Debug
+    
     const master = masterRes.services || [];
     if (!master.length) {
       container.innerHTML = "Master hizmet listesi boş";
@@ -290,44 +272,99 @@ async function loadSubeServices() {
       if (id && ad) masterMap[id] = ad;
     });
 
-    // 2) Şubeye ait hizmet id’leri
-    const subeRes = await callApi("getSubeServices", { token, subeId });
+    // 2) Şube hizmetlerini al
+    const subeRes = await jsonp("getSubeServices", { token, subeId });
+    console.log("Sube:", subeRes); // Debug
+    
     const subeServices = subeRes.services || [];
 
-    // ✅ Şube hizmet sheet’i boşsa bile master’dan hiçbir şey göstermiyoruz (senin istediğin)
+    // Şube hizmeti yoksa master'dan göster (veya boş mesaj)
     if (!subeServices.length) {
-      container.innerHTML = "Bu şubede aktif hizmet yok";
+      // İstersen burada master'dan göster, şimdilik boş diyelim
+      container.innerHTML = "Bu şubede aktif hizmet yok. Önce İşletme Ayarları'ndan hizmet ekleyin.";
       return;
     }
 
-    // 3) Render (şube hizmetId listesi -> masterMap isim)
+    // 3) Render et
     container.innerHTML = "";
-
     let shown = 0;
+    
     subeServices.forEach(s => {
       const id = String(s.hizmetId || "").trim();
       const ad = masterMap[id];
-      if (!id || !ad) return;
+      
+      if (!id || !ad) {
+        console.log("Eşleşmeyen:", id, ad); // Debug
+        return;
+      }
 
       const div = document.createElement("div");
       div.className = "service-item";
-      div.innerHTML = `<input type="checkbox" value="${id}"><span>${ad}</span>`;
+      div.innerHTML = `<input type="checkbox" value="${id}" id="svc_${id}"><label for="svc_${id}" style="cursor:pointer;">${ad}</label>`;
       container.appendChild(div);
       shown++;
     });
 
     if (shown === 0) {
-      container.innerHTML = "Eşleşen hizmet bulunamadı (Master ID uyuşmuyor)";
+      container.innerHTML = "Eşleşen hizmet bulunamadı";
     }
 
   } catch (err) {
-    console.error(err);
-    container.innerHTML = "Hizmet yüklenemedi";
+    console.error("Hata:", err);
+    container.innerHTML = "Hizmet yüklenemedi: " + err.message;
     toast("Hizmet yüklenemedi");
   }
 }
 
+async function savePersonel(){
+  const ad = document.getElementById("ad").value.trim();
+  const soyad = document.getElementById("soyad").value.trim();
+  
+  if(!ad || !soyad){
+    toast("Ad ve soyad zorunlu");
+    return;
+  }
+  
+  // Seçili hizmetleri al
+  const selectedServices = [];
+  document.querySelectorAll('.service-item input:checked').forEach(cb => {
+    selectedServices.push(cb.value);
+  });
+  
+  // Seçili günleri al
+  const selectedDays = [];
+  document.querySelectorAll('.day-btn.active').forEach(btn => {
+    selectedDays.push(btn.dataset.day);
+  });
+  
+  const data = {
+    token: getToken(),
+    subeId: getSubeId(),
+    ad,
+    soyad,
+    services: selectedServices.join(','),
+    days: selectedDays.join(','),
+    baslangic: document.getElementById("baslangic").value,
+    bitis: document.getElementById("bitis").value,
+    ogleBaslangic: document.getElementById("ogleBaslangic").value,
+    ogleBitis: document.getElementById("ogleBitis").value
+  };
+  
+  try {
+    // Şimdilik sadece toast göster, API fonksiyonu eklenince açılır
+    toast("Kaydediliyor... (API hazırlanıyor)");
+    console.log("Kayıt verisi:", data);
+  } catch(err) {
+    toast("Hata: " + err.message);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  if(!getToken() || !getSubeId()){
+    window.location.href = "business-login.html";
+    return;
+  }
+  
   loadSubeServices();
 
   document.querySelectorAll(".day-btn").forEach(btn => {
