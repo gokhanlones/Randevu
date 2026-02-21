@@ -172,7 +172,10 @@ function closeMenu() {
 }
 
 function goLogin() {
-    window.location.href = "giris.html";
+    closeMenu();
+    setTimeout(() => {
+        window.location.href = "./giris.html";
+    }, 200);
 }
 </script>
 
