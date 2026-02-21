@@ -233,11 +233,18 @@ container.innerHTML = "";
 res.services.forEach(service=>{
 const div = document.createElement("div");
 div.className = "service-item";
+res.services.forEach(service=>{
+
+if (!service.hizmet || service.hizmet.trim() === '') return;
+
+const div = document.createElement("div");
+div.className = "service-item";
 div.innerHTML = `
 <input type="checkbox" value="${service.hizmetId}">
 ${service.hizmet}
 `;
 container.appendChild(div);
+
 });
 
 }
