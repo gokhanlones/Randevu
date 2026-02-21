@@ -28,7 +28,6 @@ background:#fff;
 border-radius:20px;
 padding:25px;
 box-shadow:0 8px 25px rgba(0,0,0,0.06);
-margin-bottom:20px;
 }
 
 .card h3{margin-bottom:20px;}
@@ -164,26 +163,25 @@ Yükleniyor...
 <div class="time-grid">
 <div>
 <label>Başlangıç</label>
-<input type="time">
+<input type="time" id="baslangic">
 </div>
 <div>
 <label>Bitiş</label>
-<input type="time">
+<input type="time" id="bitis">
 </div>
 <div>
 <label>Öğle Başlangıç</label>
-<input type="time">
+<input type="time" id="ogleBaslangic">
 </div>
 <div>
 <label>Öğle Bitiş</label>
-<input type="time">
+<input type="time" id="ogleBitis">
 </div>
 </div>
 
 <button class="save-btn">Kaydet</button>
 
 </div>
-
 </div>
 </div>
 
@@ -192,17 +190,17 @@ Yükleniyor...
 const API = "https://script.google.com/macros/s/AKfycbzYUCYSIhlgQ-GeFFpukJNUC8nqrF3tZQd3LJfZvH0QLY0pSiAqbjhE5-I4sjJbmV9M/exec";
 
 function jsonp(action,params={}){
-return new Promise((resolve, reject)=>{
+return new Promise((resolve,reject)=>{
 const cb="cb_"+Date.now();
 window[cb]=d=>{
 delete window[cb];
-document.body.removeChild(s);
+if(document.body.contains(s)) document.body.removeChild(s);
 resolve(d);
 };
 const q=new URLSearchParams({action,callback:cb,...params}).toString();
 const s=document.createElement("script");
 s.src=API+"?"+q;
-s.onerror=()=>reject();
+s.onerror=()=>reject("API hatasi");
 document.body.appendChild(s);
 });
 }
@@ -212,44 +210,48 @@ async function loadSubeServices(){
 const subeId = localStorage.getItem("selectedBranch");
 const token = localStorage.getItem("stilix_token");
 
-if(!subeId || !token){
-document.getElementById("servicesContainer").innerHTML = "Şube bulunamadı";
-return;
-}
-
-const res = await jsonp("getSubeServices",{
-token: token,
-subeId: subeId
-});
-
-if(!res.success || !res.services){
-document.getElementById("servicesContainer").innerHTML = "Hizmet bulunamadı";
-return;
-}
-
 const container = document.getElementById("servicesContainer");
-container.innerHTML = "";
+
+if(!subeId || !token){
+container.innerHTML="Şube bulunamadı";
+return;
+}
+
+try{
+
+const res = await jsonp("getSubeServices",{ token, subeId });
+
+if(!res.success || !res.services || res.services.length===0){
+container.innerHTML="Hizmet bulunamadı";
+return;
+}
+
+container.innerHTML="";
 
 res.services.forEach(service=>{
-const div = document.createElement("div");
-div.className = "service-item";
-res.services.forEach(service=>{
 
-if (!service.hizmet || service.hizmet.trim() === '') return;
+if(!service.hizmet || service.hizmet.trim()==="") return;
 
-const div = document.createElement("div");
-div.className = "service-item";
-div.innerHTML = `
+const div=document.createElement("div");
+div.className="service-item";
+
+div.innerHTML=`
 <input type="checkbox" value="${service.hizmetId}">
 ${service.hizmet}
 `;
+
 container.appendChild(div);
 
 });
 
+}catch(err){
+container.innerHTML="Hizmet yüklenemedi";
+}
+
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
+
 loadSubeServices();
 
 document.querySelectorAll(".day-btn").forEach(btn=>{
@@ -257,6 +259,7 @@ btn.addEventListener("click",()=>{
 btn.classList.toggle("active");
 });
 });
+
 });
 
 </script>
