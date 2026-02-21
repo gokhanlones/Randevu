@@ -65,7 +65,6 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
   justify-content:space-between;
   margin-bottom:18px;
 }
-
 .day-btn{
   width:36px;
   height:36px;
@@ -79,8 +78,8 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
   font-weight:700;
   background:#fff;
   transition:0.2s;
+  user-select:none;
 }
-
 .day-btn.active{
   background:#667eea;
   color:#fff;
@@ -92,7 +91,6 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
   grid-template-columns:1fr 1fr;
   gap:12px;
 }
-
 .time-grid input{
   width:100%;
   padding:9px;
@@ -112,155 +110,198 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
   font-size:0.95rem;
   cursor:pointer;
 }
+
+.note{
+  margin-top:10px;
+  font-size:0.8rem;
+  color:#666;
+}
 </style>
 </head>
 
 <body>
 
-<div class="navbar">
-Personel Yönetimi
-</div>
+<div class="navbar">Personel Yönetimi</div>
 
 <div class="main">
-<div class="container">
+  <div class="container">
+    <div class="card">
+      <h3>Personel Ekle</h3>
 
-<div class="card">
-<h3>Personel Ekle</h3>
+      <div class="input-group">
+        <label>Adı</label>
+        <input type="text" id="ad">
+      </div>
 
-<div class="input-group">
-<label>Adı</label>
-<input type="text" id="ad">
-</div>
+      <div class="input-group">
+        <label>Soyadı</label>
+        <input type="text" id="soyad">
+      </div>
 
-<div class="input-group">
-<label>Soyadı</label>
-<input type="text" id="soyad">
-</div>
+      <h4 style="margin:18px 0 8px 0;">Hizmetler</h4>
+      <div class="services-list" id="servicesContainer">Yükleniyor...</div>
 
-<h4 style="margin:18px 0 8px 0;">Hizmetler</h4>
-<div class="services-list" id="servicesContainer">
-Yükleniyor...
-</div>
+      <h4 style="margin:18px 0 8px 0;">Çalışma Günleri</h4>
+      <div class="days">
+        <div class="day-btn">P</div>
+        <div class="day-btn">S</div>
+        <div class="day-btn">Ç</div>
+        <div class="day-btn">P</div>
+        <div class="day-btn">C</div>
+        <div class="day-btn">C</div>
+        <div class="day-btn">P</div>
+      </div>
 
-<h4 style="margin:18px 0 8px 0;">Çalışma Günleri</h4>
+      <h4 style="margin:18px 0 8px 0;">Çalışma Saatleri</h4>
+      <div class="time-grid">
+        <div>
+          <label>Başlangıç</label>
+          <input type="time" id="baslangic">
+        </div>
+        <div>
+          <label>Bitiş</label>
+          <input type="time" id="bitis">
+        </div>
+        <div>
+          <label>Öğle Başlangıç</label>
+          <input type="time" id="ogleBaslangic">
+        </div>
+        <div>
+          <label>Öğle Bitiş</label>
+          <input type="time" id="ogleBitis">
+        </div>
+      </div>
 
-<div class="days">
-  <div class="day-btn">P</div>
-  <div class="day-btn">S</div>
-  <div class="day-btn">Ç</div>
-  <div class="day-btn">P</div>
-  <div class="day-btn">C</div>
-  <div class="day-btn">C</div>
-  <div class="day-btn">P</div>
-</div>
+      <button class="save-btn">Kaydet</button>
 
-<h4 style="margin:18px 0 8px 0;">Çalışma Saatleri</h4>
-
-<div class="time-grid">
-  <div>
-    <label>Başlangıç</label>
-    <input type="time" id="baslangic">
+      <div class="note" id="debugNote"></div>
+    </div>
   </div>
-  <div>
-    <label>Bitiş</label>
-    <input type="time" id="bitis">
-  </div>
-  <div>
-    <label>Öğle Başlangıç</label>
-    <input type="time" id="ogleBaslangic">
-  </div>
-  <div>
-    <label>Öğle Bitiş</label>
-    <input type="time" id="ogleBitis">
-  </div>
-</div>
-
-<button class="save-btn">Kaydet</button>
-
-</div>
-</div>
 </div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbzYUCYSIhlgQ-GeFFpukJNUC8nqrF3tZQd3LJfZvH0QLY0pSiAqbjhE5-I4sjJbmV9M/exec";
+const API = "https://script.google.com/macros/s/AKfycbzYUCYSIhlgQ-GeFFpukJNUC8nqrF3tZQd3LJfZvH0QLY0pSiAqbjhE5-I4sjJbmV9M/exec";
 
-function jsonp(action,params={}){
-return new Promise((resolve,reject)=>{
-const cb="cb_"+Date.now()+"_"+Math.floor(Math.random()*1000);
+function getParam(name){
+  try{
+    return new URLSearchParams(window.location.search).get(name) || "";
+  }catch(e){ return ""; }
+}
 
-window[cb]=d=>{
-delete window[cb];
-if(document.body.contains(s)) document.body.removeChild(s);
-resolve(d);
-};
+function getToken(){
+  return localStorage.getItem("stilix_token") || sessionStorage.getItem("stilix_token") || getParam("token");
+}
 
-const q=new URLSearchParams({
-action,
-callback:cb,
-t:Date.now(),  // cache kırıcı
-...params
-}).toString();
+function getSubeId(){
+  return localStorage.getItem("selectedBranch") || sessionStorage.getItem("selectedBranch") || getParam("subeId");
+}
 
-const s=document.createElement("script");
-s.src=API+"?"+q;
-s.onerror=()=>reject("API hatası");
-document.body.appendChild(s);
-});
+function setDebug(msg){
+  const d = document.getElementById("debugNote");
+  d.textContent = msg || "";
+}
+
+function jsonp(action, params = {}) {
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Date.now() + "_" + Math.floor(Math.random()*1000);
+
+    window[cb] = (d) => {
+      try{ delete window[cb]; }catch(e){}
+      if (document.body.contains(s)) document.body.removeChild(s);
+      resolve(d);
+    };
+
+    const q = new URLSearchParams({
+      action,
+      callback: cb,
+      t: Date.now(), // cache kırıcı
+      ...params
+    }).toString();
+
+    const s = document.createElement("script");
+    s.src = API + "?" + q;
+
+    s.onerror = () => {
+      try{ delete window[cb]; }catch(e){}
+      if (document.body.contains(s)) document.body.removeChild(s);
+      reject(new Error("JSONP yüklenemedi (network / blocked)"));
+    };
+
+    document.body.appendChild(s);
+  });
 }
 
 async function loadSubeServices(){
-const subeId=localStorage.getItem("selectedBranch");
-const token=localStorage.getItem("stilix_token");
-const container=document.getElementById("servicesContainer");
+  const token = getToken();
+  const subeId = getSubeId();
+  const container = document.getElementById("servicesContainer");
 
-if(!subeId||!token){
-container.innerHTML="Şube bulunamadı";
-return;
-}
+  setDebug(`token: ${token ? "var" : "YOK"} | subeId: ${subeId || "YOK"}`);
 
-try{
-const masterRes=await jsonp("getMasterServices");
-if(!masterRes.success||!masterRes.services){
-container.innerHTML="Hizmet bulunamadı";
-return;
-}
+  if(!token || !subeId){
+    container.innerHTML = "Telefon tarafında token/subeId yok. Aynı cihazda giriş yap veya sayfayı şöyle aç: ?token=...&subeId=...";
+    return;
+  }
 
-const masterMap={};
-masterRes.services.forEach(s=>{
-masterMap[String(s.hizmetId).trim()]=s.hizmet;
-});
+  try{
+    // 1) Master hizmetler
+    const masterRes = await jsonp("getMasterServices");
+    if(!masterRes || masterRes.success !== true || !Array.isArray(masterRes.services)){
+      container.innerHTML = "Master hizmet listesi alınamadı: " + (masterRes?.message || masterRes?.error || "Bilinmeyen");
+      return;
+    }
 
-const subeRes=await jsonp("getSubeServices",{token,subeId});
-if(!subeRes.success||!subeRes.services){
-container.innerHTML="Hizmet bulunamadı";
-return;
-}
+    const masterMap = {};
+    masterRes.services.forEach(s=>{
+      const id = String(s.hizmetId || "").trim();
+      const ad = String(s.hizmet || "").trim();
+      if(id && ad) masterMap[id] = ad;
+    });
 
-container.innerHTML="";
+    // 2) Şube hizmetleri (ID listesi)
+    const subeRes = await jsonp("getSubeServices",{ token, subeId });
 
-subeRes.services.forEach(service=>{
-const id=String(service.hizmetId).trim();
-const ad=masterMap[id];
-if(!ad)return;
+    if(!subeRes || subeRes.success !== true || !Array.isArray(subeRes.services)){
+      container.innerHTML = "Şube hizmetleri alınamadı: " + (subeRes?.message || subeRes?.error || "Bilinmeyen");
+      return;
+    }
 
-const div=document.createElement("div");
-div.className="service-item";
-div.innerHTML=`<input type="checkbox" value="${id}">${ad}`;
-container.appendChild(div);
-});
+    if(subeRes.services.length === 0){
+      container.innerHTML = "Bu şubede aktif hizmet yok.";
+      return;
+    }
 
-}catch(e){
-container.innerHTML="Hizmet yüklenemedi";
-}
+    // 3) Render
+    container.innerHTML = "";
+
+    let shown = 0;
+    subeRes.services.forEach(service=>{
+      const id = String(service.hizmetId || "").trim();
+      const ad = masterMap[id];
+      if(!id || !ad) return;
+
+      const div = document.createElement("div");
+      div.className = "service-item";
+      div.innerHTML = `<input type="checkbox" value="${id}">${ad}`;
+      container.appendChild(div);
+      shown++;
+    });
+
+    if(shown === 0){
+      container.innerHTML = "ID eşleşmesi yok. (Master Hizmet_id ile SUBE_HIZMETLER.hizmetId aynı mı?)";
+    }
+
+  }catch(err){
+    container.innerHTML = "Hizmet yüklenemedi: " + (err?.message || err);
+  }
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
-loadSubeServices();
-document.querySelectorAll(".day-btn").forEach(btn=>{
-btn.addEventListener("click",()=>{
-btn.classList.toggle("active");
-});
-});
+  loadSubeServices();
+
+  document.querySelectorAll(".day-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>btn.classList.toggle("active"));
+  });
 });
 </script>
 
