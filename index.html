@@ -10,10 +10,9 @@
         margin: 0;
         font-family: 'Segoe UI', sans-serif;
         background: #f4f6f9;
-        overflow-x: hidden; /* Kenardan görünmeyi engeller */
+        overflow-x: hidden;
     }
 
-    /* Top Bar */
     .topbar {
         position: relative;
         z-index: 1000;
@@ -41,24 +40,22 @@
     .sidebar {
         position: fixed;
         top: 60px;
-        left: -260px;
         width: 260px;
         height: calc(100% - 60px);
         background: #111827;
         color: white;
-        transition: 0.3s ease;
-        z-index: 999;
         padding: 20px 15px;
-        overflow: hidden;
+        z-index: 999;
+        transform: translateX(-100%);   /* TAMAMEN dışarı */
+        transition: transform 0.3s ease;
     }
 
     .sidebar.active {
-        left: 0;
+        transform: translateX(0);       /* İçeri */
     }
 
-    /* Kart Buton (zeminden bir tık açık) */
     .menu-card {
-        background: #374151; /* Zeminden biraz daha açık */
+        background: #374151;
         border-radius: 12px;
         padding: 18px;
         margin-bottom: 15px;
@@ -74,7 +71,6 @@
         background: #4b5563;
     }
 
-    /* Normal Menü */
     .sidebar a {
         display: block;
         padding: 12px 15px;
@@ -89,7 +85,6 @@
         background: #374151;
     }
 
-    /* Overlay */
     .overlay {
         position: fixed;
         display: none;
@@ -105,7 +100,6 @@
         display: block;
     }
 
-    /* Content */
     .content {
         padding: 30px;
     }
@@ -126,7 +120,6 @@
 <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
 
 <div class="content">
-    <!-- Şimdilik boş -->
 </div>
 
 <script>
