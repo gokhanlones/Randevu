@@ -194,7 +194,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
         </div>
       </div>
 
-      <button class="save-btn" onclick="savePersonel()">Kaydet</button>
+      <button class="save-btn">Kaydet</button>
     </div>
   </div>
 </div>
@@ -316,47 +316,106 @@ async function loadSubeServices() {
   }
 }
 
-async function savePersonel(){
-  const ad = document.getElementById("ad").value.trim();
-  const soyad = document.getElementById("soyad").value.trim();
-  
-  if(!ad || !soyad){
-    toast("Ad ve soyad zorunlu");
+async function savePersonel() {
+  const token = localStorage.getItem("stilix_token");
+  const subeId = localStorage.getItem("selectedBranch");
+
+  if (!token || !subeId) {
+    toast("Yetkisiz erişim");
     return;
   }
-  
-  // Seçili hizmetleri al
-  const selectedServices = [];
-  document.querySelectorAll('.service-item input:checked').forEach(cb => {
-    selectedServices.push(cb.value);
-  });
-  
-  // Seçili günleri al
-  const selectedDays = [];
-  document.querySelectorAll('.day-btn.active').forEach(btn => {
-    selectedDays.push(btn.dataset.day);
-  });
-  
-  const data = {
-    token: getToken(),
-    subeId: getSubeId(),
-    ad,
-    soyad,
-    services: selectedServices.join(','),
-    days: selectedDays.join(','),
-    baslangic: document.getElementById("baslangic").value,
-    bitis: document.getElementById("bitis").value,
-    ogleBaslangic: document.getElementById("ogleBaslangic").value,
-    ogleBitis: document.getElementById("ogleBitis").value
-  };
-  
-  try {
-    // Şimdilik sadece toast göster, API fonksiyonu eklenince açılır
-    toast("Kaydediliyor... (API hazırlanıyor)");
-    console.log("Kayıt verisi:", data);
-  } catch(err) {
-    toast("Hata: " + err.message);
+
+  const ad = document.getElementById("ad").value.trim();
+  const soyad = document.getElementById("soyad").value.trim();
+
+  if (!ad || !soyad) {
+    toast("Ad ve Soyad zorunlu");
+    return;
   }
+
+  // 1️⃣ PERSONEL EKLE
+  const personelRes = await jsonp("addPersonel", {
+    token,
+    subeId,
+    ad,
+    soyad
+  });
+
+  if (!personelRes.success) {
+    toast(personelRes.message || "Personel kaydedilemedi");
+    return;
+  }
+
+  const personelId = personelRes.personelId;
+
+  // 2️⃣ MESAI TOPLA
+  const mesai = [];
+  const baslangic = document.getElementById("baslangic").value;
+  const bitis = document.getElementById("bitis").value;
+  const ogleBaslangic = document.getElementById("ogleBaslangic").value;
+  const ogleBitis = document.getElementById("ogleBitis").value;
+
+  // Gün haritalaması (data-day attribute'larına göre)
+  const gunMap = {
+    "Pzt": "Pazartesi",
+    "Sal": "Salı",
+    "Çar": "Çarşamba",
+    "Per": "Perşembe",
+    "Cum": "Cuma",
+    "Cmt": "Cumartesi",
+    "Paz": "Pazar"
+  };
+
+  document.querySelectorAll(".day-btn.active").forEach(btn => {
+    const gunKisa = btn.dataset.day; // Pzt, Sal, Çar, vb.
+    const gunTam = gunMap[gunKisa];
+    
+    if (gunTam) {
+      mesai.push({
+        gun: gunTam,
+        baslangic,
+        bitis,
+        ogleBaslangic,
+        ogleBitis
+      });
+    }
+  });
+
+  if (mesai.length > 0) {
+    await jsonp("savePersonelMesai", {
+      token,
+      personelId,
+      mesai: JSON.stringify(mesai)
+    });
+  }
+
+  // 3️⃣ HIZMETLER
+  const hizmetler = [];
+  document.querySelectorAll("#servicesContainer input:checked")
+    .forEach(cb => hizmetler.push(cb.value));
+
+  if (hizmetler.length > 0) {
+    await jsonp("savePersonelHizmet", {
+      token,
+      personelId,
+      subeId,
+      hizmetler: JSON.stringify(hizmetler)
+    });
+  }
+
+  toast("Personel başarıyla kaydedildi");
+  
+  // Form temizleme (opsiyonel)
+  setTimeout(() => {
+    document.getElementById("ad").value = "";
+    document.getElementById("soyad").value = "";
+    document.querySelectorAll(".day-btn.active").forEach(btn => btn.classList.remove("active"));
+    document.querySelectorAll("#servicesContainer input:checked").forEach(cb => cb.checked = false);
+    document.getElementById("baslangic").value = "";
+    document.getElementById("bitis").value = "";
+    document.getElementById("ogleBaslangic").value = "";
+    document.getElementById("ogleBitis").value = "";
+  }, 1000);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -370,6 +429,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".day-btn").forEach(btn => {
     btn.addEventListener("click", () => btn.classList.toggle("active"));
   });
+
+  // Save buton event listener
+  document.querySelector(".save-btn").addEventListener("click", savePersonel);
 });
 </script>
 
