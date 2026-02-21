@@ -1,194 +1,318 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Personel Ekle</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personel Ekle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#000;font-family:'Segoe UI',sans-serif;color:#fff;}
-.container{max-width:500px;margin:auto;padding:20px;}
-.card{
-  background:#111;
-  border-radius:22px;
-  padding:20px;
-  margin-bottom:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.4);
-}
-.title{font-size:1rem;margin-bottom:12px;opacity:.8;}
-input[type="time"], input[type="text"]{
-  width:100%;
-  background:#000;
-  color:#fff;
-  border:none;
-  font-size:1.6rem;
-  text-align:center;
-  padding:10px;
-  border-radius:10px;
-}
-.days{display:flex;justify-content:space-between;margin-top:10px;}
-.day{
-  width:40px;height:40px;
-  border-radius:50%;
-  background:#222;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:.9rem;
-}
-.day.active{background:#8a7bff;}
-.service{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:12px;
-}
-.switch{position:relative;width:45px;height:24px;}
-.switch input{opacity:0;width:0;height:0;}
-.slider{
-  position:absolute;cursor:pointer;
-  top:0;left:0;right:0;bottom:0;
-  background:#444;border-radius:30px;transition:.3s;
-}
-.slider:before{
-  content:"";position:absolute;
-  height:18px;width:18px;
-  left:3px;bottom:3px;
-  background:#fff;border-radius:50%;
-  transition:.3s;
-}
-.switch input:checked + .slider{background:#8a7bff;}
-.switch input:checked + .slider:before{transform:translateX(20px);}
-.button-bar{display:flex;justify-content:space-between;margin-top:20px;}
-button{
-  padding:14px 25px;border:none;border-radius:12px;
-  font-weight:600;cursor:pointer;
-}
-.cancel{background:#333;color:#fff;}
-.save{background:#8a7bff;color:#fff;}
-.error{color:#ff5e5e;font-size:.9rem;margin-top:10px;text-align:center;}
-</style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Hide Scrollbar but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #6366f1;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #6366f1;
+        }
+        
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(30, 30, 35, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        /* Input Styling */
+        .custom-input {
+            background: transparent;
+            border-bottom: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+        .custom-input:focus {
+            border-bottom: 2px solid #6366f1;
+            outline: none;
+        }
+
+        /* Time Picker Wheel Effect */
+        .picker-column {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 40%, black 60%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 40%, black 60%, transparent 100%);
+        }
+        .picker-scroll {
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .picker-item {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #555;
+            transition: all 0.2s;
+        }
+        .picker-item.active {
+            color: #ffffff;
+            font-weight: 600;
+            transform: scale(1.1);
+        }
+
+        /* Floating Label Animation */
+        .floating-input:placeholder-shown + label {
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: #666;
+        }
+        .floating-input:focus + label,
+        .floating-input:not(:placeholder-shown) + label {
+            top: -10px;
+            font-size: 0.75rem;
+            color: #6366f1;
+        }
+    </style>
 </head>
+<body class="h-screen flex flex-col items-center justify-center relative">
 
-<body>
-<div class="container">
+    <!-- Background Ambient Glow -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-900/20 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-900/20 rounded-full blur-[120px]"></div>
+    </div>
 
-<div class="card">
-  <div class="title">Personel Bilgileri</div>
-  <input type="text" id="ad" placeholder="Ad">
-  <br><br>
-  <input type="text" id="soyad" placeholder="Soyad">
-</div>
+    <!-- Main Container -->
+    <div class="w-full max-w-md h-full md:h-auto md:max-h-[95vh] flex flex-col relative">
+        
+        <!-- Time Picker Section (Visual Header) -->
+        <div class="flex-1 flex flex-col items-center justify-center py-8 select-none">
+            <div class="flex items-center justify-center space-x-4">
+                <!-- Hours -->
+                <div class="picker-column w-24" id="hour-col">
+                    <div class="picker-scroll" id="hour-scroll">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+                <div class="text-4xl font-light text-gray-500 pb-2">:</div>
+                <!-- Minutes -->
+                <div class="picker-column w-24" id="minute-col">
+                    <div class="picker-scroll" id="minute-scroll">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+            </div>
+            <div class="text-gray-500 text-sm mt-2 tracking-widest uppercase">Çalışma Saati</div>
+        </div>
 
-<div class="card">
-  <div class="title">Çalışma Günleri</div>
-  <div class="days">
-    <div class="day">P</div>
-    <div class="day">S</div>
-    <div class="day">Ç</div>
-    <div class="day">P</div>
-    <div class="day">C</div>
-    <div class="day">C</div>
-    <div class="day">P</div>
-  </div>
-</div>
+        <!-- Bottom Sheet / Form Card -->
+        <div class="glass-card rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 flex flex-col gap-6 animate-slide-up">
+            
+            <!-- Drag Handle (Mobile Visual Cue) -->
+            <div class="w-12 h-1.5 bg-gray-700 rounded-full mx-auto mb-2 md:hidden"></div>
 
-<div class="card">
-  <div class="title">Çalışma Başlangıç</div>
-  <input type="time" id="start" value="09:00">
-</div>
+            <!-- Personel Name Input -->
+            <div class="relative mt-2">
+                <input type="text" id="personelAdi" placeholder=" " class="floating-input w-full bg-transparent text-xl py-3 border-b border-gray-700 focus:border-indigo-500 outline-none text-white peer">
+                <label for="personelAdi" class="absolute left-0 top-3 text-gray-500 transition-all duration-300 pointer-events-none">Personel Adı</label>
+            </div>
 
-<div class="card">
-  <div class="title">Çalışma Bitiş</div>
-  <input type="time" id="end" value="18:00">
-</div>
+            <!-- Surname & Service Toggle Row -->
+            <div class="flex items-center justify-between border-b border-gray-700 pb-4">
+                <div class="flex-1 relative mr-4">
+                    <input type="text" id="personelSoyadi" placeholder=" " class="floating-input w-full bg-transparent text-lg py-2 outline-none text-white">
+                    <label for="personelSoyadi" class="absolute left-0 top-2 text-gray-500 transition-all duration-300 pointer-events-none text-sm">Soyadı</label>
+                </div>
+                
+                <!-- Toggle Service -->
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-400">Hizmet</span>
+                    <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" name="toggle" id="serviceToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 left-0 top-0 border-gray-600"/>
+                        <label for="serviceToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-700 cursor-pointer transition-colors duration-300"></label>
+                    </div>
+                </div>
+            </div>
 
-<div class="card">
-  <div class="title">Ara Başlangıç</div>
-  <input type="time" id="breakStart" value="12:30">
-</div>
+            <!-- Time Configuration Grid -->
+            <div class="grid grid-cols-2 gap-x-4 gap-y-6 mt-2">
+                <!-- Start Time -->
+                <div class="relative group">
+                    <label class="block text-xs text-indigo-400 mb-1 font-medium tracking-wide">BAŞLANGIÇ</label>
+                    <input type="time" value="09:00" class="w-full bg-gray-800/50 text-white text-lg p-3 rounded-xl border border-gray-700 focus:border-indigo-500 outline-none text-center font-mono tracking-wider">
+                </div>
 
-<div class="card">
-  <div class="title">Ara Bitiş</div>
-  <input type="time" id="breakEnd" value="13:00">
-</div>
+                <!-- End Time -->
+                <div class="relative group">
+                    <label class="block text-xs text-indigo-400 mb-1 font-medium tracking-wide">BİTİŞ</label>
+                    <input type="time" value="18:00" class="w-full bg-gray-800/50 text-white text-lg p-3 rounded-xl border border-gray-700 focus:border-indigo-500 outline-none text-center font-mono tracking-wider">
+                </div>
 
-<div class="card">
-  <div class="title">Hizmetler</div>
+                <!-- Lunch Start -->
+                <div class="relative group opacity-50 transition-opacity duration-300" id="lunchStartGroup">
+                    <label class="block text-xs text-orange-400 mb-1 font-medium tracking-wide">ÖĞLE BAŞLANGIÇ</label>
+                    <input type="time" value="12:00" disabled class="w-full bg-gray-800/50 text-white text-lg p-3 rounded-xl border border-gray-700 focus:border-orange-500 outline-none text-center font-mono tracking-wider cursor-not-allowed">
+                </div>
 
-  <div class="service">
-    <span>Saç Kesim</span>
-    <label class="switch">
-      <input type="checkbox">
-      <span class="slider"></span>
-    </label>
-  </div>
+                <!-- Lunch End -->
+                <div class="relative group opacity-50 transition-opacity duration-300" id="lunchEndGroup">
+                    <label class="block text-xs text-orange-400 mb-1 font-medium tracking-wide">ÖĞLE BİTİŞ</label>
+                    <input type="time" value="13:00" disabled class="w-full bg-gray-800/50 text-white text-lg p-3 rounded-xl border border-gray-700 focus:border-orange-500 outline-none text-center font-mono tracking-wider cursor-not-allowed">
+                </div>
+            </div>
 
-  <div class="service">
-    <span>Sakal</span>
-    <label class="switch">
-      <input type="checkbox">
-      <span class="slider"></span>
-    </label>
-  </div>
+            <!-- Action Buttons -->
+            <div class="flex justify-between items-center mt-6 pt-4">
+                <button class="text-gray-400 font-medium text-lg px-6 py-3 hover:text-white transition-colors">İptal et</button>
+                <button onclick="savePersonel()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-lg px-8 py-3 rounded-2xl shadow-lg shadow-indigo-500/30 transform active:scale-95 transition-all">
+                    Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
 
-  <div class="service">
-    <span>Fön</span>
-    <label class="switch">
-      <input type="checkbox">
-      <span class="slider"></span>
-    </label>
-  </div>
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-500 opacity-0 translate-y-[-20px] z-50 pointer-events-none">
+        <i class="fas fa-check-circle"></i>
+        <span class="font-medium">Personel Kaydedildi</span>
+    </div>
 
-</div>
+    <script>
+        // --- Time Picker Logic ---
+        const hourScroll = document.getElementById('hour-scroll');
+        const minuteScroll = document.getElementById('minute-scroll');
+        let currentHour = 9;
+        let currentMinute = 0;
 
-<div class="button-bar">
-  <button class="cancel">İptal</button>
-  <button class="save" onclick="validate()">Kaydet</button>
-</div>
+        function renderPicker(container, max, current, pad = false) {
+            container.innerHTML = '';
+            for (let i = 0; i < max; i++) {
+                const div = document.createElement('div');
+                div.className = `picker-item ${i === current ? 'active' : ''}`;
+                div.textContent = pad ? i.toString().padStart(2, '0') : i;
+                container.appendChild(div);
+            }
+            updateScroll(container, current);
+        }
 
-<div class="error" id="error"></div>
+        function updateScroll(container, index) {
+            const itemHeight = 60;
+            container.style.transform = `translateY(${-index * itemHeight + 60}px)`; // +60 to center in 180px container (middle is 60-120)
+            
+            Array.from(container.children).forEach((child, idx) => {
+                if(idx === index) child.classList.add('active');
+                else child.classList.remove('active');
+            });
+        }
 
-</div>
+        // Initialize Pickers
+        renderPicker(hourScroll, 24, currentHour);
+        renderPicker(minuteScroll, 60, currentMinute, true);
 
-<script>
-document.querySelectorAll(".day").forEach(d=>{
-  d.addEventListener("click",()=>d.classList.toggle("active"));
-});
+        // Simple Scroll Interaction (Wheel)
+        document.getElementById('hour-col').addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.deltaY > 0 && currentHour < 23) currentHour++;
+            if (e.deltaY < 0 && currentHour > 0) currentHour--;
+            renderPicker(hourScroll, 24, currentHour);
+        });
 
-function validate(){
-  const ad = document.getElementById("ad").value.trim();
-  const soyad = document.getElementById("soyad").value.trim();
-  const start = document.getElementById("start").value;
-  const end = document.getElementById("end").value;
-  const breakStart = document.getElementById("breakStart").value;
-  const breakEnd = document.getElementById("breakEnd").value;
-  const activeDays = document.querySelectorAll(".day.active").length;
-  const error = document.getElementById("error");
+        document.getElementById('minute-col').addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.deltaY > 0 && currentMinute < 59) currentMinute++;
+            if (e.deltaY < 0 && currentMinute > 0) currentMinute--;
+            renderPicker(minuteScroll, 60, currentMinute, true);
+        });
+        
+        // Touch drag support for pickers (Simplified)
+        let startY;
+        document.getElementById('hour-col').addEventListener('touchstart', e => startY = e.touches[0].clientY);
+        document.getElementById('hour-col').addEventListener('touchend', e => {
+            const endY = e.changedTouches[0].clientY;
+            if (startY - endY > 20 && currentHour < 23) currentHour++; // Swipe Up
+            if (endY - startY > 20 && currentHour > 0) currentHour--; // Swipe Down
+            renderPicker(hourScroll, 24, currentHour);
+        });
 
-  if(!ad || !soyad){
-    error.textContent="Ad ve Soyad zorunlu.";
-    return;
-  }
-  if(activeDays === 0){
-    error.textContent="En az bir çalışma günü seçilmeli.";
-    return;
-  }
-  if(start >= end){
-    error.textContent="Çalışma bitiş saati başlangıçtan büyük olmalı.";
-    return;
-  }
-  if(breakStart >= breakEnd){
-    error.textContent="Ara bitiş saati ara başlangıçtan büyük olmalı.";
-    return;
-  }
-  if(breakStart <= start || breakEnd >= end){
-    error.textContent="Ara saatleri çalışma saatleri içinde olmalı.";
-    return;
-  }
 
-  error.textContent="";
-  alert("Validasyon başarılı. Kaydedilebilir.");
-}
-</script>
+        // --- Service Toggle Logic ---
+        const toggle = document.getElementById('serviceToggle');
+        const lunchStart = document.getElementById('lunchStartGroup');
+        const lunchEnd = document.getElementById('lunchEndGroup');
+        const lunchInputs = lunchStart.querySelectorAll('input');
+        const lunchLabels = lunchStart.querySelectorAll('label');
 
+        toggle.addEventListener('change', (e) => {
+            const isChecked = e.target.checked;
+            
+            if (isChecked) {
+                lunchStart.classList.remove('opacity-50');
+                lunchEnd.classList.remove('opacity-50');
+                lunchInputs.forEach(input => {
+                    input.disabled = false;
+                    input.classList.remove('cursor-not-allowed');
+                });
+            } else {
+                lunchStart.classList.add('opacity-50');
+                lunchEnd.classList.add('opacity-50');
+                lunchInputs.forEach(input => {
+                    input.disabled = true;
+                    input.classList.add('cursor-not-allowed');
+                });
+            }
+        });
+
+        // --- Save Action ---
+        function savePersonel() {
+            const btn = document.querySelector('button[onclick="savePersonel()"]');
+            const originalText = btn.innerText;
+            
+            // Loading State
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.classList.add('opacity-75', 'cursor-wait');
+            
+            setTimeout(() => {
+                // Reset Button
+                btn.innerText = originalText;
+                btn.classList.remove('opacity-75', 'cursor-wait');
+                
+                // Show Toast
+                const toast = document.getElementById('toast');
+                toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+                
+                // Hide Toast
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-[-20px]');
+                }, 3000);
+                
+                // Clear inputs (Optional)
+                document.getElementById('personelAdi').value = '';
+                document.getElementById('personelSoyadi').value = '';
+            }, 800);
+        }
+    </script>
 </body>
 </html>
