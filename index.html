@@ -14,8 +14,6 @@
     --light-bg: #F3F4F6;
     --card-bg: #FFFFFF;
     --text-dark: #1F2937;
-    --text-light: #6B7280;
-    --border: #E5E7EB;
 }
 
 * {
@@ -47,7 +45,6 @@ body {
 
 .title {
     font-size: 17px;
-    font-weight: 500;
 }
 
 .sidebar {
@@ -70,8 +67,6 @@ body {
     border-radius: 10px;
     padding: 16px;
     margin-bottom: 15px;
-    font-size: 15px;
-    cursor: pointer;
     transition: 0.2s ease;
 }
 
@@ -79,7 +74,6 @@ body {
     background: var(--primary);
 }
 
-/* LINK TAM BLOK OLSUN */
 .menu-card a {
     display: block;
     width: 100%;
@@ -106,11 +100,10 @@ body {
 }
 
 .dashboard-card {
-    background: var(--card-bg);
+    background: white;
     padding: 25px;
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-    color: var(--text-dark);
 }
 </style>
 </head>
@@ -123,9 +116,8 @@ body {
 
 <div id="sidebar" class="sidebar">
 
-    <!-- JS YOK, DİREKT LİNK -->
     <div class="menu-card">
-        <a href="/Randevu/giris.html">
+        <a href="giris.html">
             🏢 İşletme Girişi
         </a>
     </div>
@@ -136,9 +128,7 @@ body {
 
 <div class="content">
     <div class="dashboard-card">
-        Hoş geldiniz 👋  
-        <br><br>
-        Panel içerikleri burada görünecek.
+        Hoş geldiniz 👋
     </div>
 </div>
 
