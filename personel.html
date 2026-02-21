@@ -189,76 +189,98 @@ Yükleniyor...
 
 const API = "https://script.google.com/macros/s/AKfycbzYUCYSIhlgQ-GeFFpukJNUC8nqrF3tZQd3LJfZvH0QLY0pSiAqbjhE5-I4sjJbmV9M/exec";
 
-function jsonp(action,params={}){
-return new Promise((resolve,reject)=>{
-const cb="cb_"+Date.now();
-window[cb]=d=>{
-delete window[cb];
-if(document.body.contains(s)) document.body.removeChild(s);
-resolve(d);
-};
-const q=new URLSearchParams({action,callback:cb,...params}).toString();
-const s=document.createElement("script");
-s.src=API+"?"+q;
-s.onerror=()=>reject("API hatasi");
-document.body.appendChild(s);
-});
+function jsonp(action, params = {}) {
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Date.now();
+    window[cb] = d => {
+      delete window[cb];
+      if (document.body.contains(s)) document.body.removeChild(s);
+      resolve(d);
+    };
+
+    const q = new URLSearchParams({ action, callback: cb, ...params }).toString();
+    const s = document.createElement("script");
+    s.src = API + "?" + q;
+    s.onerror = () => reject("API hatası");
+    document.body.appendChild(s);
+  });
 }
 
-async function loadSubeServices(){
+async function loadSubeServices() {
 
-const subeId = localStorage.getItem("selectedBranch");
-const token = localStorage.getItem("stilix_token");
+  const subeId = localStorage.getItem("selectedBranch");
+  const token = localStorage.getItem("stilix_token");
+  const container = document.getElementById("servicesContainer");
 
-const container = document.getElementById("servicesContainer");
+  if (!subeId || !token) {
+    container.innerHTML = "Şube bulunamadı";
+    return;
+  }
 
-if(!subeId || !token){
-container.innerHTML="Şube bulunamadı";
-return;
+  try {
+
+    // 1️⃣ Master hizmet listesi (ID + İsim)
+    const masterRes = await jsonp("getMasterServices");
+
+    if (!masterRes.success || !masterRes.services) {
+      container.innerHTML = "Master hizmet listesi alınamadı";
+      return;
+    }
+
+    // ID -> İsim map oluştur
+    const masterMap = {};
+    masterRes.services.forEach(s => {
+      masterMap[String(s.hizmetId).trim()] = s.hizmet;
+    });
+
+    // 2️⃣ Şubeye ait hizmet ID'leri
+    const subeRes = await jsonp("getSubeServices", {
+      token: token,
+      subeId: subeId
+    });
+
+    if (!subeRes.success || !subeRes.services || subeRes.services.length === 0) {
+      container.innerHTML = "Hizmet bulunamadı";
+      return;
+    }
+
+    container.innerHTML = "";
+
+    // 3️⃣ Render
+    subeRes.services.forEach(service => {
+
+      const id = String(service.hizmetId).trim();
+      const ad = masterMap[id];
+
+      if (!ad) return; // master'da yoksa gösterme
+
+      const div = document.createElement("div");
+      div.className = "service-item";
+
+      div.innerHTML = `
+        <input type="checkbox" value="${id}">
+        ${ad}
+      `;
+
+      container.appendChild(div);
+
+    });
+
+  } catch (err) {
+    container.innerHTML = "Hizmet yüklenemedi";
+    console.error(err);
+  }
 }
 
-try{
+document.addEventListener("DOMContentLoaded", () => {
 
-const res = await jsonp("getSubeServices",{ token, subeId });
+  loadSubeServices();
 
-if(!res.success || !res.services || res.services.length===0){
-container.innerHTML="Hizmet bulunamadı";
-return;
-}
-
-container.innerHTML="";
-
-res.services.forEach(service=>{
-
-if(!service.hizmet || service.hizmet.trim()==="") return;
-
-const div=document.createElement("div");
-div.className="service-item";
-
-div.innerHTML=`
-<input type="checkbox" value="${service.hizmetId}">
-${service.hizmet}
-`;
-
-container.appendChild(div);
-
-});
-
-}catch(err){
-container.innerHTML="Hizmet yüklenemedi";
-}
-
-}
-
-document.addEventListener("DOMContentLoaded",()=>{
-
-loadSubeServices();
-
-document.querySelectorAll(".day-btn").forEach(btn=>{
-btn.addEventListener("click",()=>{
-btn.classList.toggle("active");
-});
-});
+  document.querySelectorAll(".day-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      btn.classList.toggle("active");
+    });
+  });
 
 });
 
