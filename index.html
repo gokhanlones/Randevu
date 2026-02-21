@@ -140,7 +140,11 @@ function closeMenu() {
 }
 
 function goLogin() {
-    window.location.href = "giris.html";
+    closeMenu(); // önce menüyü kapat
+
+    setTimeout(() => {
+        window.location.href = "giris.html";
+    }, 250); // animasyon süresi kadar bekle
 }
 </script>
 
