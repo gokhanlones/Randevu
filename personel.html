@@ -385,6 +385,7 @@ async function savePersonel() {
     await jsonp("savePersonelMesai", {
       token,
       personelId,
+      subeId,
       mesai: JSON.stringify(mesai)
     });
   }
@@ -395,7 +396,7 @@ async function savePersonel() {
     .forEach(cb => hizmetler.push(cb.value));
 
   if (hizmetler.length > 0) {
-    await jsonp("savePersonelHizmet", {
+    await jsonp("savePersonelHizmetler", {
       token,
       personelId,
       subeId,
