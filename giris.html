@@ -8,6 +8,17 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
 <style>
+:root {
+    --primary: #4F46E5;
+    --primary-hover: #4338CA;
+    --dark: #111827;
+    --light-bg: #F3F4F6;
+    --card-bg: #FFFFFF;
+    --text-dark: #1F2937;
+    --text-light: #6B7280;
+    --border: #E5E7EB;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -16,7 +27,7 @@
 
 body {
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--light-bg);
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -25,56 +36,57 @@ body {
 
 .login-container {
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     padding: 20px;
 }
 
 .login-card {
-    background: white;
-    padding: 35px 30px;
-    border-radius: 15px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    background: var(--card-bg);
+    padding: 40px 35px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
 .login-card h2 {
     text-align: center;
-    margin-bottom: 25px;
-    color: #333;
+    margin-bottom: 30px;
+    color: var(--text-dark);
+    font-weight: 600;
 }
 
 .input-group {
     position: relative;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
 .input-group input {
     width: 100%;
-    padding: 12px 40px 12px 40px;
+    padding: 13px 42px;
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     outline: none;
-    transition: 0.3s;
     font-size: 14px;
+    transition: 0.2s ease;
 }
 
 .input-group input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102,126,234,0.2);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
 }
 
 .input-group i {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    color: #999;
+    color: var(--text-light);
 }
 
-.input-group .left-icon {
-    left: 12px;
+.left-icon {
+    left: 14px;
 }
 
-.input-group .right-icon {
-    right: 12px;
+.right-icon {
+    right: 14px;
     cursor: pointer;
 }
 
@@ -83,45 +95,48 @@ body {
     justify-content: space-between;
     align-items: center;
     font-size: 13px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    color: var(--text-light);
 }
 
 .options label {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     cursor: pointer;
 }
 
 .options a {
     text-decoration: none;
-    color: #667eea;
+    color: var(--primary);
 }
 
 .login-btn {
     width: 100%;
-    padding: 12px;
+    padding: 13px;
     border: none;
     border-radius: 8px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--primary);
     color: white;
     font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.2s ease;
 }
 
 .login-btn:hover {
-    opacity: 0.9;
+    background: var(--primary-hover);
 }
 
 .register {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 22px;
     font-size: 14px;
+    color: var(--text-light);
 }
 
 .register a {
-    color: #667eea;
+    color: var(--primary);
     text-decoration: none;
     font-weight: 500;
 }
@@ -131,7 +146,7 @@ body {
     text-align: center;
     margin-top: 15px;
     font-size: 13px;
-    color: #667eea;
+    color: var(--primary);
 }
 </style>
 </head>
@@ -192,12 +207,10 @@ function login() {
 
     loading.style.display = "block";
 
-    // API entegrasyonu buraya gelecek
     setTimeout(() => {
         loading.style.display = "none";
-        alert("Giriş başarılı (demo)");
         window.location.href = "Panel.html";
-    }, 1500);
+    }, 1200);
 }
 </script>
 
