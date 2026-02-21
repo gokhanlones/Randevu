@@ -39,7 +39,7 @@
     /* Sidebar */
     .sidebar {
         position: fixed;
-        top: 60px;              /* Topbar altından başlasın */
+        top: 60px;
         left: -260px;
         width: 260px;
         height: calc(100% - 60px);
@@ -47,22 +47,45 @@
         color: white;
         transition: 0.3s ease;
         z-index: 999;
+        padding: 20px 15px;
     }
 
+    .sidebar.active {
+        left: 0;
+    }
+
+    /* Kart Buton */
+    .menu-card {
+        background: #2563eb;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 16px;
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+        transition: 0.2s ease;
+    }
+
+    .menu-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.5);
+    }
+
+    /* Normal Menü */
     .sidebar a {
         display: block;
-        padding: 15px 20px;
+        padding: 12px 15px;
         color: #e5e7eb;
         text-decoration: none;
+        border-radius: 8px;
         transition: 0.2s;
     }
 
     .sidebar a:hover {
         background: #374151;
-    }
-
-    .sidebar.active {
-        left: 0;
     }
 
     /* Overlay */
@@ -95,7 +118,7 @@
 </div>
 
 <div id="sidebar" class="sidebar">
-    <a href="#">İşletme Girişi</a>
+    <div class="menu-card">İşletme Girişi</div>
     <a href="#">Çıkış</a>
 </div>
 
