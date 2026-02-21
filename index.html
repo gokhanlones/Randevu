@@ -36,7 +36,6 @@
         font-weight: 500;
     }
 
-    /* Sidebar */
     .sidebar {
         position: fixed;
         top: 60px;
@@ -46,12 +45,12 @@
         color: white;
         padding: 20px 15px;
         z-index: 999;
-        transform: translateX(-100%);   /* TAMAMEN dışarı */
+        transform: translateX(-100%);
         transition: transform 0.3s ease;
     }
 
     .sidebar.active {
-        transform: translateX(0);       /* İçeri */
+        transform: translateX(0);
     }
 
     .menu-card {
@@ -59,12 +58,16 @@
         border-radius: 12px;
         padding: 18px;
         margin-bottom: 15px;
-        text-align: center;
         font-weight: 600;
         font-size: 16px;
         color: white;
         cursor: pointer;
         transition: 0.2s ease;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
 
     .menu-card:hover {
@@ -113,7 +116,10 @@
 </div>
 
 <div id="sidebar" class="sidebar">
-    <div class="menu-card" onclick="closeMenu()">İşletme Girişi</div>
+    <div class="menu-card" onclick="closeMenu()">
+        <span>🏢</span>
+        <span>İşletme Girişi</span>
+    </div>
     <a onclick="closeMenu()">Çıkış</a>
 </div>
 
