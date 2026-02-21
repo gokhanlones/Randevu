@@ -43,12 +43,6 @@ outline:none;
 }
 .input-group input:focus{border-color:#667eea;}
 
-.grid2{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:15px;
-}
-
 .services-list{
 max-height:220px;
 overflow-y:auto;
@@ -69,18 +63,25 @@ font-size:0.9rem;
 
 .days{
 display:flex;
-flex-wrap:wrap;
-gap:8px;
-margin-bottom:15px;
+justify-content:space-between;
+gap:10px;
+margin-bottom:20px;
+flex-wrap:nowrap;
 }
 
 .day-btn{
-padding:8px 12px;
-border-radius:8px;
-border:1px solid #ddd;
+width:42px;
+height:42px;
+border-radius:50%;
+border:2px solid #ddd;
+display:flex;
+align-items:center;
+justify-content:center;
 cursor:pointer;
-font-size:0.85rem;
+font-size:0.9rem;
+font-weight:600;
 background:#fff;
+transition:0.2s;
 }
 
 .day-btn.active{
@@ -129,7 +130,6 @@ Personel Yönetimi
 <div class="card">
 <h3>Personel Ekle</h3>
 
-<div class="grid2">
 <div class="input-group">
 <label>Adı</label>
 <input type="text" id="ad">
@@ -138,7 +138,6 @@ Personel Yönetimi
 <div class="input-group">
 <label>Soyadı</label>
 <input type="text" id="soyad">
-</div>
 </div>
 
 <h4 style="margin:20px 0 10px 0;">Hizmetler</h4>
@@ -149,13 +148,13 @@ Yükleniyor...
 <h4 style="margin:20px 0 10px 0;">Çalışma Günleri</h4>
 
 <div class="days">
-<div class="day-btn">Pzt</div>
-<div class="day-btn">Sal</div>
-<div class="day-btn">Çar</div>
-<div class="day-btn">Per</div>
-<div class="day-btn">Cum</div>
-<div class="day-btn">Cmt</div>
-<div class="day-btn">Paz</div>
+<div class="day-btn">P</div>
+<div class="day-btn">S</div>
+<div class="day-btn">Ç</div>
+<div class="day-btn">P</div>
+<div class="day-btn">C</div>
+<div class="day-btn">C</div>
+<div class="day-btn">P</div>
 </div>
 
 <h4 style="margin:20px 0 10px 0;">Çalışma Saatleri</h4>
@@ -197,7 +196,6 @@ function jsonp(action, params = {}) {
       if (document.body.contains(s)) document.body.removeChild(s);
       resolve(d);
     };
-
     const q = new URLSearchParams({ action, callback: cb, ...params }).toString();
     const s = document.createElement("script");
     s.src = API + "?" + q;
@@ -219,40 +217,31 @@ async function loadSubeServices() {
 
   try {
 
-    // 1️⃣ Master hizmet listesi (ID + İsim)
     const masterRes = await jsonp("getMasterServices");
-
     if (!masterRes.success || !masterRes.services) {
-      container.innerHTML = "Master hizmet listesi alınamadı";
+      container.innerHTML = "Hizmet bulunamadı";
       return;
     }
 
-    // ID -> İsim map oluştur
     const masterMap = {};
     masterRes.services.forEach(s => {
       masterMap[String(s.hizmetId).trim()] = s.hizmet;
     });
 
-    // 2️⃣ Şubeye ait hizmet ID'leri
-    const subeRes = await jsonp("getSubeServices", {
-      token: token,
-      subeId: subeId
-    });
+    const subeRes = await jsonp("getSubeServices", { token, subeId });
 
-    if (!subeRes.success || !subeRes.services || subeRes.services.length === 0) {
+    if (!subeRes.success || !subeRes.services) {
       container.innerHTML = "Hizmet bulunamadı";
       return;
     }
 
     container.innerHTML = "";
 
-    // 3️⃣ Render
     subeRes.services.forEach(service => {
 
       const id = String(service.hizmetId).trim();
       const ad = masterMap[id];
-
-      if (!ad) return; // master'da yoksa gösterme
+      if (!ad) return;
 
       const div = document.createElement("div");
       div.className = "service-item";
@@ -268,7 +257,6 @@ async function loadSubeServices() {
 
   } catch (err) {
     container.innerHTML = "Hizmet yüklenemedi";
-    console.error(err);
   }
 }
 
