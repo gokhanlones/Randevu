@@ -13,11 +13,8 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 .navbar{
   height:60px;
   background:linear-gradient(135deg,#667eea,#764ba2);
-  display:flex;
-  align-items:center;
-  padding:0 20px;
-  color:#fff;
-  font-weight:600;
+  display:flex;align-items:center;
+  padding:0 20px;color:#fff;font-weight:600;
 }
 
 .main{padding:20px;display:flex;justify-content:center;}
@@ -26,17 +23,17 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 .card{
   background:#fff;
   border-radius:20px;
-  padding:20px;
+  padding:22px;
   box-shadow:0 8px 25px rgba(0,0,0,0.06);
 }
 
-.card h3{margin-bottom:18px;}
+.card h3{margin-bottom:16px;}
 
-.input-group{margin-bottom:14px;}
-.input-group label{display:block;font-size:0.85rem;margin-bottom:4px;}
+.input-group{margin-bottom:12px;}
+.input-group label{display:block;font-size:0.9rem;margin-bottom:5px;}
 .input-group input{
   width:100%;
-  padding:9px;
+  padding:10px;
   border-radius:10px;
   border:2px solid #ddd;
   outline:none;
@@ -55,27 +52,41 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 .service-item{
   display:flex;
   align-items:center;
-  margin-bottom:8px;
-  font-size:0.85rem;
+  gap:10px;
+  padding:8px 6px;
+  border-bottom:1px solid #f1f1f1;
+  font-size:0.92rem;
 }
-.service-item input{margin-right:8px;}
+.service-item:last-child{border-bottom:none;}
+.service-item input{transform:scale(1.05);}
 
+/* ✅ GÜNLER: küçült + daire garanti + tek sıra + taşarsa yana kaydır */
 .days{
   display:flex;
-  justify-content:space-between;
+  gap:8px;
   margin-bottom:18px;
+  flex-wrap:nowrap;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  justify-content:flex-start;
+  padding-bottom:2px;
+  scrollbar-width:none;
 }
+.days::-webkit-scrollbar{display:none;}
+
 .day-btn{
-  width:36px;
-  height:36px;
-  border-radius:50%;
+  width:34px;
+  height:34px;
+  flex:0 0 34px;         /* sıkışıp elips olmasın */
+  border-radius:9999px;  /* daire */
+  aspect-ratio:1 / 1;    /* daire garanti */
   border:2px solid #ddd;
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
-  font-size:0.8rem;
-  font-weight:700;
+  font-size:0.85rem;
+  font-weight:800;
   background:#fff;
   transition:0.2s;
   user-select:none;
@@ -91,9 +102,10 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
   grid-template-columns:1fr 1fr;
   gap:12px;
 }
+.time-grid label{display:block;font-size:0.85rem;margin-bottom:6px;}
 .time-grid input{
   width:100%;
-  padding:9px;
+  padding:10px;
   border-radius:10px;
   border:2px solid #ddd;
 }
@@ -101,20 +113,28 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
 .save-btn{
   margin-top:18px;
   width:100%;
-  padding:14px;
+  padding:16px;
   border:none;
   border-radius:14px;
   background:linear-gradient(135deg,#4caf50,#66bb6a);
   color:#fff;
   font-weight:700;
-  font-size:0.95rem;
+  font-size:1rem;
   cursor:pointer;
 }
 
-.note{
-  margin-top:10px;
-  font-size:0.8rem;
-  color:#666;
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  transform:translateX(-50%);
+  background:#111;
+  color:#fff;
+  padding:10px 14px;
+  border-radius:12px;
+  display:none;
+  z-index:9999;
+  font-size:0.9rem;
 }
 </style>
 </head>
@@ -138,21 +158,22 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
         <input type="text" id="soyad">
       </div>
 
-      <h4 style="margin:18px 0 8px 0;">Hizmetler</h4>
+      <h4 style="margin:18px 0 10px 0;">Hizmetler</h4>
       <div class="services-list" id="servicesContainer">Yükleniyor...</div>
 
-      <h4 style="margin:18px 0 8px 0;">Çalışma Günleri</h4>
-      <div class="days">
-        <div class="day-btn">P</div>
-        <div class="day-btn">S</div>
-        <div class="day-btn">Ç</div>
-        <div class="day-btn">P</div>
-        <div class="day-btn">C</div>
-        <div class="day-btn">C</div>
-        <div class="day-btn">P</div>
+      <h4 style="margin:18px 0 10px 0;">Çalışma Günleri</h4>
+      <div class="days" id="daysRow">
+        <!-- tek harf: Pazartesi= P, Salı= S, Çarşamba= Ç, Perşembe= P, Cuma= C, Cumartesi= C, Pazar= P -->
+        <div class="day-btn" data-day="Pzt">P</div>
+        <div class="day-btn" data-day="Sal">S</div>
+        <div class="day-btn" data-day="Çar">Ç</div>
+        <div class="day-btn" data-day="Per">P</div>
+        <div class="day-btn" data-day="Cum">C</div>
+        <div class="day-btn" data-day="Cmt">C</div>
+        <div class="day-btn" data-day="Paz">P</div>
       </div>
 
-      <h4 style="margin:18px 0 8px 0;">Çalışma Saatleri</h4>
+      <h4 style="margin:18px 0 10px 0;">Çalışma Saatleri</h4>
       <div class="time-grid">
         <div>
           <label>Başlangıç</label>
@@ -173,134 +194,144 @@ body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;}
       </div>
 
       <button class="save-btn">Kaydet</button>
-
-      <div class="note" id="debugNote"></div>
     </div>
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-const API = "https://script.google.com/macros/s/AKfycbzYUCYSIhlgQ-GeFFpukJNUC8nqrF3tZQd3LJfZvH0QLY0pSiAqbjhE5-I4sjJbmV9M/exec";
+/* ✅ Burada iki farklı Script URL var — hangisi sende “hizmetleri getiriyorsa” o çalışacak */
+const API_LIST = [
+  "https://script.google.com/macros/s/AKfycbzYUCYSIhlgQ-GeFFpukJNUC8nqrF3tZQd3LJfZvH0QLY0pSiAqbjhE5-I4sjJbmV9M/exec",
+  "https://script.google.com/macros/s/AKfycbxfySiI1ZLGBZY0YaifuAXAMcoYpO_UPj6nueQSvEoFIHQSsNSw75-X5BFdiuMG-x5V/exec"
+];
 
-function getParam(name){
-  try{
-    return new URLSearchParams(window.location.search).get(name) || "";
-  }catch(e){ return ""; }
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;
+  t.style.display="block";
+  setTimeout(()=>t.style.display="none",2200);
 }
 
-function getToken(){
-  return localStorage.getItem("stilix_token") || sessionStorage.getItem("stilix_token") || getParam("token");
-}
-
-function getSubeId(){
-  return localStorage.getItem("selectedBranch") || sessionStorage.getItem("selectedBranch") || getParam("subeId");
-}
-
-function setDebug(msg){
-  const d = document.getElementById("debugNote");
-  d.textContent = msg || "";
-}
-
-function jsonp(action, params = {}) {
+function jsonpWithApi(apiUrl, action, params = {}) {
   return new Promise((resolve, reject) => {
     const cb = "cb_" + Date.now() + "_" + Math.floor(Math.random()*1000);
 
+    const s = document.createElement("script");
     window[cb] = (d) => {
-      try{ delete window[cb]; }catch(e){}
+      try { delete window[cb]; } catch(e){}
       if (document.body.contains(s)) document.body.removeChild(s);
       resolve(d);
     };
 
-    const q = new URLSearchParams({
-      action,
-      callback: cb,
-      t: Date.now(), // cache kırıcı
-      ...params
-    }).toString();
-
-    const s = document.createElement("script");
-    s.src = API + "?" + q;
+    const q = new URLSearchParams({ action, callback: cb, ...params }).toString();
+    s.src = apiUrl + "?" + q;
 
     s.onerror = () => {
-      try{ delete window[cb]; }catch(e){}
+      try { delete window[cb]; } catch(e){}
       if (document.body.contains(s)) document.body.removeChild(s);
-      reject(new Error("JSONP yüklenemedi (network / blocked)"));
+      reject(new Error("API hatası"));
     };
 
     document.body.appendChild(s);
   });
 }
 
-async function loadSubeServices(){
-  const token = getToken();
+/* ✅ Aynı isteği sırayla API’lara at: ilk çalışan sonucu döndür */
+async function callApi(action, params = {}) {
+  let lastErr = null;
+  for (const api of API_LIST) {
+    try {
+      const res = await jsonpWithApi(api, action, params);
+
+      // bazen "success:false" döndürür; diğer API'yi de denemek için kontrol
+      if (res && (res.success === true || res.services || res.iller || res.branches || res.branch)) {
+        return res;
+      }
+
+      // burada "unknown action" / "yetkisiz" gibi şeyler varsa yine diğerini dene
+      lastErr = new Error(res?.message || "Geçersiz cevap");
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error("API çağrısı başarısız");
+}
+
+function getToken(){return localStorage.getItem("stilix_token");}
+function getSubeId(){return localStorage.getItem("selectedBranch");}
+
+async function loadSubeServices() {
   const subeId = getSubeId();
+  const token  = getToken();
   const container = document.getElementById("servicesContainer");
 
-  setDebug(`token: ${token ? "var" : "YOK"} | subeId: ${subeId || "YOK"}`);
-
-  if(!token || !subeId){
-    container.innerHTML = "Telefon tarafında token/subeId yok. Aynı cihazda giriş yap veya sayfayı şöyle aç: ?token=...&subeId=...";
+  if (!subeId || !token) {
+    container.innerHTML = "Şube/Token bulunamadı";
     return;
   }
 
-  try{
-    // 1) Master hizmetler
-    const masterRes = await jsonp("getMasterServices");
-    if(!masterRes || masterRes.success !== true || !Array.isArray(masterRes.services)){
-      container.innerHTML = "Master hizmet listesi alınamadı: " + (masterRes?.message || masterRes?.error || "Bilinmeyen");
+  container.innerHTML = "Yükleniyor...";
+
+  try {
+    // 1) Master list (id->ad)
+    const masterRes = await callApi("getMasterServices", {});
+    const master = masterRes.services || [];
+    if (!master.length) {
+      container.innerHTML = "Master hizmet listesi boş";
       return;
     }
 
     const masterMap = {};
-    masterRes.services.forEach(s=>{
+    master.forEach(s => {
       const id = String(s.hizmetId || "").trim();
       const ad = String(s.hizmet || "").trim();
-      if(id && ad) masterMap[id] = ad;
+      if (id && ad) masterMap[id] = ad;
     });
 
-    // 2) Şube hizmetleri (ID listesi)
-    const subeRes = await jsonp("getSubeServices",{ token, subeId });
+    // 2) Şubeye ait hizmet id’leri
+    const subeRes = await callApi("getSubeServices", { token, subeId });
+    const subeServices = subeRes.services || [];
 
-    if(!subeRes || subeRes.success !== true || !Array.isArray(subeRes.services)){
-      container.innerHTML = "Şube hizmetleri alınamadı: " + (subeRes?.message || subeRes?.error || "Bilinmeyen");
+    // ✅ Şube hizmet sheet’i boşsa bile master’dan hiçbir şey göstermiyoruz (senin istediğin)
+    if (!subeServices.length) {
+      container.innerHTML = "Bu şubede aktif hizmet yok";
       return;
     }
 
-    if(subeRes.services.length === 0){
-      container.innerHTML = "Bu şubede aktif hizmet yok.";
-      return;
-    }
-
-    // 3) Render
+    // 3) Render (şube hizmetId listesi -> masterMap isim)
     container.innerHTML = "";
 
     let shown = 0;
-    subeRes.services.forEach(service=>{
-      const id = String(service.hizmetId || "").trim();
+    subeServices.forEach(s => {
+      const id = String(s.hizmetId || "").trim();
       const ad = masterMap[id];
-      if(!id || !ad) return;
+      if (!id || !ad) return;
 
       const div = document.createElement("div");
       div.className = "service-item";
-      div.innerHTML = `<input type="checkbox" value="${id}">${ad}`;
+      div.innerHTML = `<input type="checkbox" value="${id}"><span>${ad}</span>`;
       container.appendChild(div);
       shown++;
     });
 
-    if(shown === 0){
-      container.innerHTML = "ID eşleşmesi yok. (Master Hizmet_id ile SUBE_HIZMETLER.hizmetId aynı mı?)";
+    if (shown === 0) {
+      container.innerHTML = "Eşleşen hizmet bulunamadı (Master ID uyuşmuyor)";
     }
 
-  }catch(err){
-    container.innerHTML = "Hizmet yüklenemedi: " + (err?.message || err);
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "Hizmet yüklenemedi";
+    toast("Hizmet yüklenemedi");
   }
 }
 
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener("DOMContentLoaded", () => {
   loadSubeServices();
 
-  document.querySelectorAll(".day-btn").forEach(btn=>{
-    btn.addEventListener("click",()=>btn.classList.toggle("active"));
+  document.querySelectorAll(".day-btn").forEach(btn => {
+    btn.addEventListener("click", () => btn.classList.toggle("active"));
   });
 });
 </script>
