@@ -177,19 +177,20 @@ async function register() {
 
     try {
 
-        const response = await fetch("https://script.google.com/macros/s/AKfycbyFxbDFRPG6PohyPDS27fi5Brn5yBBL8_5z2UMOCbpjko5Q12zxVFGMu9QJo2YMYjS1/exec", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                action: "sendVerification",
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                phone: phone
-            })
-        });
+const response = await fetch("https://script.google.com/macros/s/AKfycbyFxbDFRPG6PohyPDS27fi5Brn5yBBL8_5z2UMOCbpjko5Q12zxVFGMu9QJo2YMYjS1/exec", {
+  method: "POST",
+  mode: "no-cors", // ⬅️ BU SATIRI EKLEYİN
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    action: "sendVerification",
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    phone: phone
+  })
+});
 
         const result = await response.json();
 
