@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Şifre Sıfırla</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #4F46E5;
+    --light-bg: #F3F4F6;
+    --card-bg: #FFFFFF;
+    --text-dark: #1F2937;
+    --border: #E5E7EB;
+}
+
+body {
+    margin:0;
+    font-family:'Segoe UI', sans-serif;
+    background: var(--light-bg);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.card {
+    background: var(--card-bg);
+    padding:40px;
+    border-radius:14px;
+    width:100%;
+    max-width:400px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.card input {
+    width:100%;
+    padding:13px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    margin-bottom:20px;
+}
+
+.card button {
+    width:100%;
+    padding:13px;
+    border:none;
+    border-radius:8px;
+    background:var(--primary);
+    color:white;
+    cursor:pointer;
+}
+
+.back {
+    text-align:center;
+    margin-top:20px;
+    font-size:14px;
+}
+
+.back a {
+    color:var(--primary);
+    text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Şifre Sıfırla</h2>
+
+    <input type="email" id="email" placeholder="Mail adresiniz">
+
+    <button onclick="sendReset()">Gönder</button>
+
+    <div class="back">
+        <a href="giris.html">Giriş sayfasına dön</a>
+    </div>
+</div>
+
+<script>
+async function sendReset() {
+
+    const email = document.getElementById("email").value.trim();
+
+    if (!email) {
+        alert("Mail adresinizi girin.");
+        return;
+    }
+
+    const response = await fetch("APPS_SCRIPT_URL_BURAYA", {
+        method: "POST",
+        body: JSON.stringify({
+            action: "forgot",
+            email: email
+        })
+    });
+
+    const result = await response.json();
+    alert(result.message);
+}
+</script>
+
+</body>
+</html>
