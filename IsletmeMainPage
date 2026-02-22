@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flow Randevu - Panel</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#4F46E5;
+  --dark:#1F2937;
+  --light:#F3F4F6;
+  --white:#ffffff;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Segoe UI',sans-serif;
+  display:flex;
+  background:var(--light);
+  height:100vh;
+  overflow:hidden;
+}
+
+/* Sidebar */
+.sidebar{
+  width:260px;
+  background:var(--dark);
+  color:white;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  transition:.3s;
+}
+
+.sidebar .profile{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.sidebar .profile i{
+  font-size:45px;
+  margin-bottom:10px;
+}
+
+.sidebar .profile h3{
+  font-weight:500;
+  font-size:16px;
+}
+
+.sidebar button{
+  background:var(--primary);
+  border:none;
+  padding:12px;
+  border-radius:8px;
+  color:white;
+  font-size:14px;
+  cursor:pointer;
+  margin-bottom:15px;
+  transition:.2s;
+}
+
+.sidebar button:hover{
+  background:#4338CA;
+}
+
+.logout{
+  margin-top:auto;
+  font-size:13px;
+  color:#9CA3AF;
+  cursor:pointer;
+}
+
+.logout:hover{
+  color:white;
+}
+
+/* Content */
+.content{
+  flex:1;
+  padding:30px;
+  overflow:auto;
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  margin-bottom:25px;
+}
+
+.hamburger{
+  font-size:22px;
+  cursor:pointer;
+  margin-right:15px;
+}
+
+.card{
+  background:white;
+  padding:30px;
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.05);
+}
+
+.input-group{
+  margin-bottom:18px;
+}
+
+.input-group label{
+  display:block;
+  font-size:13px;
+  margin-bottom:5px;
+}
+
+.input-group input{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+
+.save-btn{
+  background:var(--primary);
+  color:white;
+  border:none;
+  padding:12px 20px;
+  border-radius:8px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <div class="profile">
+    <i class="fa-solid fa-user-circle"></i>
+    <h3 id="userName">Gökhan Şenol</h3>
+  </div>
+
+  <button onclick="showPage('sube')">
+    <i class="fa-solid fa-plus"></i> Şube Ekle
+  </button>
+
+  <div class="logout" onclick="logout()">
+    Çıkış
+  </div>
+
+</div>
+
+<!-- Content -->
+<div class="content">
+
+  <div class="topbar">
+    <div class="hamburger" onclick="toggleSidebar()">
+      <i class="fa-solid fa-bars"></i>
+    </div>
+    <h2>Şube Yönetimi</h2>
+  </div>
+
+  <!-- NAV PAGE -->
+  <div id="subePage" class="card">
+    <h3 style="margin-bottom:20px;">Yeni Şube Ekle</h3>
+
+    <div class="input-group">
+      <label>Şube Adı</label>
+      <input type="text" placeholder="Örn: Merkez Şube">
+    </div>
+
+    <div class="input-group">
+      <label>Telefon</label>
+      <input type="text" placeholder="05xxxxxxxxx">
+    </div>
+
+    <div class="input-group">
+      <label>Adres</label>
+      <input type="text" placeholder="Şube adresi">
+    </div>
+
+    <button class="save-btn">Kaydet</button>
+  </div>
+
+</div>
+
+<script>
+function toggleSidebar(){
+  const sidebar = document.getElementById("sidebar");
+  sidebar.style.width = sidebar.style.width === "0px" ? "260px" : "0px";
+}
+
+function showPage(page){
+  // İleride başka sayfa eklenecekse burada yönetilecek
+}
+
+function logout(){
+  alert("Çıkış yapıldı");
+  window.location.href="index.html";
+}
+</script>
+
+</body>
+</html>
