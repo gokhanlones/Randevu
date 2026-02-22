@@ -73,22 +73,19 @@ body {
     border-radius:8px;
     border:1px solid var(--border);
     font-size:14px;
-    text-align:center;
-    letter-spacing:8px;
-    font-size:24px;
-    font-weight:bold;
-}
-
-.input-group input::placeholder {
-    font-size:14px;
-    letter-spacing:normal;
-    font-weight:normal;
 }
 
 .input-group input:focus {
     outline:none;
     border-color:var(--primary);
     box-shadow:0 0 0 2px rgba(79,70,229,0.15);
+}
+
+.code-input {
+    text-align:center !important;
+    letter-spacing:8px !important;
+    font-size:24px !important;
+    font-weight:bold !important;
 }
 
 .save-btn {
@@ -126,6 +123,7 @@ body {
 .back a {
     color:var(--primary);
     text-decoration:none;
+    cursor:pointer;
 }
 
 #result {
@@ -153,17 +151,12 @@ body {
     display:none !important;
 }
 
-.code-display {
-    background:#F3F4F6;
-    padding:15px;
-    border-radius:8px;
-    text-align:center;
-    margin-bottom:20px;
-    font-family:monospace;
-    font-size:18px;
-    letter-spacing:4px;
-    color:var(--primary);
-    font-weight:bold;
+.step {
+    display:none;
+}
+
+.step.active {
+    display:block;
 }
 
 .resend {
@@ -177,14 +170,6 @@ body {
     color:var(--primary);
     cursor:pointer;
     text-decoration:underline;
-}
-
-.step {
-    display:none;
-}
-
-.step.active {
-    display:block;
 }
 </style>
 </head>
@@ -201,23 +186,23 @@ body {
 
         <form id="registerForm" onsubmit="return handleRegister();">
             <div class="input-group">
-                <input type="text" id="firstName" placeholder="Ad" required style="text-align:left;font-size:14px;letter-spacing:normal;">
+                <input type="text" id="firstName" placeholder="Ad" required>
             </div>
 
             <div class="input-group">
-                <input type="text" id="lastName" placeholder="Soyad" required style="text-align:left;font-size:14px;letter-spacing:normal;">
+                <input type="text" id="lastName" placeholder="Soyad" required>
             </div>
 
             <div class="input-group">
-                <input type="email" id="email" placeholder="Email" required style="text-align:left;font-size:14px;letter-spacing:normal;">
+                <input type="email" id="email" placeholder="Email" required>
             </div>
 
             <div class="input-group">
-                <input type="email" id="email2" placeholder="Email Tekrar" required style="text-align:left;font-size:14px;letter-spacing:normal;">
+                <input type="email" id="email2" placeholder="Email Tekrar" required>
             </div>
 
             <div class="input-group">
-                <input type="tel" id="phone" placeholder="Telefon (05xxxxxxxxx)" required style="text-align:left;font-size:14px;letter-spacing:normal;">
+                <input type="tel" id="phone" placeholder="Telefon (05xxxxxxxxx)" required>
             </div>
 
             <button type="submit" class="save-btn" id="registerBtn">
@@ -233,7 +218,7 @@ body {
 
         <form id="verifyForm" onsubmit="return handleVerify();">
             <div class="input-group">
-                <input type="text" id="verificationCode" placeholder="------" maxlength="6" required autocomplete="off">
+                <input type="text" id="verificationCode" class="code-input" placeholder="------" maxlength="6" required autocomplete="off">
             </div>
 
             <button type="submit" class="save-btn" id="verifyBtn">
@@ -257,17 +242,21 @@ body {
 
         <form id="passwordForm" onsubmit="return handlePassword();">
             <div class="input-group">
-                <input type="password" id="password" placeholder="Şifre (en az 6 karakter)" required minlength="6" style="text-align:left;font-size:14px;letter-spacing:normal;">
+                <input type="password" id="password" placeholder="Şifre (en az 6 karakter)" required minlength="6">
             </div>
 
             <div class="input-group">
-                <input type="password" id="password2" placeholder="Şifre Tekrar" required style="text-align:left;font-size:14px;letter-spacing:normal;">
+                <input type="password" id="password2" placeholder="Şifre Tekrar" required>
             </div>
 
             <button type="submit" class="save-btn" id="passwordBtn">
                 <i class="fa-solid fa-lock"></i> Hesabı Oluştur
             </button>
         </form>
+
+        <div class="back">
+            <a onclick="goBackToCode()">← Geri dön</a>
+        </div>
     </div>
 
     <!-- ADIM 4: Başarılı -->
@@ -295,6 +284,8 @@ body {
 // Geçici veri saklama
 let tempUserData = {};
 let generatedCode = null;
+
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzl4infJ2Wn7nUBrZpbvjhhqPHDToppLNGIAX1KxqD_sD1sKpJIJncufqWO28OSpIwILg/exec';
 
 function showStep(stepNumber) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -344,33 +335,31 @@ function handleRegister() {
     btn.disabled = true;
     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...`;
 
-    // Mail gönder (Apps Script'e istek)
+    // ✅ TÜM verileri gönder (telefon dahil)
     const formData = new FormData();
     formData.append('action', 'sendVerificationCode');
     formData.append('email', email);
     formData.append('code', generatedCode);
     formData.append('firstName', firstName);
     formData.append('lastName', lastName);
+    formData.append('phone', phone); // ✅ TELEFON EKLENDİ
 
-    fetch('https://script.google.com/macros/s/AKfycbwi95rXGOA8VkTgYoZU1VoUS3KK5nqQ6ysPOdTxUFRmov13e13dUg3WUbE5yw9yJ2jDxg/exec', {
+    fetch(SCRIPT_URL, {
         method: 'POST',
         body: formData
-    }).catch(() => {}); // Hata olursa görmezden gel (CORS)
+    }).catch(() => {});
 
     // 2 saniye bekle ve adım 2'ye geç
     setTimeout(() => {
         document.getElementById('emailDisplay').textContent = email;
         showStep(2);
-        
-        // Kod input'una focus
         document.getElementById('verificationCode').focus();
         
-        // Butonu normale döndür
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Kaydet`;
     }, 2000);
 
-    return false; // Form submit engelle
+    return false;
 }
 
 // ADIM 2: Kod Doğrula
@@ -406,19 +395,19 @@ function handlePassword() {
     btn.disabled = true;
     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Oluşturuluyor...`;
 
-    // Kullanıcıyı kaydet (Apps Script'e istek)
+    // ✅ TÜM verileri gönder (email dahil!)
     const formData = new FormData();
     formData.append('action', 'completeRegisterWithCode');
+    formData.append('email', tempUserData.email); // ✅ EMAIL EKLENDİ
+    formData.append('password', password);
     formData.append('firstName', tempUserData.firstName);
     formData.append('lastName', tempUserData.lastName);
-    formData.append('email', tempUserData.email);
     formData.append('phone', tempUserData.phone);
-    formData.append('password', password);
 
-    fetch('https://script.google.com/macros/s/AKfycbzl4infJ2Wn7nUBrZpbvjhhqPHDToppLNGIAX1KxqD_sD1sKpJIJncufqWO28OSpIwILg/exec', {
+    fetch(SCRIPT_URL, {
         method: 'POST',
         body: formData
-    }).catch(() => {}); // Hata olursa görmezden gel (CORS)
+    }).catch(() => {});
 
     // 2 saniye bekle ve başarılı sayfasına geç
     setTimeout(() => {
@@ -429,18 +418,17 @@ function handlePassword() {
 }
 
 function resendCode() {
-    // Yeni kod oluştur
     generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // Tekrar mail gönder
     const formData = new FormData();
     formData.append('action', 'sendVerificationCode');
     formData.append('email', tempUserData.email);
     formData.append('code', generatedCode);
     formData.append('firstName', tempUserData.firstName);
     formData.append('lastName', tempUserData.lastName);
+    formData.append('phone', tempUserData.phone);
 
-    fetch('https://script.google.com/macros/s/AKfycbzl4infJ2Wn7nUBrZpbvjhhqPHDToppLNGIAX1KxqD_sD1sKpJIJncufqWO28OSpIwILg/exec', {
+    fetch(SCRIPT_URL, {
         method: 'POST',
         body: formData
     }).catch(() => {});
@@ -451,6 +439,10 @@ function resendCode() {
 function goBack() {
     showStep(1);
     document.getElementById('mainBack').style.display = 'block';
+}
+
+function goBackToCode() {
+    showStep(2);
 }
 </script>
 
