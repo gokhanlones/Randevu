@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kayıt Ol</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #4F46E5;
+    --primary-hover: #4338CA;
+    --light-bg: #F3F4F6;
+    --card-bg: #FFFFFF;
+    --text-dark: #1F2937;
+    --text-light: #6B7280;
+    --border: #E5E7EB;
+}
+
+* {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body {
+    font-family:'Segoe UI', sans-serif;
+    background:var(--light-bg);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container {
+    width:100%;
+    max-width:420px;
+    padding:20px;
+}
+
+.card {
+    background:var(--card-bg);
+    padding:40px 35px;
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+    text-align:center;
+    margin-bottom:25px;
+    color:var(--text-dark);
+}
+
+.input-group {
+    margin-bottom:18px;
+}
+
+.input-group input {
+    width:100%;
+    padding:13px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    font-size:14px;
+}
+
+.input-group input:focus {
+    outline:none;
+    border-color:var(--primary);
+    box-shadow:0 0 0 2px rgba(79,70,229,0.15);
+}
+
+.save-btn {
+    width:100%;
+    padding:13px;
+    border:none;
+    border-radius:8px;
+    background:var(--primary);
+    color:white;
+    font-size:15px;
+    font-weight:500;
+    cursor:pointer;
+    transition:0.2s ease;
+}
+
+.save-btn:hover {
+    background:var(--primary-hover);
+}
+
+.back {
+    text-align:center;
+    margin-top:20px;
+    font-size:14px;
+}
+
+.back a {
+    color:var(--primary);
+    text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="card">
+
+        <h2>Kayıt Ol</h2>
+
+        <div class="input-group">
+            <input type="text" id="firstName" placeholder="Ad">
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="lastName" placeholder="Soyad">
+        </div>
+
+        <div class="input-group">
+            <input type="email" id="email" placeholder="Email">
+        </div>
+
+        <div class="input-group">
+            <input type="email" id="email2" placeholder="Email Tekrar">
+        </div>
+
+        <div class="input-group">
+            <input type="tel" id="phone" placeholder="Telefon">
+        </div>
+
+        <button class="save-btn" onclick="register()">Kaydet</button>
+
+        <div class="back">
+            <a href="index.html">Ana sayfaya dön</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function register() {
+
+    const first = document.getElementById("firstName").value.trim();
+    const last = document.getElementById("lastName").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const email2 = document.getElementById("email2").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+
+    if (!first || !last || !email || !email2 || !phone) {
+        alert("Tüm alanları doldurun.");
+        return;
+    }
+
+    if (email !== email2) {
+        alert("Email adresleri eşleşmiyor.");
+        return;
+    }
+
+    alert("Kayıt işlemi hazır. Backend bağlanacak.");
+}
+</script>
+
+</body>
+</html>
