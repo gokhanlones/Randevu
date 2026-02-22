@@ -2,7 +2,6 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Email Doğrulama</title>
 
 <style>
@@ -15,7 +14,6 @@ body {
     justify-content:center;
     align-items:center;
 }
-
 .card {
     background:white;
     padding:40px;
@@ -25,14 +23,25 @@ body {
     text-align:center;
     box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
-
-h2 {
-    margin-bottom:20px;
-}
-
-.message {
+input {
+    width:100%;
+    padding:12px;
     margin-top:15px;
-    font-size:14px;
+    border-radius:8px;
+    border:1px solid #ddd;
+}
+button {
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:8px;
+    background:#4F46E5;
+    color:white;
+    cursor:pointer;
+}
+.hidden {
+    display:none;
 }
 </style>
 </head>
@@ -40,15 +49,25 @@ h2 {
 <body>
 
 <div class="card">
-    <h2>Email Doğrulanıyor...</h2>
-    <div class="message" id="message">Lütfen bekleyin...</div>
+    <h2 id="title">Email Doğrulanıyor...</h2>
+    <div id="message">Lütfen bekleyin...</div>
+
+    <div id="passwordArea" class="hidden">
+        <input type="password" id="pass1" placeholder="Şifre">
+        <input type="password" id="pass2" placeholder="Şifre Tekrar">
+        <button onclick="completeRegister()">Kaydı Tamamla</button>
+    </div>
 </div>
 
 <script>
+
+let currentToken = null;
+
 async function verify() {
 
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
+    currentToken = token;
 
     if (!token) {
         document.getElementById("message").innerText = "Geçersiz link.";
@@ -67,12 +86,14 @@ async function verify() {
 
         const result = await response.json();
 
-        document.getElementById("message").innerText = result.message;
-
         if (result.success) {
-            setTimeout(() => {
-                window.location.href = "giris.html";
-            }, 3000);
+
+            document.getElementById("title").innerText = "Email Doğrulandı";
+            document.getElementById("message").innerText = "Lütfen şifrenizi oluşturun.";
+            document.getElementById("passwordArea").classList.remove("hidden");
+
+        } else {
+            document.getElementById("message").innerText = result.message;
         }
 
     } catch (err) {
@@ -80,7 +101,47 @@ async function verify() {
     }
 }
 
+async function completeRegister(){
+
+    const p1 = document.getElementById("pass1").value;
+    const p2 = document.getElementById("pass2").value;
+
+    if(!p1 || !p2){
+        alert("Tüm alanları doldurun");
+        return;
+    }
+
+    if(p1 !== p2){
+        alert("Şifreler eşleşmiyor");
+        return;
+    }
+
+    if(p1.length < 6){
+        alert("Şifre en az 6 karakter olmalı");
+        return;
+    }
+
+    const response = await fetch("https://script.google.com/macros/s/AKfycbzDxnb-3boRNy0D937jhItJC8_6z5QbP0VOhJfUfPKLiU3aPkXtyPobCjhNXsC7AfR7Mg/exec", {
+        method:"POST",
+        body:JSON.stringify({
+            action:"completeRegister",
+            token:currentToken,
+            password:p1
+        })
+    });
+
+    const result = await response.json();
+
+    if(result.success){
+        alert("Hesap oluşturuldu");
+        window.location.href="giris.html";
+    } else {
+        alert(result.message);
+    }
+}
+
 verify();
+
 </script>
 
 </body>
