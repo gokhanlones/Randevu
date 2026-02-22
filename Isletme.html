@@ -1,250 +1,32 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Flow Randevu - İşletme Panel</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-<style>
-:root{
-  --primary:#4F46E5;
-  --primary-hover:#4338CA;
-  --dark:#1F2937;
-  --light:#F3F4F6;
-  --white:#ffffff;
-  --text:#111827;
-  --muted:#9CA3AF;
-  --sidebarW:260px;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Segoe UI',sans-serif;background:var(--light);height:100vh;overflow:hidden;}
+// =======================================
+// KULLANICI BİLGİSİ GETİR (YENİ)
+// =======================================
 
-/* Sidebar off-canvas */
-.sidebar{
-  position:fixed; left:0; top:0; bottom:0;
-  width:var(--sidebarW);
-  background:var(--dark);
-  color:var(--white);
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  transform:translateX(-100%);
-  transition:transform .22s ease;
-  z-index:50;
-}
-.sidebar.open{transform:translateX(0);}
+function getUserInfo(data) {
+  try {
+    const userId = parseInt(data.userId);
+    const sheet = getSheet();
+    const rows = sheet.getDataRange().getValues();
 
-.profile{text-align:center;margin-bottom:22px;}
-.profile i{font-size:46px;margin-bottom:10px;}
-.profile h3{font-weight:500;font-size:16px;line-height:1.2;}
-
-.navbtn{
-  border:none;
-  background:transparent;
-  color:var(--white);
-  padding:12px 10px;
-  border-radius:12px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:14px;
-}
-.navbtn:hover{background:rgba(255,255,255,0.08);}
-.navbtn.primary{
-  background:var(--primary);
-  justify-content:center;
-}
-.navbtn.primary:hover{background:var(--primary-hover);}
-
-.logout{
-  margin-top:auto;
-  font-size:13px;
-  color:var(--muted);
-  cursor:pointer;
-  user-select:none;
-}
-.logout:hover{color:var(--white);}
-
-/* overlay */
-.overlay{
-  position:fixed; inset:0;
-  background:rgba(0,0,0,0.35);
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .22s ease;
-  z-index:40;
-}
-.overlay.show{opacity:1;pointer-events:auto;}
-
-/* Navpage */
-.navpage{
-  height:100vh;
-  overflow:auto;
-  padding:24px 26px;
-  transition:margin-left .22s ease;
-  margin-left:0;
-}
-@media (min-width: 901px){
-  .navpage.shift{ margin-left: var(--sidebarW); }
-}
-
-/* Topbar */
-.topbar{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
-.hamburger{
-  width:42px;height:42px;border-radius:12px;
-  background:var(--white);
-  border:1px solid #E5E7EB;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  box-shadow:0 10px 30px rgba(0,0,0,0.06);
-}
-.hamburger i{font-size:18px;color:var(--text);}
-#pageTitle{font-size:20px;font-weight:700;color:var(--text);}
-
-/* Pages */
-.page{display:none;}
-.page.active{display:block;}
-
-/* Cards */
-.card{
-  background:var(--white);
-  border-radius:16px;
-  padding:28px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.06);
-}
-.home-empty{height:240px;}
-
-/* Form */
-.input-group{margin-bottom:16px;}
-.input-group label{display:block;font-size:13px;margin-bottom:6px;color:var(--text);}
-.input-group input{
-  width:100%;
-  padding:11px 12px;
-  border-radius:10px;
-  border:1px solid #E5E7EB;
-  outline:none;
-  font-size:14px;
-}
-.input-group input:focus{
-  border-color:rgba(79,70,229,.65);
-  box-shadow:0 0 0 3px rgba(79,70,229,.12);
-}
-.save-btn{
-  background:var(--primary);
-  color:var(--white);
-  border:none;
-  padding:12px 18px;
-  border-radius:10px;
-  cursor:pointer;
-}
-.save-btn:hover{background:var(--primary-hover);}
-
-/* debug badge (gerçek panel geldi mi diye) */
-.badge{
-  position:fixed; top:10px; right:10px; z-index:99999;
-  background:#111827; color:#fff; padding:6px 10px; border-radius:10px; font-size:12px;
-}
-</style>
-</head>
-<body>
-
-<div class="badge">PANEL v1</div>
-
-<aside class="sidebar" id="sidebar">
-  <div class="profile">
-    <i class="fa-solid fa-user-circle"></i>
-    <h3 id="userName">Kullanıcı</h3>
-  </div>
-
-  <button class="navbtn primary" type="button" onclick="openSubeEkle()">
-    <i class="fa-solid fa-plus"></i> Şube Ekle
-  </button>
-
-  <div class="logout" onclick="logout()">Çıkış</div>
-</aside>
-
-<div class="overlay" id="overlay" onclick="closeMenu()"></div>
-
-<main class="navpage" id="navpage">
-  <div class="topbar">
-    <div class="hamburger" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></div>
-    <div id="pageTitle">Panel</div>
-  </div>
-
-  <section class="page active" id="pageHome">
-    <div class="card home-empty"></div>
-  </section>
-
-  <section class="page" id="pageSubeEkle">
-    <div class="card">
-      <h3 style="margin-bottom:18px;">Yeni Şube Ekle</h3>
-
-      <div class="input-group">
-        <label>Şube Adı</label>
-        <input type="text" id="subeAdi" placeholder="Örn: Merkez Şube">
-      </div>
-
-      <div class="input-group">
-        <label>Telefon</label>
-        <input type="text" id="subeTel" placeholder="05xxxxxxxxx">
-      </div>
-
-      <div class="input-group">
-        <label>Adres</label>
-        <input type="text" id="subeAdres" placeholder="Şube adresi">
-      </div>
-
-      <button class="save-btn" type="button" onclick="saveSube()">Kaydet</button>
-    </div>
-  </section>
-</main>
-
-<script>
-function toggleMenu(){
-  const sidebar = document.getElementById("sidebar");
-  const navpage = document.getElementById("navpage");
-  const overlay = document.getElementById("overlay");
-
-  const willOpen = !sidebar.classList.contains("open");
-  if(willOpen){
-    sidebar.classList.add("open");
-    navpage.classList.add("shift");
-    overlay.classList.add("show");
-  }else{
-    closeMenu();
+    // ID'ye göre kullanıcı bul
+    for (let i = 1; i < rows.length; i++) {
+      if (parseInt(rows[i][0]) === userId) {
+        return jsonResponse({
+          success: true,
+          user: {
+            id: rows[i][0],
+            ad: rows[i][1],
+            soyad: rows[i][2],
+            gsm: rows[i][3],
+            email: rows[i][4]
+          }
+        });
+      }
+    }
+    
+    return jsonResponse({ success: false, message: "Kullanıcı bulunamadı" });
+    
+  } catch (err) {
+    return jsonResponse({ success: false, message: "Hata: " + err.toString() });
   }
 }
-function closeMenu(){
-  document.getElementById("sidebar").classList.remove("open");
-  document.getElementById("navpage").classList.remove("shift");
-  document.getElementById("overlay").classList.remove("show");
-}
-function showPage(pageId, title){
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  const page = document.getElementById(pageId);
-  if(page) page.classList.add("active");
-  document.getElementById("pageTitle").innerText = title || "Panel";
-}
-function openSubeEkle(){
-  showPage("pageSubeEkle", "Şube Yönetimi");
-  closeMenu();
-}
-function saveSube(){
-  alert("Şube kaydet aksiyonu eklenecek.");
-}
-function logout(){
-  localStorage.clear();
-  window.location.href = "index.html";
-}
-
-/* init */
-(function(){
-  const name = localStorage.getItem("userName");
-  if(name) document.getElementById("userName").innerText = name;
-  showPage("pageHome","Panel");
-})();
-</script>
-
-</body>
-</html>
