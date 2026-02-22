@@ -101,6 +101,27 @@ body {
     color:var(--primary);
     text-decoration:none;
 }
+
+#result {
+    margin-top:15px;
+    padding:12px;
+    border-radius:8px;
+    text-align:center;
+    display:none;
+    font-size:14px;
+}
+
+.success {
+    background:#d1fae5;
+    color:#065f46;
+    border:1px solid #a7f3d0;
+}
+
+.error {
+    background:#fee2e2;
+    color:#991b1b;
+    border:1px solid #fecaca;
+}
 </style>
 </head>
 
@@ -111,29 +132,44 @@ body {
 
 <h2>Kayıt Ol</h2>
 
-<div class="input-group">
-    <input type="text" id="firstName" placeholder="Ad">
-</div>
+<!-- Gizli iframe - form submit için -->
+<iframe name="hiddenFrame" id="hiddenFrame" style="display:none;"></iframe>
 
-<div class="input-group">
-    <input type="text" id="lastName" placeholder="Soyad">
-</div>
+<!-- FORM - CORS yok, direkt submit -->
+<form id="registerForm" 
+      action="https://script.google.com/macros/s/AKfycbzl4infJ2Wn7nUBrZpbvjhhqPHDToppLNGIAX1KxqD_sD1sKpJIJncufqWO28OSpIwILg/exec" 
+      method="POST" 
+      target="hiddenFrame">
 
-<div class="input-group">
-    <input type="email" id="email" placeholder="Email">
-</div>
+    <input type="hidden" name="action" value="sendVerification">
+    
+    <div class="input-group">
+        <input type="text" name="firstName" id="firstName" placeholder="Ad" required>
+    </div>
 
-<div class="input-group">
-    <input type="email" id="email2" placeholder="Email Tekrar">
-</div>
+    <div class="input-group">
+        <input type="text" name="lastName" id="lastName" placeholder="Soyad" required>
+    </div>
 
-<div class="input-group">
-    <input type="tel" id="phone" placeholder="Telefon (05xxxxxxxxx)">
-</div>
+    <div class="input-group">
+        <input type="email" name="email" id="email" placeholder="Email" required>
+    </div>
 
-<button class="save-btn" id="registerBtn" onclick="register()">
-    <i class="fa-solid fa-user-plus"></i> Kaydet
-</button>
+    <div class="input-group">
+        <input type="email" id="email2" placeholder="Email Tekrar" required>
+    </div>
+
+    <div class="input-group">
+        <input type="tel" name="phone" id="phone" placeholder="Telefon (05xxxxxxxxx)" required>
+    </div>
+
+    <button type="submit" class="save-btn" id="registerBtn">
+        <i class="fa-solid fa-user-plus"></i> Kaydet
+    </button>
+
+</form>
+
+<div id="result"></div>
 
 <div class="back">
     <a href="index.html">Ana sayfaya dön</a>
@@ -143,79 +179,54 @@ body {
 </div>
 
 <script>
-
-async function register() {
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    const email = document.getElementById('email').value.trim();
+    const email2 = document.getElementById('email2').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    
+    // Validasyon
+    if (email !== email2) {
+        e.preventDefault();
+        showResult('Email adresleri eşleşmiyor!', 'error');
+        return false;
+    }
+    
+    if (!/^05\d{9}$/.test(phone.replace(/\s/g,''))) {
+        e.preventDefault();
+        showResult('Telefon 05xxxxxxxxx formatında olmalı!', 'error');
+        return false;
+    }
+    
+    // Buton loading yap
     const btn = document.getElementById("registerBtn");
     btn.classList.add("loading");
     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...`;
-
-    const firstName = document.getElementById("firstName").value.trim();
-    const lastName = document.getElementById("lastName").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const email2 = document.getElementById("email2").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^05\d{9}$/;
-
-    if (!firstName || !lastName || !email || !email2 || !phone) {
-        return showError("Tüm alanları doldurun.");
-    }
-
-    if (!emailRegex.test(email)) {
-        return showError("Geçerli bir email girin.");
-    }
-
-    if (email !== email2) {
-        return showError("Email adresleri eşleşmiyor.");
-    }
-
-    if (!phoneRegex.test(phone.replace(/\s/g,''))) {
-        return showError("Telefon 05xxxxxxxxx formatında olmalı.");
-    }
-
-    try {
-        // ✅ URL sonundaki boşluk kaldırıldı
-        const response = await fetch("https://script.google.com/macros/s/AKfycbzl4infJ2Wn7nUBrZpbvjhhqPHDToppLNGIAX1KxqD_sD1sKpJIJncufqWO28OSpIwILg/exec", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                action: "sendVerification",
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                phone: phone
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error("HTTP error! status: " + response.status);
-        }
-
-        const result = await response.json();
-
-        if(result.success){
-            alert("Doğrulama maili gönderildi. Mailinizi kontrol edin.");
+    
+    // Form submit edilecek (iframe'e) - CORS yok!
+    
+    // 3 saniye sonra başarılı mesaj
+    setTimeout(function() {
+        showResult('✅ Doğrulama maili gönderildi! Lütfen mailinizi kontrol edin.', 'success');
+        
+        // 2 saniye sonra ana sayfaya yönlendir
+        setTimeout(() => {
             window.location.href = "index.html";
-        } else {
-            showError(result.message || "Kayıt başarısız.");
-        }
+        }, 2000);
+        
+    }, 3000);
+});
 
-    } catch (err) {
-        console.error("Hata detayı:", err);
-        showError("Sunucu bağlantı hatası. Lütfen daha sonra tekrar deneyin.");
-    }
-}
-
-function showError(message){
-    alert(message);
+function showResult(msg, type) {
+    const div = document.getElementById('result');
+    div.textContent = msg;
+    div.className = type;
+    div.style.display = 'block';
+    
+    // Butonu normale döndür
     const btn = document.getElementById("registerBtn");
     btn.classList.remove("loading");
     btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Kaydet`;
 }
-
 </script>
 
 </body>
