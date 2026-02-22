@@ -129,11 +129,7 @@ body {
 </div>
 
 <div class="input-group">
-    <input type="tel" id="phone" placeholder="Telefon (05xx xxx xx xx)">
-</div>
-
-<div class="input-group">
-    <input type="password" id="password" placeholder="Şifre">
+    <input type="tel" id="phone" placeholder="Telefon (05xx...)">
 </div>
 
 <button class="save-btn" id="registerBtn" onclick="register()">
@@ -160,12 +156,11 @@ async function register() {
     const email = document.getElementById("email").value.trim();
     const email2 = document.getElementById("email2").value.trim();
     const phone = document.getElementById("phone").value.trim();
-    const password = document.getElementById("password").value.trim();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^05\d{9}$/;
 
-    if (!first || !last || !email || !email2 || !phone || !password) {
+    if (!first || !last || !email || !email2 || !phone) {
         return showError("Tüm alanları doldurun.");
     }
 
@@ -181,10 +176,6 @@ async function register() {
         return showError("Telefon 05xx formatında olmalı.");
     }
 
-    if (password.length < 6) {
-        return showError("Şifre en az 6 karakter olmalı.");
-    }
-
     try {
 
         const response = await fetch("APPS_SCRIPT_URL_BURAYA", {
@@ -194,8 +185,7 @@ async function register() {
                 first,
                 last,
                 email,
-                phone,
-                password
+                phone
             })
         });
 
