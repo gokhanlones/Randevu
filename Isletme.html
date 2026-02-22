@@ -201,13 +201,16 @@ body {
 
 .menu-item.primary {
     background: var(--primary);
-    margin: 5px 15px;      /* Dış boşluk azaltıldı */
-    padding: 8px 15px;     /* İç boşluk azaltıldı */
-    border-radius: 6px;    /* Köşe yuvarlaklığı azaltıldı */
+    margin: 10px 20px;
+    padding: 12px 15px;     /* ← padding azaltıldı (varsayılan 15px 20px) */
+    border-radius: 8px;
     justify-content: center;
     font-weight: 500;
-    font-size: 13px;       /* Yazı boyutu küçültüldü */
-}
+    font-size: 14px;        /* ← yazı boyutu küçültüldü */
+    width: calc(100% - 40px); /* ← genişlik: sidebar genişliği - margin */
+    max-width: 200px;       /* ← maksimum genişlik sınırlandı */
+    margin-left: auto;      /* ← ortalamak için */
+    margin-right: auto;     /* ← ortalamak için */
 }
 
 .menu-item.primary:hover {
