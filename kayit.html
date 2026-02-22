@@ -15,6 +15,7 @@
     --card-bg: #FFFFFF;
     --text-dark: #1F2937;
     --border: #E5E7EB;
+    --success: #10B981;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -43,12 +44,27 @@ body {
 
 .card h2 {
     text-align:center;
-    margin-bottom:25px;
+    margin-bottom:10px;
     color:var(--text-dark);
+}
+
+.subtitle {
+    text-align:center;
+    color:#6B7280;
+    font-size:14px;
+    margin-bottom:25px;
 }
 
 .input-group {
     margin-bottom:16px;
+}
+
+.input-group label {
+    display:block;
+    margin-bottom:6px;
+    font-size:13px;
+    color:var(--text-dark);
+    font-weight:500;
 }
 
 .input-group input {
@@ -57,6 +73,16 @@ body {
     border-radius:8px;
     border:1px solid var(--border);
     font-size:14px;
+    text-align:center;
+    letter-spacing:8px;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.input-group input::placeholder {
+    font-size:14px;
+    letter-spacing:normal;
+    font-weight:normal;
 }
 
 .input-group input:focus {
@@ -86,9 +112,9 @@ body {
     background:var(--primary-hover);
 }
 
-.save-btn.loading {
+.save-btn:disabled {
     opacity:0.7;
-    pointer-events:none;
+    cursor:not-allowed;
 }
 
 .back {
@@ -122,6 +148,44 @@ body {
     color:#991b1b;
     border:1px solid #fecaca;
 }
+
+.hidden {
+    display:none !important;
+}
+
+.code-display {
+    background:#F3F4F6;
+    padding:15px;
+    border-radius:8px;
+    text-align:center;
+    margin-bottom:20px;
+    font-family:monospace;
+    font-size:18px;
+    letter-spacing:4px;
+    color:var(--primary);
+    font-weight:bold;
+}
+
+.resend {
+    text-align:center;
+    margin-top:15px;
+    font-size:13px;
+    color:#6B7280;
+}
+
+.resend a {
+    color:var(--primary);
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+.step {
+    display:none;
+}
+
+.step.active {
+    display:block;
+}
 </style>
 </head>
 
@@ -130,102 +194,263 @@ body {
 <div class="container">
 <div class="card">
 
-<h2>Kayıt Ol</h2>
+    <!-- ADIM 1: Kayıt Formu -->
+    <div id="step1" class="step active">
+        <h2>Kayıt Ol</h2>
+        <p class="subtitle">Hesabınızı oluşturmaya başlayın</p>
 
-<!-- Gizli iframe - form submit için -->
-<iframe name="hiddenFrame" id="hiddenFrame" style="display:none;"></iframe>
+        <form id="registerForm" onsubmit="return handleRegister();">
+            <div class="input-group">
+                <input type="text" id="firstName" placeholder="Ad" required style="text-align:left;font-size:14px;letter-spacing:normal;">
+            </div>
 
-<!-- FORM - CORS yok, direkt submit -->
-<form id="registerForm" 
-      action="https://script.google.com/macros/s/AKfycbzl4infJ2Wn7nUBrZpbvjhhqPHDToppLNGIAX1KxqD_sD1sKpJIJncufqWO28OSpIwILg/exec" 
-      method="POST" 
-      target="hiddenFrame">
+            <div class="input-group">
+                <input type="text" id="lastName" placeholder="Soyad" required style="text-align:left;font-size:14px;letter-spacing:normal;">
+            </div>
 
-    <input type="hidden" name="action" value="sendVerification">
-    
-    <div class="input-group">
-        <input type="text" name="firstName" id="firstName" placeholder="Ad" required>
+            <div class="input-group">
+                <input type="email" id="email" placeholder="Email" required style="text-align:left;font-size:14px;letter-spacing:normal;">
+            </div>
+
+            <div class="input-group">
+                <input type="email" id="email2" placeholder="Email Tekrar" required style="text-align:left;font-size:14px;letter-spacing:normal;">
+            </div>
+
+            <div class="input-group">
+                <input type="tel" id="phone" placeholder="Telefon (05xxxxxxxxx)" required style="text-align:left;font-size:14px;letter-spacing:normal;">
+            </div>
+
+            <button type="submit" class="save-btn" id="registerBtn">
+                <i class="fa-solid fa-user-plus"></i> Kaydet
+            </button>
+        </form>
     </div>
 
-    <div class="input-group">
-        <input type="text" name="lastName" id="lastName" placeholder="Soyad" required>
+    <!-- ADIM 2: Kod Doğrulama -->
+    <div id="step2" class="step">
+        <h2>Kodu Doğrula</h2>
+        <p class="subtitle"><span id="emailDisplay"></span> adresine gönderilen 6 haneli kodu girin</p>
+
+        <form id="verifyForm" onsubmit="return handleVerify();">
+            <div class="input-group">
+                <input type="text" id="verificationCode" placeholder="------" maxlength="6" required autocomplete="off">
+            </div>
+
+            <button type="submit" class="save-btn" id="verifyBtn">
+                <i class="fa-solid fa-check"></i> Doğrula
+            </button>
+        </form>
+
+        <div class="resend">
+            Kod gelmedi mi? <a onclick="resendCode()">Tekrar gönder</a>
+        </div>
+
+        <div class="back">
+            <a onclick="goBack()">← Geri dön</a>
+        </div>
     </div>
 
-    <div class="input-group">
-        <input type="email" name="email" id="email" placeholder="Email" required>
+    <!-- ADIM 3: Şifre Oluştur -->
+    <div id="step3" class="step">
+        <h2>Şifre Oluştur</h2>
+        <p class="subtitle">Hesabınızı güvence altına alın</p>
+
+        <form id="passwordForm" onsubmit="return handlePassword();">
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Şifre (en az 6 karakter)" required minlength="6" style="text-align:left;font-size:14px;letter-spacing:normal;">
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password2" placeholder="Şifre Tekrar" required style="text-align:left;font-size:14px;letter-spacing:normal;">
+            </div>
+
+            <button type="submit" class="save-btn" id="passwordBtn">
+                <i class="fa-solid fa-lock"></i> Hesabı Oluştur
+            </button>
+        </form>
     </div>
 
-    <div class="input-group">
-        <input type="email" id="email2" placeholder="Email Tekrar" required>
+    <!-- ADIM 4: Başarılı -->
+    <div id="step4" class="step">
+        <div style="text-align:center;padding:20px 0;">
+            <i class="fa-solid fa-circle-check" style="font-size:64px;color:var(--success);margin-bottom:20px;"></i>
+            <h2>Hesabınız Oluşturuldu!</h2>
+            <p class="subtitle">Giriş yapabilirsiniz</p>
+            <a href="giris.html" class="save-btn" style="text-decoration:none;margin-top:20px;">
+                <i class="fa-solid fa-right-to-bracket"></i> Giriş Yap
+            </a>
+        </div>
     </div>
 
-    <div class="input-group">
-        <input type="tel" name="phone" id="phone" placeholder="Telefon (05xxxxxxxxx)" required>
+    <div id="result"></div>
+
+    <div class="back" id="mainBack">
+        <a href="index.html">Ana sayfaya dön</a>
     </div>
-
-    <button type="submit" class="save-btn" id="registerBtn">
-        <i class="fa-solid fa-user-plus"></i> Kaydet
-    </button>
-
-</form>
-
-<div id="result"></div>
-
-<div class="back">
-    <a href="index.html">Ana sayfaya dön</a>
-</div>
 
 </div>
 </div>
 
 <script>
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-    const email = document.getElementById('email').value.trim();
-    const email2 = document.getElementById('email2').value.trim();
-    const phone = document.getElementById('phone').value.trim();
+// Geçici veri saklama
+let tempUserData = {};
+let generatedCode = null;
+
+function showStep(stepNumber) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + stepNumber).classList.add('active');
     
-    // Validasyon
-    if (email !== email2) {
-        e.preventDefault();
-        showResult('Email adresleri eşleşmiyor!', 'error');
-        return false;
+    if (stepNumber === 2 || stepNumber === 3) {
+        document.getElementById('mainBack').style.display = 'none';
+    } else {
+        document.getElementById('mainBack').style.display = 'block';
     }
-    
-    if (!/^05\d{9}$/.test(phone.replace(/\s/g,''))) {
-        e.preventDefault();
-        showResult('Telefon 05xxxxxxxxx formatında olmalı!', 'error');
-        return false;
-    }
-    
-    // Buton loading yap
-    const btn = document.getElementById("registerBtn");
-    btn.classList.add("loading");
-    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...`;
-    
-    // Form submit edilecek (iframe'e) - CORS yok!
-    
-    // 3 saniye sonra başarılı mesaj
-    setTimeout(function() {
-        showResult('✅ Doğrulama maili gönderildi! Lütfen mailinizi kontrol edin.', 'success');
-        
-        // 2 saniye sonra ana sayfaya yönlendir
-        setTimeout(() => {
-            window.location.href = "index.html";
-        }, 2000);
-        
-    }, 3000);
-});
+}
 
 function showResult(msg, type) {
     const div = document.getElementById('result');
     div.textContent = msg;
     div.className = type;
     div.style.display = 'block';
+    setTimeout(() => div.style.display = 'none', 5000);
+}
+
+// ADIM 1: Kayıt
+function handleRegister() {
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const email2 = document.getElementById('email2').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+
+    if (email !== email2) {
+        showResult('Email adresleri eşleşmiyor!', 'error');
+        return false;
+    }
+
+    if (!/^05\d{9}$/.test(phone.replace(/\s/g,''))) {
+        showResult('Telefon 05xxxxxxxxx formatında olmalı!', 'error');
+        return false;
+    }
+
+    // 6 haneli kod oluştur
+    generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // Butonu normale döndür
+    // Veriyi sakla
+    tempUserData = { firstName, lastName, email, phone };
+
+    // Buton loading
     const btn = document.getElementById("registerBtn");
-    btn.classList.remove("loading");
-    btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Kaydet`;
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...`;
+
+    // Mail gönder (Apps Script'e istek)
+    const formData = new FormData();
+    formData.append('action', 'sendVerificationCode');
+    formData.append('email', email);
+    formData.append('code', generatedCode);
+    formData.append('firstName', firstName);
+    formData.append('lastName', lastName);
+
+    fetch('https://script.google.com/macros/s/AKfycbzl4infJ2Wn7nUBrZpbvjhhqPHDToppLNGIAX1KxqD_sD1sKpJIJncufqWO28OSpIwILg/exec', {
+        method: 'POST',
+        body: formData
+    }).catch(() => {}); // Hata olursa görmezden gel (CORS)
+
+    // 2 saniye bekle ve adım 2'ye geç
+    setTimeout(() => {
+        document.getElementById('emailDisplay').textContent = email;
+        showStep(2);
+        
+        // Kod input'una focus
+        document.getElementById('verificationCode').focus();
+        
+        // Butonu normale döndür
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Kaydet`;
+    }, 2000);
+
+    return false; // Form submit engelle
+}
+
+// ADIM 2: Kod Doğrula
+function handleVerify() {
+    const enteredCode = document.getElementById('verificationCode').value.trim();
+    
+    if (enteredCode !== generatedCode) {
+        showResult('Kod hatalı! Lütfen tekrar deneyin.', 'error');
+        return false;
+    }
+
+    showStep(3);
+    return false;
+}
+
+// ADIM 3: Şifre Oluştur
+function handlePassword() {
+    const password = document.getElementById('password').value;
+    const password2 = document.getElementById('password2').value;
+
+    if (password !== password2) {
+        showResult('Şifreler eşleşmiyor!', 'error');
+        return false;
+    }
+
+    if (password.length < 6) {
+        showResult('Şifre en az 6 karakter olmalı!', 'error');
+        return false;
+    }
+
+    // Buton loading
+    const btn = document.getElementById("passwordBtn");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Oluşturuluyor...`;
+
+    // Kullanıcıyı kaydet (Apps Script'e istek)
+    const formData = new FormData();
+    formData.append('action', 'completeRegisterWithCode');
+    formData.append('firstName', tempUserData.firstName);
+    formData.append('lastName', tempUserData.lastName);
+    formData.append('email', tempUserData.email);
+    formData.append('phone', tempUserData.phone);
+    formData.append('password', password);
+
+    fetch('https://script.google.com/macros/s/AKfycbzl4infJ2Wn7nUBrZpbvjhhqPHDToppLNGIAX1KxqD_sD1sKpJIJncufqWO28OSpIwILg/exec', {
+        method: 'POST',
+        body: formData
+    }).catch(() => {}); // Hata olursa görmezden gel (CORS)
+
+    // 2 saniye bekle ve başarılı sayfasına geç
+    setTimeout(() => {
+        showStep(4);
+    }, 2000);
+
+    return false;
+}
+
+function resendCode() {
+    // Yeni kod oluştur
+    generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Tekrar mail gönder
+    const formData = new FormData();
+    formData.append('action', 'sendVerificationCode');
+    formData.append('email', tempUserData.email);
+    formData.append('code', generatedCode);
+    formData.append('firstName', tempUserData.firstName);
+    formData.append('lastName', tempUserData.lastName);
+
+    fetch('https://script.google.com/macros/s/AKfycbzl4infJ2Wn7nUBrZpbvjhhqPHDToppLNGIAX1KxqD_sD1sKpJIJncufqWO28OSpIwILg/exec', {
+        method: 'POST',
+        body: formData
+    }).catch(() => {});
+
+    showResult('Yeni kod gönderildi!', 'success');
+}
+
+function goBack() {
+    showStep(1);
+    document.getElementById('mainBack').style.display = 'block';
 }
 </script>
 
