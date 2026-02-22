@@ -95,7 +95,7 @@ async function sendReset() {
         return;
     }
 
-    const response = await fetch("APPS_SCRIPT_URL_BURAYA", {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbwgTZmyNTFXRC--qzzzSnDv02Lrnbfkn2IaPsJDD37VHZ6inO_n-yzBPqZj77dL6NUE_Q/exec", {
         method: "POST",
         body: JSON.stringify({
             action: "forgot",
