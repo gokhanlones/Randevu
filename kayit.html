@@ -352,7 +352,7 @@ function handleRegister() {
     formData.append('firstName', firstName);
     formData.append('lastName', lastName);
 
-    fetch('https://script.google.com/macros/s/AKfycbzl4infJ2Wn7nUBrZpbvjhhqPHDToppLNGIAX1KxqD_sD1sKpJIJncufqWO28OSpIwILg/exec', {
+    fetch('https://script.google.com/macros/s/AKfycbwi95rXGOA8VkTgYoZU1VoUS3KK5nqQ6ysPOdTxUFRmov13e13dUg3WUbE5yw9yJ2jDxg/exec', {
         method: 'POST',
         body: formData
     }).catch(() => {}); // Hata olursa görmezden gel (CORS)
