@@ -33,7 +33,7 @@ body{
   padding:20px;
   display:flex;
   flex-direction:column;
-  transition:.3s;
+  transition:.25s ease;
 }
 
 .sidebar .profile{
@@ -49,8 +49,10 @@ body{
 .sidebar .profile h3{
   font-weight:500;
   font-size:16px;
+  line-height:1.2;
 }
 
+/* Button style */
 .sidebar button{
   background:var(--primary);
   border:none;
@@ -61,28 +63,41 @@ body{
   cursor:pointer;
   margin-bottom:15px;
   transition:.2s;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  justify-content:center;
 }
 
-.sidebar button:hover{
-  background:#4338CA;
-}
+.sidebar button:hover{ background:#4338CA; }
 
+/* Logout text */
 .logout{
   margin-top:auto;
   font-size:13px;
   color:#9CA3AF;
   cursor:pointer;
+  user-select:none;
 }
 
-.logout:hover{
-  color:white;
+.logout:hover{ color:white; }
+
+/* Collapsed sidebar */
+.sidebar.collapsed{
+  width:78px;
+  padding:20px 12px;
 }
+
+.sidebar.collapsed .profile h3{ display:none; }
+.sidebar.collapsed button span{ display:none; }
+.sidebar.collapsed .logout{ display:block; text-align:center; }
 
 /* Content */
 .content{
   flex:1;
   padding:30px;
   overflow:auto;
+  transition:.25s ease;
 }
 
 .topbar{
@@ -104,16 +119,17 @@ body{
   box-shadow:0 10px 30px rgba(0,0,0,0.05);
 }
 
-.input-group{
-  margin-bottom:18px;
-}
+/* NavPage system */
+.navpage{ transition:.25s ease; }
+.page{ display:none; }
+.page.active{ display:block; }
 
+.input-group{ margin-bottom:18px; }
 .input-group label{
   display:block;
   font-size:13px;
   margin-bottom:5px;
 }
-
 .input-group input{
   width:100%;
   padding:10px;
@@ -142,8 +158,8 @@ body{
     <h3 id="userName">Gökhan Şenol</h3>
   </div>
 
-  <button onclick="showPage('sube')">
-    <i class="fa-solid fa-plus"></i> Şube Ekle
+  <button onclick="openSubeEkle()">
+    <i class="fa-solid fa-plus"></i> <span>Şube Ekle</span>
   </button>
 
   <div class="logout" onclick="logout()">
@@ -153,35 +169,47 @@ body{
 </div>
 
 <!-- Content -->
-<div class="content">
+<div class="content" id="content">
 
   <div class="topbar">
     <div class="hamburger" onclick="toggleSidebar()">
       <i class="fa-solid fa-bars"></i>
     </div>
-    <h2>Şube Yönetimi</h2>
+    <h2 id="pageTitle">Panel</h2>
   </div>
 
   <!-- NAV PAGE -->
-  <div id="subePage" class="card">
-    <h3 style="margin-bottom:20px;">Yeni Şube Ekle</h3>
+  <div class="navpage" id="navpage">
 
-    <div class="input-group">
-      <label>Şube Adı</label>
-      <input type="text" placeholder="Örn: Merkez Şube">
+    <!-- ANA SAYFA (BOŞ) -->
+    <div class="page active" id="pageHome">
+      <div class="card"></div>
     </div>
 
-    <div class="input-group">
-      <label>Telefon</label>
-      <input type="text" placeholder="05xxxxxxxxx">
+    <!-- ŞUBE EKLE -->
+    <div class="page" id="pageSubeEkle">
+      <div class="card">
+        <h3 style="margin-bottom:20px;">Yeni Şube Ekle</h3>
+
+        <div class="input-group">
+          <label>Şube Adı</label>
+          <input type="text" id="subeAdi" placeholder="Örn: Merkez Şube">
+        </div>
+
+        <div class="input-group">
+          <label>Telefon</label>
+          <input type="text" id="subeTel" placeholder="05xxxxxxxxx">
+        </div>
+
+        <div class="input-group">
+          <label>Adres</label>
+          <input type="text" id="subeAdres" placeholder="Şube adresi">
+        </div>
+
+        <button class="save-btn" onclick="saveSube()">Kaydet</button>
+      </div>
     </div>
 
-    <div class="input-group">
-      <label>Adres</label>
-      <input type="text" placeholder="Şube adresi">
-    </div>
-
-    <button class="save-btn">Kaydet</button>
   </div>
 
 </div>
@@ -189,15 +217,38 @@ body{
 <script>
 function toggleSidebar(){
   const sidebar = document.getElementById("sidebar");
-  sidebar.style.width = sidebar.style.width === "0px" ? "260px" : "0px";
+  sidebar.classList.toggle("collapsed");
 }
 
-function showPage(page){
-  // İleride başka sayfa eklenecekse burada yönetilecek
+/* NavPage routing */
+function showPage(pageId, title){
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  const page = document.getElementById(pageId);
+  if(page) page.classList.add("active");
+  if(title) document.getElementById("pageTitle").innerText = title;
+}
+
+/* Sidebar action: Şube Ekle */
+function openSubeEkle(){
+  showPage("pageSubeEkle", "Şube Yönetimi");
+}
+
+/* Şimdilik stub - aksiyonu sen yazınca burayı bağlayacağız */
+function saveSube(){
+  const subeAdi = document.getElementById("subeAdi").value.trim();
+  const subeTel = document.getElementById("subeTel").value.trim();
+  const subeAdres = document.getElementById("subeAdres").value.trim();
+
+  if(!subeAdi || !subeTel || !subeAdres){
+    alert("Tüm alanları doldurun.");
+    return;
+  }
+
+  alert("Şube kaydet aksiyonu eklenecek.");
 }
 
 function logout(){
-  alert("Çıkış yapıldı");
+  localStorage.clear();
   window.location.href="index.html";
 }
 </script>
