@@ -18,11 +18,7 @@
     --border: #E5E7EB;
 }
 
-* {
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+* { margin:0; padding:0; box-sizing:border-box; }
 
 body {
     font-family:'Segoe UI', sans-serif;
@@ -53,7 +49,7 @@ body {
 }
 
 .input-group {
-    margin-bottom:18px;
+    margin-bottom:16px;
 }
 
 .input-group input {
@@ -81,10 +77,19 @@ body {
     font-weight:500;
     cursor:pointer;
     transition:0.2s ease;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
 }
 
 .save-btn:hover {
     background:var(--primary-hover);
+}
+
+.save-btn.loading {
+    opacity:0.7;
+    pointer-events:none;
 }
 
 .back {
@@ -103,60 +108,119 @@ body {
 <body>
 
 <div class="container">
-    <div class="card">
+<div class="card">
 
-        <h2>Kayıt Ol</h2>
+<h2>Kayıt Ol</h2>
 
-        <div class="input-group">
-            <input type="text" id="firstName" placeholder="Ad">
-        </div>
+<div class="input-group">
+    <input type="text" id="firstName" placeholder="Ad">
+</div>
 
-        <div class="input-group">
-            <input type="text" id="lastName" placeholder="Soyad">
-        </div>
+<div class="input-group">
+    <input type="text" id="lastName" placeholder="Soyad">
+</div>
 
-        <div class="input-group">
-            <input type="email" id="email" placeholder="Email">
-        </div>
+<div class="input-group">
+    <input type="email" id="email" placeholder="Email">
+</div>
 
-        <div class="input-group">
-            <input type="email" id="email2" placeholder="Email Tekrar">
-        </div>
+<div class="input-group">
+    <input type="email" id="email2" placeholder="Email Tekrar">
+</div>
 
-        <div class="input-group">
-            <input type="tel" id="phone" placeholder="Telefon">
-        </div>
+<div class="input-group">
+    <input type="tel" id="phone" placeholder="Telefon (05xx xxx xx xx)">
+</div>
 
-        <button class="save-btn" onclick="register()">Kaydet</button>
+<div class="input-group">
+    <input type="password" id="password" placeholder="Şifre">
+</div>
 
-        <div class="back">
-            <a href="index.html">Ana sayfaya dön</a>
-        </div>
+<button class="save-btn" id="registerBtn" onclick="register()">
+    <i class="fa-solid fa-user-plus"></i> Kaydet
+</button>
 
-    </div>
+<div class="back">
+    <a href="index.html">Ana sayfaya dön</a>
+</div>
+
+</div>
 </div>
 
 <script>
-function register() {
+
+async function register() {
+
+    const btn = document.getElementById("registerBtn");
+    btn.classList.add("loading");
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...`;
 
     const first = document.getElementById("firstName").value.trim();
     const last = document.getElementById("lastName").value.trim();
     const email = document.getElementById("email").value.trim();
     const email2 = document.getElementById("email2").value.trim();
     const phone = document.getElementById("phone").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    if (!first || !last || !email || !email2 || !phone) {
-        alert("Tüm alanları doldurun.");
-        return;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^05\d{9}$/;
+
+    if (!first || !last || !email || !email2 || !phone || !password) {
+        return showError("Tüm alanları doldurun.");
+    }
+
+    if (!emailRegex.test(email)) {
+        return showError("Geçerli bir email girin.");
     }
 
     if (email !== email2) {
-        alert("Email adresleri eşleşmiyor.");
-        return;
+        return showError("Email adresleri eşleşmiyor.");
     }
 
-    alert("Kayıt işlemi hazır. Backend bağlanacak.");
+    if (!phoneRegex.test(phone.replace(/\s/g,''))) {
+        return showError("Telefon 05xx formatında olmalı.");
+    }
+
+    if (password.length < 6) {
+        return showError("Şifre en az 6 karakter olmalı.");
+    }
+
+    try {
+
+        const response = await fetch("APPS_SCRIPT_URL_BURAYA", {
+            method: "POST",
+            body: JSON.stringify({
+                action: "registerUser",
+                first,
+                last,
+                email,
+                phone,
+                password
+            })
+        });
+
+        const result = await response.json();
+
+        if(result.success){
+            alert("Kayıt başarılı!");
+            window.location.href = "index.html";
+        } else {
+            showError(result.message || "Kayıt başarısız.");
+        }
+
+    } catch (err) {
+        showError("Sunucu bağlantı hatası.");
+    }
+
 }
+
+function showError(message){
+    alert(message);
+    const btn = document.getElementById("registerBtn");
+    btn.classList.remove("loading");
+    btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Kaydet`;
+}
+
 </script>
 
 </body>
