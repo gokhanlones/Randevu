@@ -4,236 +4,258 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flow Randevu - Panel</title>
-
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
 <style>
 :root{
   --primary:#4F46E5;
+  --primary-hover:#4338CA;
   --dark:#1F2937;
   --light:#F3F4F6;
   --white:#ffffff;
+  --text:#111827;
+  --muted:#9CA3AF;
 }
 
+/* ===== RESET ===== */
 *{margin:0;padding:0;box-sizing:border-box;}
-
 body{
   font-family:'Segoe UI',sans-serif;
-  display:flex;
   background:var(--light);
   height:100vh;
   overflow:hidden;
 }
 
-/* Sidebar */
+/* ===== LAYOUT ===== */
+.app{
+  display:flex;
+  height:100vh;
+}
+
+/* ===== SIDEBAR ===== */
 .sidebar{
   width:260px;
   background:var(--dark);
-  color:white;
+  color:var(--white);
   padding:20px;
   display:flex;
   flex-direction:column;
-  transition:.25s ease;
+  transition: width .25s ease, padding .25s ease;
+  flex: 0 0 auto;
 }
 
-.sidebar .profile{
+.profile{
   text-align:center;
-  margin-bottom:30px;
+  margin-bottom:26px;
 }
-
-.sidebar .profile i{
-  font-size:45px;
+.profile i{
+  font-size:46px;
   margin-bottom:10px;
 }
-
-.sidebar .profile h3{
+.profile h3{
   font-weight:500;
   font-size:16px;
   line-height:1.2;
 }
 
-/* Button style */
+/* Sidebar button */
 .sidebar button{
   background:var(--primary);
   border:none;
   padding:12px;
-  border-radius:8px;
-  color:white;
+  border-radius:10px;
+  color:var(--white);
   font-size:14px;
   cursor:pointer;
-  margin-bottom:15px;
   transition:.2s;
   display:flex;
   align-items:center;
   gap:10px;
   justify-content:center;
 }
+.sidebar button:hover{ background:var(--primary-hover); }
 
-.sidebar button:hover{ background:#4338CA; }
-
-/* Logout text */
 .logout{
   margin-top:auto;
   font-size:13px;
-  color:#9CA3AF;
+  color:var(--muted);
   cursor:pointer;
   user-select:none;
 }
+.logout:hover{ color:var(--white); }
 
-.logout:hover{ color:white; }
-
-/* Collapsed sidebar */
+/* COLLAPSED */
 .sidebar.collapsed{
   width:78px;
   padding:20px 12px;
 }
-
 .sidebar.collapsed .profile h3{ display:none; }
 .sidebar.collapsed button span{ display:none; }
-.sidebar.collapsed .logout{ display:block; text-align:center; }
+.sidebar.collapsed .logout{ text-align:center; }
+.sidebar.collapsed button i{ font-size:16px; }
 
-/* Content */
+/* ===== CONTENT (NAVPAGE) ===== */
 .content{
   flex:1;
-  padding:30px;
+  padding:28px 30px;
   overflow:auto;
-  transition:.25s ease;
+  transition: margin-left .25s ease;
+  margin-left:0;
+}
+
+/* Sidebar daralınca NAVPAGE “kaymış” gibi olsun */
+.content.shifted{
+  margin-left:-182px; /* 260 - 78 = 182 */
 }
 
 .topbar{
   display:flex;
   align-items:center;
-  margin-bottom:25px;
+  gap:12px;
+  margin-bottom:22px;
+  color:var(--text);
 }
-
 .hamburger{
   font-size:22px;
   cursor:pointer;
-  margin-right:15px;
+  user-select:none;
+}
+#pageTitle{
+  font-size:22px;
+  font-weight:700;
 }
 
-.card{
-  background:white;
-  padding:30px;
-  border-radius:14px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.05);
-}
-
-/* NavPage system */
-.navpage{ transition:.25s ease; }
+/* ===== PAGE SYSTEM ===== */
 .page{ display:none; }
 .page.active{ display:block; }
 
-.input-group{ margin-bottom:18px; }
+/* ===== CARD ===== */
+.card{
+  background:var(--white);
+  border-radius:16px;
+  padding:28px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.06);
+}
+
+/* ===== FORM ===== */
+.input-group{ margin-bottom:16px; }
 .input-group label{
   display:block;
   font-size:13px;
-  margin-bottom:5px;
+  margin-bottom:6px;
+  color:var(--text);
 }
 .input-group input{
   width:100%;
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #ddd;
+  padding:11px 12px;
+  border-radius:10px;
+  border:1px solid #E5E7EB;
+  outline:none;
+  font-size:14px;
+}
+.input-group input:focus{
+  border-color: rgba(79,70,229,.65);
+  box-shadow:0 0 0 3px rgba(79,70,229,.12);
 }
 
 .save-btn{
   background:var(--primary);
-  color:white;
+  color:var(--white);
   border:none;
-  padding:12px 20px;
-  border-radius:8px;
+  padding:12px 18px;
+  border-radius:10px;
   cursor:pointer;
+}
+.save-btn:hover{ background:var(--primary-hover); }
+
+/* Home boş sayfa görünümü (istersen komple boş da bırakabilirsin) */
+.home-empty{
+  height:240px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- Sidebar -->
-<div class="sidebar" id="sidebar">
+<div class="app">
 
-  <div class="profile">
-    <i class="fa-solid fa-user-circle"></i>
-    <h3 id="userName">Gökhan Şenol</h3>
-  </div>
-
-  <button onclick="openSubeEkle()">
-    <i class="fa-solid fa-plus"></i> <span>Şube Ekle</span>
-  </button>
-
-  <div class="logout" onclick="logout()">
-    Çıkış
-  </div>
-
-</div>
-
-<!-- Content -->
-<div class="content" id="content">
-
-  <div class="topbar">
-    <div class="hamburger" onclick="toggleSidebar()">
-      <i class="fa-solid fa-bars"></i>
-    </div>
-    <h2 id="pageTitle">Panel</h2>
-  </div>
-
-  <!-- NAV PAGE -->
-  <div class="navpage" id="navpage">
-
-    <!-- ANA SAYFA (BOŞ) -->
-    <div class="page active" id="pageHome">
-      <div class="card"></div>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="profile">
+      <i class="fa-solid fa-user-circle"></i>
+      <h3 id="userName">Gökhan Şenol</h3>
     </div>
 
-    <!-- ŞUBE EKLE -->
-    <div class="page" id="pageSubeEkle">
-      <div class="card">
-        <h3 style="margin-bottom:20px;">Yeni Şube Ekle</h3>
+    <button type="button" onclick="openSubeEkle()">
+      <i class="fa-solid fa-plus"></i> <span>Şube Ekle</span>
+    </button>
 
-        <div class="input-group">
-          <label>Şube Adı</label>
-          <input type="text" id="subeAdi" placeholder="Örn: Merkez Şube">
-        </div>
+    <div class="logout" onclick="logout()">Çıkış</div>
+  </aside>
 
-        <div class="input-group">
-          <label>Telefon</label>
-          <input type="text" id="subeTel" placeholder="05xxxxxxxxx">
-        </div>
+  <!-- CONTENT -->
+  <main class="content" id="content">
+    <div class="topbar">
+      <div class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></div>
+      <div id="pageTitle">Panel</div>
+    </div>
 
-        <div class="input-group">
-          <label>Adres</label>
-          <input type="text" id="subeAdres" placeholder="Şube adresi">
-        </div>
+    <!-- NAVPAGE -->
+    <section id="navpage">
 
-        <button class="save-btn" onclick="saveSube()">Kaydet</button>
+      <!-- ANA SAYFA: GERÇEKTEN BOŞ -->
+      <div class="page active" id="pageHome">
+        <div class="card home-empty"></div>
       </div>
-    </div>
 
-  </div>
+      <!-- ŞUBE EKLE -->
+      <div class="page" id="pageSubeEkle">
+        <div class="card">
+          <h3 style="margin-bottom:18px;">Yeni Şube Ekle</h3>
+
+          <div class="input-group">
+            <label>Şube Adı</label>
+            <input type="text" id="subeAdi" placeholder="Örn: Merkez Şube">
+          </div>
+
+          <div class="input-group">
+            <label>Telefon</label>
+            <input type="text" id="subeTel" placeholder="05xxxxxxxxx">
+          </div>
+
+          <div class="input-group">
+            <label>Adres</label>
+            <input type="text" id="subeAdres" placeholder="Şube adresi">
+          </div>
+
+          <button class="save-btn" type="button" onclick="saveSube()">Kaydet</button>
+        </div>
+      </div>
+
+    </section>
+  </main>
 
 </div>
 
 <script>
 function toggleSidebar(){
   const sidebar = document.getElementById("sidebar");
+  const content = document.getElementById("content");
   sidebar.classList.toggle("collapsed");
+  content.classList.toggle("shifted");
 }
 
-/* NavPage routing */
 function showPage(pageId, title){
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
   const page = document.getElementById(pageId);
   if(page) page.classList.add("active");
-  if(title) document.getElementById("pageTitle").innerText = title;
+  document.getElementById("pageTitle").innerText = title || "Panel";
 }
 
-/* Sidebar action: Şube Ekle */
 function openSubeEkle(){
   showPage("pageSubeEkle", "Şube Yönetimi");
 }
 
-/* Şimdilik stub - aksiyonu sen yazınca burayı bağlayacağız */
 function saveSube(){
   const subeAdi = document.getElementById("subeAdi").value.trim();
   const subeTel = document.getElementById("subeTel").value.trim();
@@ -244,6 +266,7 @@ function saveSube(){
     return;
   }
 
+  // aksiyonu sen yazınca buraya bağlayacağız
   alert("Şube kaydet aksiyonu eklenecek.");
 }
 
@@ -251,6 +274,9 @@ function logout(){
   localStorage.clear();
   window.location.href="index.html";
 }
+
+/* SAYFA AÇILIR AÇILMAZ: BOŞ HOME */
+showPage("pageHome", "Panel");
 </script>
 
 </body>
