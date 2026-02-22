@@ -205,7 +205,7 @@ async function login() {
         return;
     }
 
-    const response = await fetch("APPS_SCRIPT_URL_BURAYA", {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbwajW7rMIe7YAGTSno-Vta2iQEGgrn-dfQXnTiK2c5kqPM6_w46a4ItVTyvxHZMN9nYGA/exec", {
         method: "POST",
         body: JSON.stringify({
             action: "login",
