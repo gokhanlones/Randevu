@@ -145,7 +145,6 @@ body {
 <script>
 
 async function register() {
-
     const btn = document.getElementById("registerBtn");
     btn.classList.add("loading");
     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...`;
@@ -175,6 +174,44 @@ async function register() {
         return showError("Telefon 05xxxxxxxxx formatında olmalı.");
     }
 
+    try {
+        // ❌ mode: "no-cors" kaldırıldı
+        // ✅ Yeni URL (boşluk yok)
+        const response = await fetch("https://script.google.com/macros/s/AKfycbyFxbDFRPG6PohyPDS27fi5Brn5yBBL8_5z2UMOCbpjko5Q12zxVFGMu9QJo2YMYjS1/exec", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                action: "sendVerification",
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                phone: phone
+            })
+        });
+
+        // Eğer CORS hatası varsa burası çalışmayabilir
+        // Bu yüzden response kontrolü ekliyoruz
+        if (!response.ok) {
+            throw new Error("HTTP error! status: " + response.status);
+        }
+
+        const result = await response.json();
+
+        if(result.success){
+            alert("Doğrulama maili gönderildi. Mailinizi kontrol edin.");
+            window.location.href = "index.html";
+        } else {
+            showError(result.message || "Kayıt başarısız.");
+        }
+
+    } catch (err) {
+        console.error("Hata detayı:", err);
+        // CORS hatası durumunda kullanıcıya bilgi ver
+        showError("Sunucu bağlantı hatası. Lütfen daha sonra tekrar deneyin.");
+    }
+}
     try {
 
 const response = await fetch("https://script.google.com/macros/s/AKfycbyFxbDFRPG6PohyPDS27fi5Brn5yBBL8_5z2UMOCbpjko5Q12zxVFGMu9QJo2YMYjS1/exec", {
