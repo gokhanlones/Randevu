@@ -14,7 +14,6 @@
     --light-bg: #F3F4F6;
     --card-bg: #FFFFFF;
     --text-dark: #1F2937;
-    --text-light: #6B7280;
     --border: #E5E7EB;
 }
 
@@ -129,7 +128,7 @@ body {
 </div>
 
 <div class="input-group">
-    <input type="tel" id="phone" placeholder="Telefon (05xx...)">
+    <input type="tel" id="phone" placeholder="Telefon (05xxxxxxxxx)">
 </div>
 
 <button class="save-btn" id="registerBtn" onclick="register()">
@@ -149,10 +148,10 @@ async function register() {
 
     const btn = document.getElementById("registerBtn");
     btn.classList.add("loading");
-    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...`;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...`;
 
-    const first = document.getElementById("firstName").value.trim();
-    const last = document.getElementById("lastName").value.trim();
+    const firstName = document.getElementById("firstName").value.trim();
+    const lastName = document.getElementById("lastName").value.trim();
     const email = document.getElementById("email").value.trim();
     const email2 = document.getElementById("email2").value.trim();
     const phone = document.getElementById("phone").value.trim();
@@ -160,7 +159,7 @@ async function register() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^05\d{9}$/;
 
-    if (!first || !last || !email || !email2 || !phone) {
+    if (!firstName || !lastName || !email || !email2 || !phone) {
         return showError("Tüm alanları doldurun.");
     }
 
@@ -173,26 +172,26 @@ async function register() {
     }
 
     if (!phoneRegex.test(phone.replace(/\s/g,''))) {
-        return showError("Telefon 05xx formatında olmalı.");
+        return showError("Telefon 05xxxxxxxxx formatında olmalı.");
     }
 
     try {
 
-        const response = await fetch("https://script.google.com/macros/s/AKfycbzDxnb-3boRNy0D937jhItJC8_6z5QbP0VOhJfUfPKLiU3aPkXtyPobCjhNXsC7AfR7Mg/exec", {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbyEX4feeHkyS1gIeDvcJk9cbXtxADq77gDQsTWRNacNC6pfmsHaERcCpSpHvbQWaWpvxw/exec", {
             method: "POST",
             body: JSON.stringify({
-                action: "registerUser",
-                first,
-                last,
-                email,
-                phone
+                action: "sendVerification",
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                phone: phone
             })
         });
 
         const result = await response.json();
 
         if(result.success){
-            alert("Kayıt başarılı!");
+            alert("Doğrulama maili gönderildi. Mailinizi kontrol edin.");
             window.location.href = "index.html";
         } else {
             showError(result.message || "Kayıt başarısız.");
@@ -201,7 +200,6 @@ async function register() {
     } catch (err) {
         showError("Sunucu bağlantı hatası.");
     }
-
 }
 
 function showError(message){
