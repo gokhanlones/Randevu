@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kayıt Ol</title>
+<title>İşletmeci Kayıt - Flow Randevu</title>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
@@ -23,23 +23,23 @@
 body {
     font-family:'Segoe UI', sans-serif;
     background:var(--light-bg);
-    height:100vh;
+    min-height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
+    padding:20px;
 }
 
 .container {
     width:100%;
-    max-width:420px;
-    padding:20px;
+    max-width:480px;
 }
 
 .card {
     background:var(--card-bg);
-    padding:40px 35px;
-    border-radius:14px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    padding:35px 30px;
+    border-radius:16px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.1);
 }
 
 .card h2 {
@@ -69,48 +69,82 @@ body {
 
 .input-group input {
     width:100%;
-    padding:13px;
+    padding:12px 14px;
     border-radius:8px;
     border:1px solid var(--border);
     font-size:14px;
+    transition:0.2s;
 }
 
 .input-group input:focus {
     outline:none;
     border-color:var(--primary);
-    box-shadow:0 0 0 2px rgba(79,70,229,0.15);
+    box-shadow:0 0 0 3px rgba(79,70,229,0.1);
 }
 
 .code-input {
     text-align:center !important;
-    letter-spacing:8px !important;
-    font-size:24px !important;
+    letter-spacing:10px !important;
+    font-size:28px !important;
     font-weight:bold !important;
+}
+
+/* Sözleşme Checkbox */
+.checkbox-group {
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin:20px 0;
+    padding:15px;
+    background:#F9FAFB;
+    border-radius:8px;
+    border:1px solid var(--border);
+}
+
+.checkbox-group input[type="checkbox"] {
+    width:18px;
+    height:18px;
+    margin-top:2px;
+    accent-color:var(--primary);
+    cursor:pointer;
+}
+
+.checkbox-group label {
+    font-size:13px;
+    color:#4B5563;
+    line-height:1.5;
+    cursor:pointer;
+}
+
+.checkbox-group a {
+    color:var(--primary);
+    text-decoration:underline;
+    font-weight:500;
 }
 
 .save-btn {
     width:100%;
-    padding:13px;
+    padding:14px;
     border:none;
     border-radius:8px;
     background:var(--primary);
     color:white;
     font-size:15px;
-    font-weight:500;
+    font-weight:600;
     cursor:pointer;
-    transition:0.2s ease;
+    transition:0.2s;
     display:flex;
     justify-content:center;
     align-items:center;
     gap:8px;
 }
 
-.save-btn:hover {
+.save-btn:hover:not(:disabled) {
     background:var(--primary-hover);
 }
 
 .save-btn:disabled {
-    opacity:0.7;
+    opacity:0.6;
     cursor:not-allowed;
 }
 
@@ -171,54 +205,221 @@ body {
     cursor:pointer;
     text-decoration:underline;
 }
+
+/* Sözleşme Modal */
+.modal-overlay {
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+    z-index:1000;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.modal-overlay.active {
+    display:flex;
+}
+
+.modal {
+    background:white;
+    width:100%;
+    max-width:600px;
+    max-height:80vh;
+    border-radius:12px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+}
+
+.modal-header {
+    padding:20px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.modal-header h3 {
+    color:var(--text-dark);
+    font-size:18px;
+}
+
+.modal-close {
+    background:none;
+    border:none;
+    font-size:28px;
+    cursor:pointer;
+    color:#6B7280;
+    line-height:1;
+}
+
+.modal-close:hover {
+    color:var(--text-dark);
+}
+
+.modal-body {
+    padding:20px;
+    overflow-y:auto;
+    flex:1;
+    line-height:1.6;
+    color:#4B5563;
+    font-size:14px;
+}
+
+.modal-body h4 {
+    color:var(--text-dark);
+    margin:20px 0 10px 0;
+    font-size:15px;
+}
+
+.modal-body h4:first-child {
+    margin-top:0;
+}
+
+.modal-body p {
+    margin-bottom:10px;
+}
+
+.modal-footer {
+    padding:20px;
+    border-top:1px solid var(--border);
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+}
+
+.modal-btn {
+    padding:10px 20px;
+    border-radius:6px;
+    border:none;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:500;
+}
+
+.modal-btn.secondary {
+    background:#F3F4F6;
+    color:#4B5563;
+}
+
+.modal-btn.secondary:hover {
+    background:#E5E7EB;
+}
+
+.modal-btn.primary {
+    background:var(--primary);
+    color:white;
+}
+
+.modal-btn.primary:hover {
+    background:var(--primary-hover);
+}
 </style>
 </head>
 
 <body>
+
+<!-- Sözleşme Modal -->
+<div class="modal-overlay" id="sozlesmeModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-file-contract"></i> Kullanım Sözleşmesi</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <h4>1. Hizmet Kapsamı</h4>
+            <p>Flow Randevu sistemi, işletmelerin randevu yönetimini dijital ortamda gerçekleştirmesini sağlayan bir SaaS platformudur.</p>
+            
+            <h4>2. Kullanıcı Yükümlülükleri</h4>
+            <p>Kullanıcı, sisteme doğru ve güncel bilgiler girmekle yükümlüdür. Yanlış bilgi girilmesinden doğan sorumluluk kullanıcıya aittir.</p>
+            
+            <h4>3. Veri Güvenliği</h4>
+            <p>Kullanıcı bilgileri SHA-256 algoritması ile şifrelenerek saklanır. Cihaz bilgileri (IP, tarayıcı, işletim sistemi) sadece güvenlik amaçlı kaydedilir.</p>
+            
+            <h4>4. Gizlilik</h4>
+            <p>Kişisel verileriniz 6698 sayılı KVKK kapsamında korunmaktadır. Verileriniz üçüncü taraflarla paylaşılmaz.</p>
+            
+            <h4>5. Hizmet Şartları</h4>
+            <p>Sistem, bakım ve güncelleme çalışmaları nedeniyle belirli dönemlerde kullanılamayabilir. Kullanıcı, sistemin %99.9 uptime garantisi ile çalıştığını kabul eder.</p>
+            
+            <h4>6. Üyelik İptali</h4>
+            <p>Kullanıcı, istediği zaman hesabını silebilir. Silinen hesapların verileri 30 gün içinde sistemden tamamen kaldırılır.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn secondary" onclick="closeModal()">Kapat</button>
+            <button class="modal-btn primary" onclick="onaylaSozlesme()">
+                <i class="fa-solid fa-check"></i> Okudum, Onaylıyorum
+            </button>
+        </div>
+    </div>
+</div>
 
 <div class="container">
 <div class="card">
 
     <!-- ADIM 1: Kayıt Formu -->
     <div id="step1" class="step active">
-        <h2>Kayıt Ol</h2>
-        <p class="subtitle">Hesabınızı oluşturmaya başlayın</p>
+        <h2>İşletmeci Kayıt</h2>
+        <p class="subtitle">Flow Randevu sistemine üye olun</p>
 
         <form id="registerForm" onsubmit="return handleRegister();">
             <div class="input-group">
-                <input type="text" id="firstName" placeholder="Ad" required>
+                <label>Ad</label>
+                <input type="text" id="firstName" placeholder="Adınız" required>
             </div>
 
             <div class="input-group">
-                <input type="text" id="lastName" placeholder="Soyad" required>
+                <label>Soyad</label>
+                <input type="text" id="lastName" placeholder="Soyadınız" required>
             </div>
 
             <div class="input-group">
-                <input type="email" id="email" placeholder="Email" required>
+                <label>Email</label>
+                <input type="email" id="email" placeholder="ornek@email.com" required>
             </div>
 
             <div class="input-group">
-                <input type="email" id="email2" placeholder="Email Tekrar" required>
+                <label>Email Tekrar</label>
+                <input type="email" id="email2" placeholder="Email adresinizi tekrar girin" required>
             </div>
 
             <div class="input-group">
-                <input type="tel" id="phone" placeholder="Telefon (05xxxxxxxxx)" required>
+                <label>Telefon</label>
+                <input type="tel" id="phone" placeholder="05xxxxxxxxx" required maxlength="11">
+            </div>
+
+            <!-- Sözleşme Onayı -->
+            <div class="checkbox-group">
+                <input type="checkbox" id="sozlesmeCheck" required>
+                <label for="sozlesmeCheck">
+                    <a href="#" onclick="openModal(); return false;">Kullanım sözleşmesini</a> okudum, onaylıyorum. 
+                    Kişisel verilerimin işlenmesine izin veriyorum.
+                </label>
             </div>
 
             <button type="submit" class="save-btn" id="registerBtn">
-                <i class="fa-solid fa-user-plus"></i> Kaydet
+                <i class="fa-solid fa-arrow-right"></i> Devam Et
             </button>
         </form>
+
+        <div class="back">
+            <a href="index.html"><i class="fa-solid fa-arrow-left"></i> Ana sayfaya dön</a>
+        </div>
     </div>
 
     <!-- ADIM 2: Kod Doğrulama -->
     <div id="step2" class="step">
         <h2>Kodu Doğrula</h2>
-        <p class="subtitle"><span id="emailDisplay"></span> adresine gönderilen 6 haneli kodu girin</p>
+        <p class="subtitle"><span id="emailDisplay"></span> adresine 6 haneli kod gönderildi</p>
 
         <form id="verifyForm" onsubmit="return handleVerify();">
             <div class="input-group">
-                <input type="text" id="verificationCode" class="code-input" placeholder="------" maxlength="6" required autocomplete="off">
+                <input type="text" id="verificationCode" class="code-input" placeholder="------" maxlength="6" required autocomplete="off" inputmode="numeric">
             </div>
 
             <button type="submit" class="save-btn" id="verifyBtn">
@@ -231,22 +432,24 @@ body {
         </div>
 
         <div class="back">
-            <a onclick="goBack()">← Geri dön</a>
+            <a onclick="goBack(1)"><i class="fa-solid fa-arrow-left"></i> Geri dön</a>
         </div>
     </div>
 
     <!-- ADIM 3: Şifre Oluştur -->
     <div id="step3" class="step">
-        <h2>Şifre Oluştur</h2>
+        <h2>Şifre Belirle</h2>
         <p class="subtitle">Hesabınızı güvence altına alın</p>
 
         <form id="passwordForm" onsubmit="return handlePassword();">
             <div class="input-group">
-                <input type="password" id="password" placeholder="Şifre (en az 6 karakter)" required minlength="6">
+                <label>Şifre</label>
+                <input type="password" id="password" placeholder="En az 6 karakter" required minlength="6">
             </div>
 
             <div class="input-group">
-                <input type="password" id="password2" placeholder="Şifre Tekrar" required>
+                <label>Şifre Tekrar</label>
+                <input type="password" id="password2" placeholder="Şifrenizi tekrar girin" required>
             </div>
 
             <button type="submit" class="save-btn" id="passwordBtn">
@@ -255,17 +458,19 @@ body {
         </form>
 
         <div class="back">
-            <a onclick="goBackToCode()">← Geri dön</a>
+            <a onclick="goBack(2)"><i class="fa-solid fa-arrow-left"></i> Geri dön</a>
         </div>
     </div>
 
     <!-- ADIM 4: Başarılı -->
     <div id="step4" class="step">
-        <div style="text-align:center;padding:20px 0;">
-            <i class="fa-solid fa-circle-check" style="font-size:64px;color:var(--success);margin-bottom:20px;"></i>
-            <h2>Hesabınız Oluşturuldu!</h2>
-            <p class="subtitle">Giriş yapabilirsiniz</p>
-            <a href="giris.html" class="save-btn" style="text-decoration:none;margin-top:20px;">
+        <div style="text-align:center;padding:30px 0;">
+            <div style="width:80px;height:80px;background:#D1FAE5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+                <i class="fa-solid fa-check" style="font-size:40px;color:var(--success);"></i>
+            </div>
+            <h2 style="color:var(--text-dark);margin-bottom:10px;">Kayıt Tamamlandı!</h2>
+            <p style="color:#6B7280;font-size:14px;margin-bottom:25px;">Hesabınız başarıyla oluşturuldu.</p>
+            <a href="giris.html" class="save-btn" style="text-decoration:none;">
                 <i class="fa-solid fa-right-to-bracket"></i> Giriş Yap
             </a>
         </div>
@@ -273,29 +478,75 @@ body {
 
     <div id="result"></div>
 
-    <div class="back" id="mainBack">
-        <a href="index.html">Ana sayfaya dön</a>
-    </div>
-
 </div>
 </div>
 
 <script>
-// Geçici veri saklama
+// ========================================
+// DEĞİŞKENLER
+// ========================================
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwfv9mGLOV5cpizTukvM1t26U1xJ--Z6MWjRlB6KQLg4almvGW_cKy8JjVhnXQQLmT0PQ/exec';
 let tempUserData = {};
 let generatedCode = null;
+let deviceInfo = {};
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwfv9mGLOV5cpizTukvM1t26U1xJ--Z6MWjRlB6KQLg4almvGW_cKy8JjVhnXQQLmT0PQ/exec';
+// ========================================
+// CİHAZ BİLGİSİ TOPLA
+// ========================================
+function collectDeviceInfo() {
+    const ua = navigator.userAgent;
+    let os = "Bilinmiyor";
+    let browser = "Bilinmiyor";
+    
+    if (ua.indexOf("Win") !== -1) os = "Windows";
+    else if (ua.indexOf("Mac") !== -1) os = "MacOS";
+    else if (ua.indexOf("Linux") !== -1) os = "Linux";
+    else if (ua.indexOf("Android") !== -1) os = "Android";
+    else if (ua.indexOf("like Mac") !== -1) os = "iOS";
+    
+    if (ua.indexOf("Chrome") !== -1) browser = "Chrome";
+    else if (ua.indexOf("Safari") !== -1) browser = "Safari";
+    else if (ua.indexOf("Firefox") !== -1) browser = "Firefox";
+    else if (ua.indexOf("Edge") !== -1) browser = "Edge";
+    
+    deviceInfo = {
+        browser: browser,
+        os: os,
+        screen: window.screen.width + "x" + window.screen.height
+    };
+}
 
+window.onload = function() {
+    collectDeviceInfo();
+};
+
+// ========================================
+// MODAL İŞLEMLERİ
+// ========================================
+function openModal() {
+    document.getElementById('sozlesmeModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('sozlesmeModal').classList.remove('active');
+}
+
+function onaylaSozlesme() {
+    document.getElementById('sozlesmeCheck').checked = true;
+    closeModal();
+}
+
+// Modal dışına tıklayınca kapat
+document.getElementById('sozlesmeModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+// ========================================
+// ADIM YÖNETİMİ
+// ========================================
 function showStep(stepNumber) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
     document.getElementById('step' + stepNumber).classList.add('active');
-    
-    if (stepNumber === 2 || stepNumber === 3) {
-        document.getElementById('mainBack').style.display = 'none';
-    } else {
-        document.getElementById('mainBack').style.display = 'block';
-    }
 }
 
 function showResult(msg, type) {
@@ -306,13 +557,16 @@ function showResult(msg, type) {
     setTimeout(() => div.style.display = 'none', 5000);
 }
 
-// ADIM 1: Kayıt
+// ========================================
+// ADIM 1: KAYIT
+// ========================================
 function handleRegister() {
     const firstName = document.getElementById('firstName').value.trim();
     const lastName = document.getElementById('lastName').value.trim();
     const email = document.getElementById('email').value.trim();
     const email2 = document.getElementById('email2').value.trim();
     const phone = document.getElementById('phone').value.trim();
+    const sozlesme = document.getElementById('sozlesmeCheck').checked;
 
     if (email !== email2) {
         showResult('Email adresleri eşleşmiyor!', 'error');
@@ -324,45 +578,43 @@ function handleRegister() {
         return false;
     }
 
-    // 6 haneli kod oluştur
+    if (!sozlesme) {
+        showResult('Kullanım sözleşmesini onaylamalısınız!', 'error');
+        openModal();
+        return false;
+    }
+
     generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    // Veriyi sakla
     tempUserData = { firstName, lastName, email, phone };
 
-    // Buton loading
     const btn = document.getElementById("registerBtn");
     btn.disabled = true;
     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...`;
 
-    // ✅ TÜM verileri gönder (telefon dahil)
     const formData = new FormData();
     formData.append('action', 'sendVerificationCode');
     formData.append('email', email);
     formData.append('code', generatedCode);
     formData.append('firstName', firstName);
     formData.append('lastName', lastName);
-    formData.append('phone', phone); // ✅ TELEFON EKLENDİ
+    formData.append('phone', phone);
 
-    fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: formData
-    }).catch(() => {});
+    fetch(SCRIPT_URL, { method: 'POST', body: formData }).catch(() => {});
 
-    // 2 saniye bekle ve adım 2'ye geç
     setTimeout(() => {
         document.getElementById('emailDisplay').textContent = email;
         showStep(2);
         document.getElementById('verificationCode').focus();
-        
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Kaydet`;
+        btn.innerHTML = `<i class="fa-solid fa-arrow-right"></i> Devam Et`;
     }, 2000);
 
     return false;
 }
 
-// ADIM 2: Kod Doğrula
+// ========================================
+// ADIM 2: KOD DOĞRULA
+// ========================================
 function handleVerify() {
     const enteredCode = document.getElementById('verificationCode').value.trim();
     
@@ -375,7 +627,9 @@ function handleVerify() {
     return false;
 }
 
-// ADIM 3: Şifre Oluştur
+// ========================================
+// ADIM 3: ŞİFRE OLUŞTUR
+// ========================================
 function handlePassword() {
     const password = document.getElementById('password').value;
     const password2 = document.getElementById('password2').value;
@@ -390,33 +644,34 @@ function handlePassword() {
         return false;
     }
 
-    // Buton loading
     const btn = document.getElementById("passwordBtn");
     btn.disabled = true;
     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Oluşturuluyor...`;
 
-    // ✅ TÜM verileri gönder (email dahil!)
     const formData = new FormData();
     formData.append('action', 'completeRegisterWithCode');
-    formData.append('email', tempUserData.email); // ✅ EMAIL EKLENDİ
-    formData.append('password', password);
     formData.append('firstName', tempUserData.firstName);
     formData.append('lastName', tempUserData.lastName);
+    formData.append('email', tempUserData.email);
     formData.append('phone', tempUserData.phone);
+    formData.append('password', password);
+    formData.append('sozlesme', 'Evet');
+    formData.append('browser', deviceInfo.browser);
+    formData.append('os', deviceInfo.os);
+    formData.append('screen', deviceInfo.screen);
 
-    fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: formData
-    }).catch(() => {});
+    fetch(SCRIPT_URL, { method: 'POST', body: formData }).catch(() => {});
 
-    // 2 saniye bekle ve başarılı sayfasına geç
     setTimeout(() => {
         showStep(4);
-    }, 2000);
+    }, 2500);
 
     return false;
 }
 
+// ========================================
+// YARDIMCI FONKSİYONLAR
+// ========================================
 function resendCode() {
     generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
     
@@ -428,21 +683,12 @@ function resendCode() {
     formData.append('lastName', tempUserData.lastName);
     formData.append('phone', tempUserData.phone);
 
-    fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: formData
-    }).catch(() => {});
-
+    fetch(SCRIPT_URL, { method: 'POST', body: formData }).catch(() => {});
     showResult('Yeni kod gönderildi!', 'success');
 }
 
-function goBack() {
-    showStep(1);
-    document.getElementById('mainBack').style.display = 'block';
-}
-
-function goBackToCode() {
-    showStep(2);
+function goBack(step) {
+    showStep(step);
 }
 </script>
 
