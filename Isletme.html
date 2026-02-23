@@ -14,11 +14,12 @@
     --dark: #111827;
     --sidebar-bg: #1F2937;
     --sidebar-active: #374151;
+    --sidebar-hover: #2D3748;
     --light-bg: #F3F4F6;
     --text-light: #E5E7EB;
     --text-muted: #9CA3AF;
     --card-bg: #FFFFFF;
-    --border: #E5E7EB;
+    --border: #4B5563;
 }
 
 * {
@@ -104,7 +105,7 @@ body {
     position: fixed;
     top: 60px;
     left: 0;
-    width: 280px;
+    width: 300px;
     height: calc(100vh - 60px);
     background: var(--sidebar-bg);
     transform: translateX(-100%);
@@ -112,7 +113,7 @@ body {
     z-index: 999;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 .sidebar.active {
@@ -137,47 +138,50 @@ body {
     visibility: visible;
 }
 
+/* Kullanıcı Bilgisi */
 .user-info {
-    padding: 30px 20px;
-    border-bottom: 1px solid var(--sidebar-active);
+    padding: 25px 20px;
+    border-bottom: 1px solid var(--border);
     text-align: center;
+    flex-shrink: 0;
 }
 
 .user-avatar {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     background: var(--primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 15px;
-    font-size: 28px;
+    margin: 0 auto 12px;
+    font-size: 24px;
     color: white;
 }
 
 .user-name {
     color: var(--text-light);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 }
 
 .user-email {
     color: var(--text-muted);
-    font-size: 13px;
+    font-size: 12px;
 }
 
+/* Sidebar Menü */
 .sidebar-menu {
-    padding: 20px 0;
-    flex: 1;
+    padding: 15px 0;
+    flex-shrink: 0;
 }
 
 .menu-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 15px 20px;
+    padding: 12px 20px;
     color: var(--text-light);
     text-decoration: none;
     transition: 0.2s;
@@ -185,32 +189,27 @@ body {
     border: none;
     background: none;
     width: 100%;
-    font-size: 15px;
+    font-size: 14px;
     text-align: left;
 }
 
 .menu-item:hover {
-    background: var(--sidebar-active);
+    background: var(--sidebar-hover);
 }
 
 .menu-item i {
-    width: 24px;
+    width: 20px;
     text-align: center;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .menu-item.primary {
     background: var(--primary);
-    margin: 10px 20px;
-    padding: 12px 15px;
+    margin: 0 15px 15px;
+    padding: 12px;
     border-radius: 8px;
     justify-content: center;
     font-weight: 500;
-    font-size: 14px;
-    width: calc(100% - 40px);
-    max-width: 200px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .menu-item.primary:hover {
@@ -219,14 +218,108 @@ body {
 
 .menu-divider {
     height: 1px;
-    background: var(--sidebar-active);
-    margin: 15px 20px;
+    background: var(--border);
+    margin: 10px 15px;
 }
 
+/* ========================================
+   İŞLETME LİSTESİ (SIDEBAR'DA)
+   ======================================== */
+.isletme-list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 15px 15px;
+}
+
+.isletme-list-header {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 10px 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.isletme-list-header span {
+    background: var(--sidebar-active);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+}
+
+.isletme-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.isletme-card {
+    background: var(--sidebar-active);
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.isletme-card:hover {
+    background: var(--sidebar-hover);
+    border-left-color: var(--primary);
+}
+
+.isletme-card.active {
+    background: var(--primary);
+    border-left-color: white;
+}
+
+.isletme-adi {
+    color: var(--text-light);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.isletme-lokasyon {
+    color: var(--text-muted);
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.isletme-lokasyon i {
+    font-size: 10px;
+    color: var(--primary);
+}
+
+/* Boş Durum */
+.empty-state-sidebar {
+    text-align: center;
+    padding: 20px 10px;
+    color: var(--text-muted);
+}
+
+.empty-state-sidebar i {
+    font-size: 32px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+}
+
+.empty-state-sidebar p {
+    font-size: 12px;
+}
+
+/* Yükleme */
 .loading-spinner {
     display: inline-block;
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     border: 2px solid var(--text-muted);
     border-top-color: var(--primary);
     border-radius: 50%;
@@ -237,6 +330,13 @@ body {
     to { transform: rotate(360deg); }
 }
 
+.loading-container-small {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
 /* ========================================
    MAIN CONTENT
    ======================================== */
@@ -244,135 +344,50 @@ body {
     margin-top: 60px;
     padding: 30px;
     min-height: calc(100vh - 60px);
+    margin-left: 0;
+    transition: margin-left 0.3s;
 }
 
-/* ========================================
-   İŞLETME LİSTESİ (SADELEŞTİRİLMİŞ)
-   ======================================== */
-.isletme-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 20px;
-}
-
-.isletme-card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    padding: 20px 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    border: 1px solid var(--border);
-    transition: all 0.2s;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.isletme-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    border-color: var(--primary);
-    transform: translateX(4px);
-}
-
-.isletme-adi {
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--dark);
-}
-
-.isletme-lokasyon {
-    font-size: 13px;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.isletme-lokasyon i {
-    color: var(--primary);
-    font-size: 12px;
-}
-
-/* Boş Durum */
-.empty-state {
+.welcome-section {
     text-align: center;
-    padding: 80px 20px;
+    padding: 100px 20px;
 }
 
-.empty-state i {
-    font-size: 56px;
-    color: #D1D5DB;
+.welcome-section i {
+    font-size: 64px;
+    color: #E5E7EB;
     margin-bottom: 20px;
 }
 
-.empty-state h2 {
+.welcome-section h2 {
     color: var(--dark);
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 8px;
+    font-size: 24px;
+    margin-bottom: 10px;
 }
 
-.empty-state p {
+.welcome-section p {
     color: var(--text-muted);
     font-size: 14px;
-    margin-bottom: 25px;
-}
-
-.btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--primary);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.btn-primary:hover {
-    background: var(--primary-hover);
-}
-
-/* Yükleme */
-.loading-container {
-    text-align: center;
-    padding: 60px 20px;
-}
-
-.loading-container p {
-    color: var(--text-muted);
-    margin-top: 15px;
-    font-size: 14px;
-}
-
-/* Hata */
-.error-message {
-    background: #FEE2E2;
-    color: #991B1B;
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    margin: 20px 0;
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (min-width: 1024px) {
     .sidebar {
-        width: 100%;
+        transform: translateX(0);
+    }
+    
+    .hamburger {
+        display: none;
     }
     
     .main-content {
-        padding: 20px;
+        margin-left: 300px;
     }
-    
-    .isletme-card {
-        padding: 16px 20px;
+}
+
+@media (max-width: 1023px) {
+    .sidebar {
+        width: 280px;
     }
 }
 </style>
@@ -395,6 +410,7 @@ body {
 <!-- Sidebar -->
 <nav class="sidebar" id="sidebar">
     
+    <!-- Kullanıcı Bilgisi -->
     <div class="user-info">
         <div class="user-avatar">
             <i class="fa-solid fa-user"></i>
@@ -405,6 +421,7 @@ body {
         <div class="user-email" id="userEmail">Yükleniyor...</div>
     </div>
 
+    <!-- Menü -->
     <div class="sidebar-menu">
         <button class="menu-item primary" onclick="isletmeEkle()">
             <i class="fa-solid fa-plus"></i>
@@ -412,23 +429,36 @@ body {
         </button>
 
         <div class="menu-divider"></div>
+    </div>
 
-        <button class="menu-item" onclick="cikisYap()">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            Çıkış Yap
-        </button>
+    <!-- İşletme Listesi (Butonun Altında) -->
+    <div class="isletme-list-container" id="isletmeListContainer">
+        <div class="isletme-list-header">
+            Kayıtlı İşletmeler
+            <span id="isletmeCount">0</span>
+        </div>
+        <div id="isletmeList">
+            <!-- İşletmeler buraya yüklenecek -->
+        </div>
     </div>
 
 </nav>
 
 <!-- Ana İçerik -->
 <main class="main-content" id="mainContent">
-    <!-- İşletmeler buraya yüklenecek -->
+    <div class="welcome-section">
+        <i class="fa-solid fa-store"></i>
+        <h2>Hoş Geldiniz</h2>
+        <p>Sol menüden bir işletme seçin veya yeni işletme ekleyin.</p>
+    </div>
 </main>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0ayS_G6BgvJSlmbtO_bZz3zQODt1ZHbzxJlcRNj5Bpdrj7ArF9h6QSW-RZrxsXKmgaw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzhgT-OC7_px5CfPwOjaNLBP8JKwiVEFtUuTFw8m4m9xPFmErMAZGeQF9rxcrbzwIDSlA/exec';
 
+// ========================================
+// SIDEBAR KONTROL
+// ========================================
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
@@ -439,6 +469,9 @@ function toggleSidebar() {
     hamburger.classList.toggle('active');
 }
 
+// ========================================
+// KULLANICI BİLGİSİNİ YÜKLE
+// ========================================
 async function loadUserInfo() {
     const userId = localStorage.getItem("userId");
     
@@ -464,6 +497,7 @@ async function loadUserInfo() {
             document.getElementById('userName').textContent = user.ad + " " + user.soyad;
             document.getElementById('userEmail').textContent = user.email;
             
+            // İşletmeleri yükle
             loadIsletmeler(userId);
         } else {
             cikisYap();
@@ -475,13 +509,16 @@ async function loadUserInfo() {
     }
 }
 
+// ========================================
+// İŞLETMELERİ YÜKLE (SIDEBAR'DA)
+// ========================================
 async function loadIsletmeler(userId) {
-    const mainContent = document.getElementById('mainContent');
+    const listContainer = document.getElementById('isletmeList');
     
-    mainContent.innerHTML = `
-        <div class="loading-container">
-            <div class="loading-spinner" style="width: 36px; height: 36px;"></div>
-            <p>İşletmeler yükleniyor...</p>
+    listContainer.innerHTML = `
+        <div class="loading-container-small">
+            <div class="loading-spinner"></div>
+            <p>Yükleniyor...</p>
         </div>
     `;
     
@@ -504,23 +541,29 @@ async function loadIsletmeler(userId) {
         }
         
     } catch (err) {
-        mainContent.innerHTML = `
-            <div class="error-message">
-                <i class="fa-solid fa-exclamation-circle"></i> İşletmeler yüklenirken hata oluştu.
+        listContainer.innerHTML = `
+            <div class="empty-state-sidebar">
+                <i class="fa-solid fa-exclamation-circle"></i>
+                <p>Yüklenemedi</p>
             </div>
-            ${getEmptyStateHTML()}
         `;
     }
 }
 
+// ========================================
+// İŞLETME LİSTESİNİ RENDER ET
+// ========================================
 function renderIsletmeler(isletmeler) {
-    const mainContent = document.getElementById('mainContent');
+    const listContainer = document.getElementById('isletmeList');
+    const countSpan = document.getElementById('isletmeCount');
+    
+    countSpan.textContent = isletmeler.length;
     
     let html = '<div class="isletme-list">';
     
-    isletmeler.forEach(isletme => {
+    isletmeler.forEach((isletme, index) => {
         html += `
-            <div class="isletme-card" onclick="isletmeSec(${isletme.id})">
+            <div class="isletme-card ${index === 0 ? 'active' : ''}" onclick="isletmeSec(this, ${isletme.id})">
                 <div class="isletme-adi">${escapeHtml(isletme.isletmeAdi)}</div>
                 <div class="isletme-lokasyon">
                     <i class="fa-solid fa-location-dot"></i>
@@ -531,38 +574,58 @@ function renderIsletmeler(isletmeler) {
     });
     
     html += '</div>';
-    mainContent.innerHTML = html;
+    listContainer.innerHTML = html;
 }
 
+// ========================================
+// BOŞ DURUM
+// ========================================
 function renderEmptyState() {
-    document.getElementById('mainContent').innerHTML = getEmptyStateHTML();
-}
-
-function getEmptyStateHTML() {
-    return `
-        <div class="empty-state">
+    const listContainer = document.getElementById('isletmeList');
+    const countSpan = document.getElementById('isletmeCount');
+    
+    countSpan.textContent = '0';
+    
+    listContainer.innerHTML = `
+        <div class="empty-state-sidebar">
             <i class="fa-solid fa-store-slash"></i>
-            <h2>Henüz İşletme Eklenmemiş</h2>
-            <p>Randevu sistemi kullanmak için önce bir işletme eklemelisiniz.</p>
-            <button class="btn-primary" onclick="isletmeEkle()">
-                <i class="fa-solid fa-plus"></i>
-                İşletme Ekle
-            </button>
+            <p>Henüz işletme eklenmemiş</p>
         </div>
     `;
 }
 
+// ========================================
+// İŞLETME SEÇ
+// ========================================
+function isletmeSec(element, isletmeId) {
+    // Aktif sınıfını kaldır
+    document.querySelectorAll('.isletme-card').forEach(card => {
+        card.classList.remove('active');
+    });
+    
+    // Tıklanan kartı aktif yap
+    element.classList.add('active');
+    
+    // LocalStorage'a kaydet
+    localStorage.setItem('seciliIsletmeId', isletmeId);
+    
+    // Ana içeriği güncelle (örnek)
+    console.log("Seçilen işletme:", isletmeId);
+    
+    // Mobil'de sidebar'ı kapat
+    if (window.innerWidth < 1024) {
+        toggleSidebar();
+    }
+}
+
+// ========================================
+// YARDIMCI FONKSİYONLAR
+// ========================================
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
-}
-
-function isletmeSec(isletmeId) {
-    localStorage.setItem('seciliIsletmeId', isletmeId);
-    // Örnek: window.location.href = "randevu.html?id=" + isletmeId;
-    console.log("İşletme seçildi:", isletmeId);
 }
 
 function isletmeEkle() {
@@ -577,10 +640,14 @@ function cikisYap() {
     }
 }
 
+// ========================================
+// SAYFA YÜKLENİNCE
+// ========================================
 window.onload = function() {
     loadUserInfo();
 };
 
+// ESC tuşu ile kapat
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const sidebar = document.getElementById('sidebar');
