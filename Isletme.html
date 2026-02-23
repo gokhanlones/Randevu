@@ -407,7 +407,7 @@ body {
 }
 
 /* ========================================
-   İŞLETME DETAY SAYFASI (YENİ)
+   İŞLETME DETAY SAYFASI
    ======================================== */
 .isletme-detay {
     max-width: 800px;
@@ -531,6 +531,10 @@ body {
     box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
 }
 
+.btn-duzenle.active {
+    background: #10B981;
+}
+
 .btn-ana-sayfa {
     background: white;
     color: var(--dark);
@@ -541,6 +545,81 @@ body {
     border-color: var(--primary);
     color: var(--primary);
     transform: translateY(-2px);
+}
+
+/* ========================================
+   DÜZENLE ALT MENÜ - YENİ EKLENDİ
+   ======================================== */
+.alt-menu-container {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #E5E7EB;
+    display: none;
+    animation: slideDown 0.3s ease;
+}
+
+.alt-menu-container.active {
+    display: block;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alt-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+@media (min-width: 640px) {
+    .alt-menu-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.alt-menu-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px 15px;
+    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    color: var(--text-dark);
+}
+
+.alt-menu-btn:hover {
+    background: linear-gradient(135deg, var(--primary) 0%, #7C3AED 100%);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+}
+
+.alt-menu-btn i {
+    font-size: 24px;
+    color: var(--primary);
+    transition: 0.25s;
+}
+
+.alt-menu-btn:hover i {
+    color: white;
+}
+
+.alt-menu-btn span {
+    font-size: 13px;
+    font-weight: 600;
 }
 
 /* İstatistik Kartları */
@@ -897,7 +976,7 @@ function isletmeSec(element, isletmeId, isletmeData) {
 }
 
 // ========================================
-// İŞLETME DETAY SAYFASI (YENİ)
+// İŞLETME DETAY SAYFASI
 // ========================================
 function renderIsletmeDetay(isletme) {
     const mainContent = document.getElementById('mainContent');
@@ -925,7 +1004,7 @@ function renderIsletmeDetay(isletme) {
                 
                 <!-- Buton Grubu -->
                 <div class="buton-grup">
-                    <button class="btn btn-duzenle" onclick="isletmeDuzenle(${isletme.id})">
+                    <button class="btn btn-duzenle" id="duzenleBtn" onclick="toggleDuzenleMenu()">
                         <i class="fa-solid fa-pen-to-square"></i>
                         Düzenle
                     </button>
@@ -933,6 +1012,28 @@ function renderIsletmeDetay(isletme) {
                         <i class="fa-solid fa-house"></i>
                         Ana Sayfa
                     </button>
+                </div>
+                
+                <!-- Alt Menü (Düzenle butonuna tıklayınca açılır) -->
+                <div class="alt-menu-container" id="altMenu">
+                    <div class="alt-menu-grid">
+                        <button class="alt-menu-btn" onclick="menuHesap()">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <span>Hesap</span>
+                        </button>
+                        <button class="alt-menu-btn" onclick="menuIsletme()">
+                            <i class="fa-solid fa-store"></i>
+                            <span>İşletme</span>
+                        </button>
+                        <button class="alt-menu-btn" onclick="menuPersonel()">
+                            <i class="fa-solid fa-users"></i>
+                            <span>Personel</span>
+                        </button>
+                        <button class="alt-menu-btn" onclick="menuRandevu()">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            <span>Randevu</span>
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -973,10 +1074,51 @@ function renderIsletmeDetay(isletme) {
 }
 
 // ========================================
-// BUTON FONKSİYONLARI
+// DÜZENLE ALT MENÜ FONKSİYONLARI - YENİ
+// ========================================
+function toggleDuzenleMenu() {
+    const altMenu = document.getElementById('altMenu');
+    const duzenleBtn = document.getElementById('duzenleBtn');
+    
+    altMenu.classList.toggle('active');
+    duzenleBtn.classList.toggle('active');
+    
+    // İkon ve metin değiştir
+    if (altMenu.classList.contains('active')) {
+        duzenleBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Kapat';
+    } else {
+        duzenleBtn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Düzenle';
+    }
+}
+
+function menuHesap() {
+    console.log("Hesap yönetimi");
+    alert("Hesap yönetimi sayfası yakında!");
+    // window.location.href = "hesap-yonetimi.html";
+}
+
+function menuIsletme() {
+    console.log("İşletme düzenleme");
+    alert("İşletme düzenleme sayfası yakında!");
+    // window.location.href = `isletme-duzenle.html?id=${aktifIsletme?.id}`;
+}
+
+function menuPersonel() {
+    console.log("Personel yönetimi");
+    alert("Personel yönetimi sayfası yakında!");
+    // window.location.href = "personel-yonetimi.html";
+}
+
+function menuRandevu() {
+    console.log("Randevu ayarları");
+    alert("Randevu ayarları sayfası yakında!");
+    // window.location.href = "randevu-ayarlari.html";
+}
+
+// ========================================
+// DİĞER FONKSİYONLAR
 // ========================================
 function fotoEkle() {
-    // Fotoğraf yükleme modalı veya input
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -994,17 +1136,8 @@ function fotoEkle() {
     input.click();
 }
 
-function isletmeDuzenle(isletmeId) {
-    console.log("Düzenle:", isletmeId);
-    // Düzenleme sayfasına yönlendirme
-    // window.location.href = `isletme-duzenle.html?id=${isletmeId}`;
-    alert("Düzenleme özelliği yakında eklenecek!");
-}
-
 function anaSayfa() {
-    // Ana sayfaya yönlendirme veya dashboard
     console.log("Ana Sayfa'ya dönülüyor");
-    // Şimdiki işletme detayını yeniden yükle
     if (aktifIsletme) {
         renderIsletmeDetay(aktifIsletme);
     }
@@ -1029,15 +1162,31 @@ function cikisYap() {
     }
 }
 
+// ========================================
+// EVENT LISTENERS
+// ========================================
 window.onload = function() {
     loadUserInfo();
 };
 
+// ESC tuşu ile sidebar kapat
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const sidebar = document.getElementById('sidebar');
         if (sidebar.classList.contains('active')) {
             toggleSidebar();
+        }
+    }
+});
+
+// Menü dışına tıklayınca alt menüyü kapat
+document.addEventListener('click', function(e) {
+    const altMenu = document.getElementById('altMenu');
+    const duzenleBtn = document.getElementById('duzenleBtn');
+    
+    if (altMenu && altMenu.classList.contains('active')) {
+        if (!altMenu.contains(e.target) && !duzenleBtn.contains(e.target)) {
+            toggleDuzenleMenu();
         }
     }
 });
