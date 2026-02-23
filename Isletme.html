@@ -20,6 +20,7 @@
     --text-muted: #9CA3AF;
     --card-bg: #FFFFFF;
     --border: #4B5563;
+    --success: #10B981;
 }
 
 * {
@@ -105,7 +106,7 @@ body {
     position: fixed;
     top: 60px;
     left: 0;
-    width: 300px;
+    width: 320px;
     height: calc(100vh - 60px);
     background: var(--sidebar-bg);
     transform: translateX(-100%);
@@ -171,155 +172,179 @@ body {
     font-size: 12px;
 }
 
-/* Sidebar Menü */
-.sidebar-menu {
-    padding: 15px 0;
-    flex-shrink: 0;
+/* Sidebar İçerik Alanı */
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
 }
 
-.menu-item {
+/* İşletme Ekle Butonu */
+.add-button {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
-    color: var(--text-light);
-    text-decoration: none;
-    transition: 0.2s;
-    cursor: pointer;
-    border: none;
-    background: none;
+    justify-content: center;
+    gap: 10px;
     width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
     font-size: 14px;
-    text-align: left;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 20px;
 }
 
-.menu-item:hover {
-    background: var(--sidebar-hover);
+.add-button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
 }
 
-.menu-item i {
-    width: 20px;
-    text-align: center;
+.add-button i {
     font-size: 16px;
 }
 
-.menu-item.primary {
-    background: var(--primary);
-    margin: 0 15px 15px;
-    padding: 12px;
-    border-radius: 8px;
-    justify-content: center;
-    font-weight: 500;
-}
-
-.menu-item.primary:hover {
-    background: var(--primary-hover);
-}
-
-.menu-divider {
-    height: 1px;
-    background: var(--border);
-    margin: 10px 15px;
-}
-
-/* ========================================
-   İŞLETME LİSTESİ (SIDEBAR'DA)
-   ======================================== */
-.isletme-list-container {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0 15px 15px;
-}
-
-.isletme-list-header {
-    color: var(--text-muted);
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 10px 5px;
+/* İşletme Listesi Başlık */
+.section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 12px;
+    padding: 0 5px;
 }
 
-.isletme-list-header span {
+.section-title {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge {
     background: var(--sidebar-active);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 10px;
+    color: var(--text-light);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
 }
 
+/* İşletme Kartları */
 .isletme-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .isletme-card {
-    background: var(--sidebar-active);
-    border-radius: 8px;
-    padding: 12px;
+    background: linear-gradient(135deg, var(--sidebar-active) 0%, #2D3748 100%);
+    border-radius: 12px;
+    padding: 16px;
     cursor: pointer;
-    transition: 0.2s;
-    border-left: 3px solid transparent;
+    transition: all 0.25s ease;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.isletme-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--primary);
+    opacity: 0;
+    transition: 0.25s;
 }
 
 .isletme-card:hover {
-    background: var(--sidebar-hover);
-    border-left-color: var(--primary);
+    background: linear-gradient(135deg, #374151 0%, #4B5563 100%);
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
+
+.isletme-card:hover::before {
+    opacity: 1;
 }
 
 .isletme-card.active {
-    background: var(--primary);
-    border-left-color: white;
+    background: linear-gradient(135deg, var(--primary) 0%, #4338CA 100%);
+    border-color: rgba(255,255,255,0.3);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+}
+
+.isletme-card.active::before {
+    opacity: 1;
+    background: white;
+}
+
+.isletme-card.active .isletme-lokasyon {
+    color: rgba(255,255,255,0.8);
+}
+
+.isletme-card.active .isletme-lokasyon i {
+    color: rgba(255,255,255,0.9);
 }
 
 .isletme-adi {
-    color: var(--text-light);
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.isletme-adi i {
+    color: var(--success);
+    font-size: 12px;
 }
 
 .isletme-lokasyon {
     color: var(--text-muted);
-    font-size: 11px;
+    font-size: 12px;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    line-height: 1.4;
 }
 
 .isletme-lokasyon i {
-    font-size: 10px;
     color: var(--primary);
+    font-size: 11px;
 }
 
 /* Boş Durum */
-.empty-state-sidebar {
+.empty-state {
     text-align: center;
-    padding: 20px 10px;
+    padding: 30px 20px;
     color: var(--text-muted);
 }
 
-.empty-state-sidebar i {
-    font-size: 32px;
-    margin-bottom: 8px;
-    opacity: 0.5;
+.empty-state i {
+    font-size: 40px;
+    margin-bottom: 12px;
+    opacity: 0.4;
 }
 
-.empty-state-sidebar p {
-    font-size: 12px;
+.empty-state p {
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 /* Yükleme */
 .loading-spinner {
     display: inline-block;
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     border: 2px solid var(--text-muted);
     border-top-color: var(--primary);
     border-radius: 50%;
@@ -330,11 +355,44 @@ body {
     to { transform: rotate(360deg); }
 }
 
-.loading-container-small {
+.loading-container {
     text-align: center;
-    padding: 20px;
+    padding: 40px 20px;
     color: var(--text-muted);
-    font-size: 12px;
+}
+
+.loading-container p {
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+/* Çıkış Butonu */
+.logout-section {
+    padding: 15px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.logout-button:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+    border-color: #EF4444;
 }
 
 /* ========================================
@@ -381,13 +439,13 @@ body {
     }
     
     .main-content {
-        margin-left: 300px;
+        margin-left: 320px;
     }
 }
 
 @media (max-width: 1023px) {
     .sidebar {
-        width: 280px;
+        width: 300px;
     }
 }
 </style>
@@ -421,25 +479,33 @@ body {
         <div class="user-email" id="userEmail">Yükleniyor...</div>
     </div>
 
-    <!-- Menü -->
-    <div class="sidebar-menu">
-        <button class="menu-item primary" onclick="isletmeEkle()">
+    <!-- Sidebar İçerik -->
+    <div class="sidebar-content">
+        
+        <!-- İşletme Ekle Butonu -->
+        <button class="add-button" onclick="isletmeEkle()">
             <i class="fa-solid fa-plus"></i>
-            İşletme Ekle
+            Yeni İşletme Ekle
         </button>
 
-        <div class="menu-divider"></div>
-    </div>
-
-    <!-- İşletme Listesi (Butonun Altında) -->
-    <div class="isletme-list-container" id="isletmeListContainer">
-        <div class="isletme-list-header">
-            Kayıtlı İşletmeler
-            <span id="isletmeCount">0</span>
+        <!-- İşletme Listesi -->
+        <div class="section-header">
+            <span class="section-title">Kayıtlı İşletmelerim</span>
+            <span class="badge" id="isletmeCount">0</span>
         </div>
+        
         <div id="isletmeList">
             <!-- İşletmeler buraya yüklenecek -->
         </div>
+
+    </div>
+
+    <!-- Çıkış Butonu -->
+    <div class="logout-section">
+        <button class="logout-button" onclick="cikisYap()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Çıkış Yap
+        </button>
     </div>
 
 </nav>
@@ -454,11 +520,8 @@ body {
 </main>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0ayS_G6BgvJSlmbtO_bZz3zQODt1ZHbzxJlcRNj5Bpdrj7ArF9h6QSW-RZrxsXKmgaw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzhgT-OC7_px5CfPwOjaNLBP8JKwiVEFtUuTFw8m4m9xPFmErMAZGeQF9rxcrbzwIDSlA/exec';
 
-// ========================================
-// SIDEBAR KONTROL
-// ========================================
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
@@ -469,9 +532,6 @@ function toggleSidebar() {
     hamburger.classList.toggle('active');
 }
 
-// ========================================
-// KULLANICI BİLGİSİNİ YÜKLE
-// ========================================
 async function loadUserInfo() {
     const userId = localStorage.getItem("userId");
     
@@ -497,7 +557,6 @@ async function loadUserInfo() {
             document.getElementById('userName').textContent = user.ad + " " + user.soyad;
             document.getElementById('userEmail').textContent = user.email;
             
-            // İşletmeleri yükle
             loadIsletmeler(userId);
         } else {
             cikisYap();
@@ -509,16 +568,13 @@ async function loadUserInfo() {
     }
 }
 
-// ========================================
-// İŞLETMELERİ YÜKLE (SIDEBAR'DA)
-// ========================================
 async function loadIsletmeler(userId) {
     const listContainer = document.getElementById('isletmeList');
     
     listContainer.innerHTML = `
-        <div class="loading-container-small">
+        <div class="loading-container">
             <div class="loading-spinner"></div>
-            <p>Yükleniyor...</p>
+            <p>İşletmeler yükleniyor...</p>
         </div>
     `;
     
@@ -542,17 +598,14 @@ async function loadIsletmeler(userId) {
         
     } catch (err) {
         listContainer.innerHTML = `
-            <div class="empty-state-sidebar">
+            <div class="empty-state">
                 <i class="fa-solid fa-exclamation-circle"></i>
-                <p>Yüklenemedi</p>
+                <p>Yüklenirken hata oluştu</p>
             </div>
         `;
     }
 }
 
-// ========================================
-// İŞLETME LİSTESİNİ RENDER ET
-// ========================================
 function renderIsletmeler(isletmeler) {
     const listContainer = document.getElementById('isletmeList');
     const countSpan = document.getElementById('isletmeCount');
@@ -564,10 +617,13 @@ function renderIsletmeler(isletmeler) {
     isletmeler.forEach((isletme, index) => {
         html += `
             <div class="isletme-card ${index === 0 ? 'active' : ''}" onclick="isletmeSec(this, ${isletme.id})">
-                <div class="isletme-adi">${escapeHtml(isletme.isletmeAdi)}</div>
+                <div class="isletme-adi">
+                    ${escapeHtml(isletme.isletmeAdi)}
+                    ${index === 0 ? '<i class="fa-solid fa-check-circle"></i>' : ''}
+                </div>
                 <div class="isletme-lokasyon">
                     <i class="fa-solid fa-location-dot"></i>
-                    ${escapeHtml(isletme.il)}, ${escapeHtml(isletme.ilce)}, ${escapeHtml(isletme.mahalle)}
+                    ${escapeHtml(isletme.il)} › ${escapeHtml(isletme.ilce)} › ${escapeHtml(isletme.mahalle)}
                 </div>
             </div>
         `;
@@ -577,9 +633,6 @@ function renderIsletmeler(isletmeler) {
     listContainer.innerHTML = html;
 }
 
-// ========================================
-// BOŞ DURUM
-// ========================================
 function renderEmptyState() {
     const listContainer = document.getElementById('isletmeList');
     const countSpan = document.getElementById('isletmeCount');
@@ -587,40 +640,34 @@ function renderEmptyState() {
     countSpan.textContent = '0';
     
     listContainer.innerHTML = `
-        <div class="empty-state-sidebar">
+        <div class="empty-state">
             <i class="fa-solid fa-store-slash"></i>
-            <p>Henüz işletme eklenmemiş</p>
+            <p>Henüz işletme eklenmemiş.<br>İlk işletmenizi ekleyerek başlayın.</p>
         </div>
     `;
 }
 
-// ========================================
-// İŞLETME SEÇ
-// ========================================
 function isletmeSec(element, isletmeId) {
-    // Aktif sınıfını kaldır
     document.querySelectorAll('.isletme-card').forEach(card => {
         card.classList.remove('active');
+        const icon = card.querySelector('.isletme-adi i');
+        if (icon) icon.remove();
     });
     
-    // Tıklanan kartı aktif yap
     element.classList.add('active');
     
-    // LocalStorage'a kaydet
+    const title = element.querySelector('.isletme-adi');
+    title.innerHTML += ' <i class="fa-solid fa-check-circle"></i>';
+    
     localStorage.setItem('seciliIsletmeId', isletmeId);
     
-    // Ana içeriği güncelle (örnek)
     console.log("Seçilen işletme:", isletmeId);
     
-    // Mobil'de sidebar'ı kapat
     if (window.innerWidth < 1024) {
         toggleSidebar();
     }
 }
 
-// ========================================
-// YARDIMCI FONKSİYONLAR
-// ========================================
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
@@ -640,14 +687,10 @@ function cikisYap() {
     }
 }
 
-// ========================================
-// SAYFA YÜKLENİNCE
-// ========================================
 window.onload = function() {
     loadUserInfo();
 };
 
-// ESC tuşu ile kapat
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const sidebar = document.getElementById('sidebar');
