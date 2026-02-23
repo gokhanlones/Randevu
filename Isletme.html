@@ -19,8 +19,6 @@
     --text-muted: #9CA3AF;
     --card-bg: #FFFFFF;
     --border: #E5E7EB;
-    --success: #10B981;
-    --error: #EF4444;
 }
 
 * {
@@ -139,7 +137,6 @@ body {
     visibility: visible;
 }
 
-/* Kullanıcı Bilgisi */
 .user-info {
     padding: 30px 20px;
     border-bottom: 1px solid var(--sidebar-active);
@@ -171,7 +168,6 @@ body {
     font-size: 13px;
 }
 
-/* Menü */
 .sidebar-menu {
     padding: 20px 0;
     flex: 1;
@@ -227,7 +223,6 @@ body {
     margin: 15px 20px;
 }
 
-/* Loading */
 .loading-spinner {
     display: inline-block;
     width: 20px;
@@ -252,111 +247,70 @@ body {
 }
 
 /* ========================================
-   İŞLETME KARTLARI
+   İŞLETME LİSTESİ (SADELEŞTİRİLMİŞ)
    ======================================== */
-.isletme-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+.isletme-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     margin-top: 20px;
 }
 
 .isletme-card {
     background: var(--card-bg);
     border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 20px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     border: 1px solid var(--border);
-    transition: 0.2s;
+    transition: all 0.2s;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .isletme-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    border-color: var(--primary);
+    transform: translateX(4px);
 }
 
-.isletme-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 15px;
-}
-
-.isletme-icon {
-    width: 50px;
-    height: 50px;
-    background: var(--primary);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 24px;
-}
-
-.isletme-title {
-    flex: 1;
-}
-
-.isletme-title h3 {
-    font-size: 16px;
+.isletme-adi {
+    font-size: 17px;
+    font-weight: 600;
     color: var(--dark);
-    margin-bottom: 4px;
 }
 
-.isletme-title span {
-    font-size: 12px;
-    color: var(--text-muted);
-}
-
-.isletme-adres {
+.isletme-lokasyon {
     font-size: 13px;
-    color: #6B7280;
-    line-height: 1.5;
-    margin-bottom: 15px;
-}
-
-.isletme-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 15px;
-    border-top: 1px solid var(--border);
-}
-
-.hitap-badge {
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.hitap-erkek { background: #DBEAFE; color: #1E40AF; }
-.hitap-kadin { background: #FCE7F3; color: #9D174D; }
-.hitap-herkes { background: #D1FAE5; color: #065F46; }
-
-.isletme-tarih {
-    font-size: 12px;
     color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.isletme-lokasyon i {
+    color: var(--primary);
+    font-size: 12px;
 }
 
 /* Boş Durum */
 .empty-state {
     text-align: center;
-    padding: 60px 20px;
+    padding: 80px 20px;
 }
 
 .empty-state i {
-    font-size: 64px;
-    color: var(--border);
+    font-size: 56px;
+    color: #D1D5DB;
     margin-bottom: 20px;
 }
 
 .empty-state h2 {
     color: var(--dark);
-    font-size: 20px;
-    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
 }
 
 .empty-state p {
@@ -365,32 +319,60 @@ body {
     margin-bottom: 25px;
 }
 
-/* Yükleme Durumu */
-.loading-container {
-    text-align: center;
-    padding: 40px;
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-/* Hata Mesajı */
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+/* Yükleme */
+.loading-container {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.loading-container p {
+    color: var(--text-muted);
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+/* Hata */
 .error-message {
     background: #FEE2E2;
     color: #991B1B;
-    padding: 12px;
+    padding: 12px 16px;
     border-radius: 8px;
-    text-align: center;
+    font-size: 14px;
     margin: 20px 0;
 }
 
-/* ========================================
-   RESPONSIVE
-   ======================================== */
+/* Responsive */
 @media (max-width: 768px) {
     .sidebar {
         width: 100%;
     }
     
-    .isletme-grid {
-        grid-template-columns: 1fr;
+    .main-content {
+        padding: 20px;
+    }
+    
+    .isletme-card {
+        padding: 16px 20px;
     }
 }
 </style>
@@ -413,7 +395,6 @@ body {
 <!-- Sidebar -->
 <nav class="sidebar" id="sidebar">
     
-    <!-- Kullanıcı Bilgisi -->
     <div class="user-info">
         <div class="user-avatar">
             <i class="fa-solid fa-user"></i>
@@ -424,7 +405,6 @@ body {
         <div class="user-email" id="userEmail">Yükleniyor...</div>
     </div>
 
-    <!-- Menü -->
     <div class="sidebar-menu">
         <button class="menu-item primary" onclick="isletmeEkle()">
             <i class="fa-solid fa-plus"></i>
@@ -447,14 +427,8 @@ body {
 </main>
 
 <script>
-// ========================================
-// CONFIG
-// ========================================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzhgT-OC7_px5CfPwOjaNLBP8JKwiVEFtUuTFw8m4m9xPFmErMAZGeQF9rxcrbzwIDSlA/exec';
 
-// ========================================
-// SIDEBAR KONTROL
-// ========================================
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
@@ -465,9 +439,6 @@ function toggleSidebar() {
     hamburger.classList.toggle('active');
 }
 
-// ========================================
-// KULLANICI BİLGİSİNİ YÜKLE
-// ========================================
 async function loadUserInfo() {
     const userId = localStorage.getItem("userId");
     
@@ -493,31 +464,24 @@ async function loadUserInfo() {
             document.getElementById('userName').textContent = user.ad + " " + user.soyad;
             document.getElementById('userEmail').textContent = user.email;
             
-            // İşletmeleri yükle
             loadIsletmeler(userId);
         } else {
-            console.error("Kullanıcı bulunamadı:", result.message);
             cikisYap();
         }
         
     } catch (err) {
-        console.error("Veri çekme hatası:", err);
         document.getElementById('userName').textContent = "Kullanıcı";
         document.getElementById('userEmail').textContent = "Bilgi alınamadı";
     }
 }
 
-// ========================================
-// İŞLETMELERİ YÜKLE (YENİ)
-// ========================================
 async function loadIsletmeler(userId) {
     const mainContent = document.getElementById('mainContent');
     
-    // Yükleme göster
     mainContent.innerHTML = `
         <div class="loading-container">
-            <div class="loading-spinner" style="width: 40px; height: 40px;"></div>
-            <p style="color: var(--text-muted); margin-top: 15px;">İşletmeler yükleniyor...</p>
+            <div class="loading-spinner" style="width: 36px; height: 36px;"></div>
+            <p>İşletmeler yükleniyor...</p>
         </div>
     `;
     
@@ -540,7 +504,6 @@ async function loadIsletmeler(userId) {
         }
         
     } catch (err) {
-        console.error("İşletme yükleme hatası:", err);
         mainContent.innerHTML = `
             <div class="error-message">
                 <i class="fa-solid fa-exclamation-circle"></i> İşletmeler yüklenirken hata oluştu.
@@ -550,40 +513,18 @@ async function loadIsletmeler(userId) {
     }
 }
 
-// ========================================
-// İŞLETME KARTLARINI RENDER ET (YENİ)
-// ========================================
 function renderIsletmeler(isletmeler) {
     const mainContent = document.getElementById('mainContent');
     
-    let html = '<div class="isletme-grid">';
+    let html = '<div class="isletme-list">';
     
     isletmeler.forEach(isletme => {
-        const hitapClass = isletme.hitap === 'Erkek' ? 'hitap-erkek' : 
-                          isletme.hitap === 'Kadın' ? 'hitap-kadin' : 'hitap-herkes';
-        
-        const adres = `${isletme.il}, ${isletme.ilce}, ${isletme.mahalle}`;
-        const detayAdres = [isletme.cadde, isletme.sokak, isletme.binaAdi].filter(Boolean).join(', ');
-        
         html += `
             <div class="isletme-card" onclick="isletmeSec(${isletme.id})">
-                <div class="isletme-header">
-                    <div class="isletme-icon">
-                        <i class="fa-solid fa-store"></i>
-                    </div>
-                    <div class="isletme-title">
-                        <h3>${escapeHtml(isletme.isletmeAdi)}</h3>
-                        <span>ID: #${isletme.id}</span>
-                    </div>
-                </div>
-                <div class="isletme-adres">
-                    <i class="fa-solid fa-location-dot" style="color: var(--primary); margin-right: 5px;"></i>
-                    ${escapeHtml(adres)}<br>
-                    ${detayAdres ? `<span style="color: #9CA3AF; font-size: 12px;">${escapeHtml(detayAdres)}</span>` : ''}
-                </div>
-                <div class="isletme-footer">
-                    <span class="hitap-badge ${hitapClass}">${isletme.hitap}</span>
-                    <span class="isletme-tarih">${formatTarih(isletme.tarih)}</span>
+                <div class="isletme-adi">${escapeHtml(isletme.isletmeAdi)}</div>
+                <div class="isletme-lokasyon">
+                    <i class="fa-solid fa-location-dot"></i>
+                    ${escapeHtml(isletme.il)}, ${escapeHtml(isletme.ilce)}, ${escapeHtml(isletme.mahalle)}
                 </div>
             </div>
         `;
@@ -593,12 +534,8 @@ function renderIsletmeler(isletmeler) {
     mainContent.innerHTML = html;
 }
 
-// ========================================
-// BOŞ DURUM GÖSTER (YENİ)
-// ========================================
 function renderEmptyState() {
-    const mainContent = document.getElementById('mainContent');
-    mainContent.innerHTML = getEmptyStateHTML();
+    document.getElementById('mainContent').innerHTML = getEmptyStateHTML();
 }
 
 function getEmptyStateHTML() {
@@ -607,7 +544,7 @@ function getEmptyStateHTML() {
             <i class="fa-solid fa-store-slash"></i>
             <h2>Henüz İşletme Eklenmemiş</h2>
             <p>Randevu sistemi kullanmak için önce bir işletme eklemelisiniz.</p>
-            <button class="menu-item primary" onclick="isletmeEkle()" style="display: inline-flex; width: auto; padding: 12px 24px;">
+            <button class="btn-primary" onclick="isletmeEkle()">
                 <i class="fa-solid fa-plus"></i>
                 İşletme Ekle
             </button>
@@ -615,9 +552,6 @@ function getEmptyStateHTML() {
     `;
 }
 
-// ========================================
-// YARDIMCI FONKSİYONLAR (YENİ)
-// ========================================
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
@@ -625,27 +559,12 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-function formatTarih(tarihStr) {
-    if (!tarihStr) return '';
-    const tarih = new Date(tarihStr);
-    return tarih.toLocaleDateString('tr-TR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-    });
-}
-
 function isletmeSec(isletmeId) {
-    // Seçilen işletmeyi localStorage'a kaydet
     localStorage.setItem('seciliIsletmeId', isletmeId);
-    // Randevu sayfasına yönlendir (varsa)
-    // window.location.href = "randevu.html";
+    // Örnek: window.location.href = "randevu.html?id=" + isletmeId;
     console.log("İşletme seçildi:", isletmeId);
 }
 
-// ========================================
-// MENÜ FONKSİYONLARI
-// ========================================
 function isletmeEkle() {
     window.location.href = "isletme-kayit.html";
 }
@@ -658,14 +577,10 @@ function cikisYap() {
     }
 }
 
-// ========================================
-// SAYFA YÜKLENİNCE
-// ========================================
 window.onload = function() {
     loadUserInfo();
 };
 
-// ESC tuşu ile kapat
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const sidebar = document.getElementById('sidebar');
