@@ -21,6 +21,7 @@
     --card-bg: #FFFFFF;
     --border: #4B5563;
     --success: #10B981;
+    --error: #EF4444;
 }
 
 * {
@@ -548,7 +549,7 @@ body {
 }
 
 /* ========================================
-   DÜZENLE ALT MENÜ - YENİ EKLENDİ
+   DÜZENLE ALT MENÜ
    ======================================== */
 .alt-menu-container {
     margin-top: 20px;
@@ -607,6 +608,15 @@ body {
     box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
 }
 
+.alt-menu-btn.active {
+    background: linear-gradient(135deg, var(--primary) 0%, #7C3AED 100%);
+    color: white;
+}
+
+.alt-menu-btn.active i {
+    color: white;
+}
+
 .alt-menu-btn i {
     font-size: 24px;
     color: var(--primary);
@@ -620,6 +630,169 @@ body {
 .alt-menu-btn span {
     font-size: 13px;
     font-weight: 600;
+}
+
+/* ========================================
+   HESAP BİLGİLERİ FORMU - YENİ
+   ======================================== */
+.hesap-form-container {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-top: 30px;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hesap-form-baslik {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hesap-form-baslik i {
+    color: var(--primary);
+}
+
+.hesap-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-group label i {
+    color: var(--primary);
+    font-size: 12px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #E5E7EB;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.2s;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.form-group input:disabled {
+    background: #F3F4F6;
+    cursor: not-allowed;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.kaydet-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--primary) 0%, #7C3AED 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.kaydet-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+}
+
+.kaydet-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.kaydet-btn .loading-spinner {
+    width: 18px;
+    height: 18px;
+    border-color: rgba(255,255,255,0.3);
+    border-top-color: white;
+}
+
+.basarili-mesaj {
+    background: #D1FAE5;
+    color: #065F46;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.basarili-mesaj.active {
+    display: flex;
+}
+
+.hata-mesaj {
+    background: #FEE2E2;
+    color: #991B1B;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.hata-mesaj.active {
+    display: flex;
 }
 
 /* İstatistik Kartları */
@@ -732,6 +905,10 @@ body {
         width: 120px;
         height: 120px;
     }
+    
+    .hesap-form-container {
+        padding: 25px 20px;
+    }
 }
 </style>
 </head>
@@ -804,6 +981,8 @@ body {
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0ayS_G6BgvJSlmbtO_bZz3zQODt1ZHbzxJlcRNj5Bpdrj7ArF9h6QSW-RZrxsXKmgaw/exec';
 
 let aktifIsletme = null;
+let aktifKullanici = null;
+let aktifMenu = null;
 
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
@@ -836,9 +1015,9 @@ async function loadUserInfo() {
         const result = await response.json();
         
         if (result.success) {
-            const user = result.user;
-            document.getElementById('userName').textContent = user.ad + " " + user.soyad;
-            document.getElementById('userEmail').textContent = user.email;
+            aktifKullanici = result.user;
+            document.getElementById('userName').textContent = aktifKullanici.ad + " " + aktifKullanici.soyad;
+            document.getElementById('userEmail').textContent = aktifKullanici.email;
             
             loadIsletmeler(userId);
         } else {
@@ -875,7 +1054,6 @@ async function loadIsletmeler(userId) {
         
         if (result.success && result.data && result.data.length > 0) {
             renderIsletmeler(result.data);
-            // İlk işletmeyi otomatik seç
             isletmeSec(document.querySelector('.isletme-card'), result.data[0].id, result.data[0]);
         } else {
             renderEmptyState();
@@ -933,7 +1111,6 @@ function renderEmptyState() {
         </div>
     `;
     
-    // Ana sayfada boş durum göster
     document.getElementById('mainContent').innerHTML = `
         <div class="welcome-section">
             <i class="fa-solid fa-store"></i>
@@ -943,41 +1120,29 @@ function renderEmptyState() {
     `;
 }
 
-// ========================================
-// İŞLETME SEÇİMİ - ANA SAYFA GÜNCELLENİYOR
-// ========================================
 function isletmeSec(element, isletmeId, isletmeData) {
-    // Tüm kartlardan active sınıfını kaldır
     document.querySelectorAll('.isletme-card').forEach(card => {
         card.classList.remove('active');
         const icon = card.querySelector('.isletme-adi i');
         if (icon) icon.remove();
     });
     
-    // Tıklanan kartı aktif yap
     element.classList.add('active');
     
     const title = element.querySelector('.isletme-adi');
     title.innerHTML += ' <i class="fa-solid fa-check-circle"></i>';
     
-    // LocalStorage'a kaydet
     localStorage.setItem('seciliIsletmeId', isletmeId);
-    
-    // Aktif işletmeyi sakla
     aktifIsletme = isletmeData;
+    aktifMenu = null;
     
-    // Ana sayfayı güncelle
     renderIsletmeDetay(isletmeData);
     
-    // Mobil'de sidebar'ı kapat
     if (window.innerWidth < 1024) {
         toggleSidebar();
     }
 }
 
-// ========================================
-// İŞLETME DETAY SAYFASI
-// ========================================
 function renderIsletmeDetay(isletme) {
     const mainContent = document.getElementById('mainContent');
     
@@ -985,7 +1150,6 @@ function renderIsletmeDetay(isletme) {
         <div class="isletme-detay">
             <!-- Profil Bölümü -->
             <div class="profil-section">
-                <!-- Yuvarlak Foto Alanı -->
                 <div class="foto-container">
                     <div class="foto-yuvarlak" id="isletmeFoto">
                         <i class="fa-solid fa-store"></i>
@@ -995,7 +1159,6 @@ function renderIsletmeDetay(isletme) {
                     </button>
                 </div>
                 
-                <!-- İşletme Adı -->
                 <h1 class="isletme-baslik">${escapeHtml(isletme.isletmeAdi)}</h1>
                 <p class="isletme-altbaslik">
                     <i class="fa-solid fa-location-dot" style="color: var(--primary);"></i>
@@ -1014,22 +1177,22 @@ function renderIsletmeDetay(isletme) {
                     </button>
                 </div>
                 
-                <!-- Alt Menü (Düzenle butonuna tıklayınca açılır) -->
+                <!-- Alt Menü -->
                 <div class="alt-menu-container" id="altMenu">
                     <div class="alt-menu-grid">
-                        <button class="alt-menu-btn" onclick="menuHesap()">
+                        <button class="alt-menu-btn ${aktifMenu === 'hesap' ? 'active' : ''}" id="btnHesap" onclick="menuHesap()">
                             <i class="fa-solid fa-user-shield"></i>
                             <span>Hesap</span>
                         </button>
-                        <button class="alt-menu-btn" onclick="menuIsletme()">
+                        <button class="alt-menu-btn ${aktifMenu === 'isletme' ? 'active' : ''}" id="btnIsletme" onclick="menuIsletme()">
                             <i class="fa-solid fa-store"></i>
                             <span>İşletme</span>
                         </button>
-                        <button class="alt-menu-btn" onclick="menuPersonel()">
+                        <button class="alt-menu-btn ${aktifMenu === 'personel' ? 'active' : ''}" id="btnPersonel" onclick="menuPersonel()">
                             <i class="fa-solid fa-users"></i>
                             <span>Personel</span>
                         </button>
-                        <button class="alt-menu-btn" onclick="menuRandevu()">
+                        <button class="alt-menu-btn ${aktifMenu === 'randevu' ? 'active' : ''}" id="btnRandevu" onclick="menuRandevu()">
                             <i class="fa-solid fa-calendar-check"></i>
                             <span>Randevu</span>
                         </button>
@@ -1037,44 +1200,124 @@ function renderIsletmeDetay(isletme) {
                 </div>
             </div>
             
-            <!-- İstatistik Kartları -->
-            <div class="istatistik-grid">
-                <div class="istatistik-kart">
-                    <div class="istatistik-icon">
-                        <i class="fa-solid fa-calendar-check"></i>
-                    </div>
-                    <div class="istatistik-bilgi">
-                        <h4>Bugünkü Randevular</h4>
-                        <p>0</p>
-                    </div>
+            <!-- Dinamik İçerik Alanı -->
+            <div id="dinamikIcerik">
+                ${aktifMenu === 'hesap' ? renderHesapFormHTML() : renderIstatistikHTML()}
+            </div>
+        </div>
+    `;
+}
+
+function renderIstatistikHTML() {
+    return `
+        <div class="istatistik-grid">
+            <div class="istatistik-kart">
+                <div class="istatistik-icon">
+                    <i class="fa-solid fa-calendar-check"></i>
                 </div>
-                
-                <div class="istatistik-kart">
-                    <div class="istatistik-icon turuncu">
-                        <i class="fa-solid fa-users"></i>
-                    </div>
-                    <div class="istatistik-bilgi">
-                        <h4>Toplam Müşteri</h4>
-                        <p>0</p>
-                    </div>
+                <div class="istatistik-bilgi">
+                    <h4>Bugünkü Randevular</h4>
+                    <p>0</p>
                 </div>
-                
-                <div class="istatistik-kart">
-                    <div class="istatistik-icon yesil">
-                        <i class="fa-solid fa-scissors"></i>
-                    </div>
-                    <div class="istatistik-bilgi">
-                        <h4>Hizmetler</h4>
-                        <p>0</p>
-                    </div>
+            </div>
+            
+            <div class="istatistik-kart">
+                <div class="istatistik-icon turuncu">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="istatistik-bilgi">
+                    <h4>Toplam Müşteri</h4>
+                    <p>0</p>
+                </div>
+            </div>
+            
+            <div class="istatistik-kart">
+                <div class="istatistik-icon yesil">
+                    <i class="fa-solid fa-scissors"></i>
+                </div>
+                <div class="istatistik-bilgi">
+                    <h4>Hizmetler</h4>
+                    <p>0</p>
                 </div>
             </div>
         </div>
     `;
 }
 
+function renderHesapFormHTML() {
+    if (!aktifKullanici) return '';
+    
+    return `
+        <div class="hesap-form-container">
+            <div class="basarili-mesaj" id="basariliMesaj">
+                <i class="fa-solid fa-check-circle"></i>
+                <span>Bilgileriniz başarıyla güncellendi!</span>
+            </div>
+            
+            <div class="hata-mesaj" id="hataMesaj">
+                <i class="fa-solid fa-exclamation-circle"></i>
+                <span id="hataText">Bir hata oluştu!</span>
+            </div>
+            
+            <h2 class="hesap-form-baslik">
+                <i class="fa-solid fa-user-shield"></i>
+                Hesap Bilgilerim
+            </h2>
+            
+            <form class="hesap-form" id="hesapForm" onsubmit="return hesapKaydet(event);">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user"></i> Ad</label>
+                        <input type="text" id="hesapAd" value="${escapeHtml(aktifKullanici.ad)}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user"></i> Soyad</label>
+                        <input type="text" id="hesapSoyad" value="${escapeHtml(aktifKullanici.soyad)}" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fa-solid fa-phone"></i> GSM (Telefon)</label>
+                    <input type="tel" id="hesapTelefon" value="${escapeHtml(aktifKullanici.telefon || '')}" placeholder="05xxxxxxxxx" maxlength="11">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fa-solid fa-envelope"></i> E-Posta</label>
+                    <input type="email" id="hesapEmail" value="${escapeHtml(aktifKullanici.email)}" required disabled>
+                    <small style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">
+                        <i class="fa-solid fa-info-circle"></i> E-posta adresi değiştirilemez
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fa-solid fa-lock"></i> Mevcut Parola</label>
+                    <input type="password" id="hesapEskiParola" placeholder="Mevcut parolanızı girin">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-key"></i> Yeni Parola</label>
+                        <input type="password" id="hesapYeniParola" placeholder="Yeni parola (değiştirmek istemiyorsanız boş bırakın)" minlength="6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-key"></i> Yeni Parola Tekrar</label>
+                        <input type="password" id="hesapYeniParolaTekrar" placeholder="Yeni parolayı tekrar girin">
+                    </div>
+                </div>
+                
+                <button type="submit" class="kaydet-btn" id="kaydetBtn">
+                    <i class="fa-solid fa-save"></i>
+                    Kaydet
+                </button>
+            </form>
+        </div>
+    `;
+}
+
 // ========================================
-// DÜZENLE ALT MENÜ FONKSİYONLARI - YENİ
+// DÜZENLE ALT MENÜ FONKSİYONLARI
 // ========================================
 function toggleDuzenleMenu() {
     const altMenu = document.getElementById('altMenu');
@@ -1083,36 +1326,175 @@ function toggleDuzenleMenu() {
     altMenu.classList.toggle('active');
     duzenleBtn.classList.toggle('active');
     
-    // İkon ve metin değiştir
     if (altMenu.classList.contains('active')) {
         duzenleBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Kapat';
     } else {
         duzenleBtn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Düzenle';
+        // Menü kapanınca istatistikleri göster
+        if (aktifMenu) {
+            aktifMenu = null;
+            if (aktifIsletme) renderIsletmeDetay(aktifIsletme);
+        }
     }
 }
 
 function menuHesap() {
-    console.log("Hesap yönetimi");
-    alert("Hesap yönetimi sayfası yakında!");
-    // window.location.href = "hesap-yonetimi.html";
+    aktifMenu = 'hesap';
+    updateAltMenuButtons();
+    
+    const dinamikIcerik = document.getElementById('dinamikIcerik');
+    if (dinamikIcerik) {
+        dinamikIcerik.innerHTML = renderHesapFormHTML();
+    }
 }
 
 function menuIsletme() {
-    console.log("İşletme düzenleme");
+    aktifMenu = 'isletme';
+    updateAltMenuButtons();
     alert("İşletme düzenleme sayfası yakında!");
-    // window.location.href = `isletme-duzenle.html?id=${aktifIsletme?.id}`;
 }
 
 function menuPersonel() {
-    console.log("Personel yönetimi");
+    aktifMenu = 'personel';
+    updateAltMenuButtons();
     alert("Personel yönetimi sayfası yakında!");
-    // window.location.href = "personel-yonetimi.html";
 }
 
 function menuRandevu() {
-    console.log("Randevu ayarları");
+    aktifMenu = 'randevu';
+    updateAltMenuButtons();
     alert("Randevu ayarları sayfası yakında!");
-    // window.location.href = "randevu-ayarlari.html";
+}
+
+function updateAltMenuButtons() {
+    document.querySelectorAll('.alt-menu-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    if (aktifMenu) {
+        const activeBtn = document.getElementById('btn' + aktifMenu.charAt(0).toUpperCase() + aktifMenu.slice(1));
+        if (activeBtn) activeBtn.classList.add('active');
+    }
+}
+
+// ========================================
+// HESAP KAYDET FONKSİYONU
+// ========================================
+async function hesapKaydet(event) {
+    event.preventDefault();
+    
+    const btn = document.getElementById('kaydetBtn');
+    const basariliMesaj = document.getElementById('basariliMesaj');
+    const hataMesaj = document.getElementById('hataMesaj');
+    const hataText = document.getElementById('hataText');
+    
+    // Mesajları gizle
+    basariliMesaj.classList.remove('active');
+    hataMesaj.classList.remove('active');
+    
+    // Verileri al
+    const ad = document.getElementById('hesapAd').value.trim();
+    const soyad = document.getElementById('hesapSoyad').value.trim();
+    const telefon = document.getElementById('hesapTelefon').value.trim();
+    const email = document.getElementById('hesapEmail').value.trim();
+    const eskiParola = document.getElementById('hesapEskiParola').value;
+    const yeniParola = document.getElementById('hesapYeniParola').value;
+    const yeniParolaTekrar = document.getElementById('hesapYeniParolaTekrar').value;
+    
+    // Validasyon
+    if (!ad || !soyad) {
+        hataText.textContent = "Ad ve soyad zorunludur!";
+        hataMesaj.classList.add('active');
+        return false;
+    }
+    
+    if (telefon && !/^05\d{9}$/.test(telefon.replace(/\s/g,''))) {
+        hataText.textContent = "Telefon numarası 05xxxxxxxxx formatında olmalıdır!";
+        hataMesaj.classList.add('active');
+        return false;
+    }
+    
+    // Parola değişikliği kontrolü
+    if (yeniParola) {
+        if (yeniParola.length < 6) {
+            hataText.textContent = "Yeni parola en az 6 karakter olmalıdır!";
+            hataMesaj.classList.add('active');
+            return false;
+        }
+        if (yeniParola !== yeniParolaTekrar) {
+            hataText.textContent = "Yeni parolalar eşleşmiyor!";
+            hataMesaj.classList.add('active');
+            return false;
+        }
+        if (!eskiParola) {
+            hataText.textContent = "Parola değiştirmek için mevcut parolanızı girmelisiniz!";
+            hataMesaj.classList.add('active');
+            return false;
+        }
+    }
+    
+    // Butonu yükleme durumuna getir
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading-spinner"></span> Kaydediliyor...';
+    
+    try {
+        const formData = new FormData();
+        formData.append('action', 'updateUserInfo');
+        formData.append('userId', localStorage.getItem('userId'));
+        formData.append('ad', ad);
+        formData.append('soyad', soyad);
+        formData.append('telefon', telefon);
+        formData.append('email', email);
+        
+        if (eskiParola) {
+            formData.append('eskiParola', eskiParola);
+        }
+        if (yeniParola) {
+            formData.append('yeniParola', yeniParola);
+        }
+        
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Local verileri güncelle
+            aktifKullanici.ad = ad;
+            aktifKullanici.soyad = soyad;
+            aktifKullanici.telefon = telefon;
+            
+            // Sidebar'daki ismi güncelle
+            document.getElementById('userName').textContent = ad + " " + soyad;
+            
+            // Form alanlarını temizle (parola alanları)
+            document.getElementById('hesapEskiParola').value = '';
+            document.getElementById('hesapYeniParola').value = '';
+            document.getElementById('hesapYeniParolaTekrar').value = '';
+            
+            basariliMesaj.classList.add('active');
+            
+            // 3 saniye sonra mesajı gizle
+            setTimeout(() => {
+                basariliMesaj.classList.remove('active');
+            }, 3000);
+            
+        } else {
+            hataText.textContent = result.message || "Bilgiler güncellenirken bir hata oluştu!";
+            hataMesaj.classList.add('active');
+        }
+        
+    } catch (err) {
+        hataText.textContent = "Bağlantı hatası! Lütfen tekrar deneyin.";
+        hataMesaj.classList.add('active');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-save"></i> Kaydet';
+    }
+    
+    return false;
 }
 
 // ========================================
@@ -1137,7 +1519,7 @@ function fotoEkle() {
 }
 
 function anaSayfa() {
-    console.log("Ana Sayfa'ya dönülüyor");
+    aktifMenu = null;
     if (aktifIsletme) {
         renderIsletmeDetay(aktifIsletme);
     }
@@ -1169,7 +1551,6 @@ window.onload = function() {
     loadUserInfo();
 };
 
-// ESC tuşu ile sidebar kapat
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const sidebar = document.getElementById('sidebar');
@@ -1179,7 +1560,6 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Menü dışına tıklayınca alt menüyü kapat
 document.addEventListener('click', function(e) {
     const altMenu = document.getElementById('altMenu');
     const duzenleBtn = document.getElementById('duzenleBtn');
