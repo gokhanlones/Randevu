@@ -406,6 +406,197 @@ body {
     transition: margin-left 0.3s;
 }
 
+/* ========================================
+   İŞLETME DETAY SAYFASI (YENİ)
+   ======================================== */
+.isletme-detay {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Profil Bölümü */
+.profil-section {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Yuvarlak Foto Alanı */
+.foto-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 25px;
+}
+
+.foto-yuvarlak {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, #7C3AED 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    color: white;
+    border: 5px solid white;
+    box-shadow: 0 8px 30px rgba(79, 70, 229, 0.3);
+    overflow: hidden;
+    position: relative;
+}
+
+.foto-yuvarlak img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.foto-yuvarlak i {
+    opacity: 0.9;
+}
+
+/* Foto Ekle Butonu */
+.foto-ekle-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: 0.2s;
+    color: var(--primary);
+    font-size: 16px;
+}
+
+.foto-ekle-btn:hover {
+    transform: scale(1.1);
+    background: var(--primary);
+    color: white;
+}
+
+/* İşletme Adı */
+.isletme-baslik {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 8px;
+}
+
+.isletme-altbaslik {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 25px;
+}
+
+/* Buton Grubu */
+.buton-grup {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    border: none;
+    text-decoration: none;
+}
+
+.btn-duzenle {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-duzenle:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+}
+
+.btn-ana-sayfa {
+    background: white;
+    color: var(--dark);
+    border: 2px solid #E5E7EB;
+}
+
+.btn-ana-sayfa:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+}
+
+/* İstatistik Kartları */
+.istatistik-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.istatistik-kart {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.istatistik-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    font-size: 20px;
+}
+
+.istatistik-icon.turuncu {
+    background: linear-gradient(135deg, #FED7AA 0%, #FDBA74 100%);
+    color: #EA580C;
+}
+
+.istatistik-icon.yesil {
+    background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+    color: #059669;
+}
+
+.istatistik-bilgi h4 {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.istatistik-bilgi p {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+/* Hoş Geldiniz (Boş Durum) */
 .welcome-section {
     text-align: center;
     padding: 100px 20px;
@@ -446,6 +637,21 @@ body {
 @media (max-width: 1023px) {
     .sidebar {
         width: 300px;
+    }
+    
+    .profil-section {
+        padding: 30px 20px;
+    }
+    
+    .foto-yuvarlak {
+        width: 120px;
+        height: 120px;
+        font-size: 48px;
+    }
+    
+    .foto-container {
+        width: 120px;
+        height: 120px;
     }
 }
 </style>
@@ -512,15 +718,13 @@ body {
 
 <!-- Ana İçerik -->
 <main class="main-content" id="mainContent">
-    <div class="welcome-section">
-        <i class="fa-solid fa-store"></i>
-        <h2>Hoş Geldiniz</h2>
-        <p>Sol menüden bir işletme seçin veya yeni işletme ekleyin.</p>
-    </div>
+    <!-- Dinamik içerik buraya yüklenecek -->
 </main>
 
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0ayS_G6BgvJSlmbtO_bZz3zQODt1ZHbzxJlcRNj5Bpdrj7ArF9h6QSW-RZrxsXKmgaw/exec';
+
+let aktifIsletme = null;
 
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
@@ -592,6 +796,8 @@ async function loadIsletmeler(userId) {
         
         if (result.success && result.data && result.data.length > 0) {
             renderIsletmeler(result.data);
+            // İlk işletmeyi otomatik seç
+            isletmeSec(document.querySelector('.isletme-card'), result.data[0].id, result.data[0]);
         } else {
             renderEmptyState();
         }
@@ -616,7 +822,9 @@ function renderIsletmeler(isletmeler) {
     
     isletmeler.forEach((isletme, index) => {
         html += `
-            <div class="isletme-card ${index === 0 ? 'active' : ''}" onclick="isletmeSec(this, ${isletme.id})">
+            <div class="isletme-card ${index === 0 ? 'active' : ''}" 
+                 onclick="isletmeSec(this, ${isletme.id}, ${JSON.stringify(isletme).replace(/"/g, '&quot;')})"
+                 data-id="${isletme.id}">
                 <div class="isletme-adi">
                     ${escapeHtml(isletme.isletmeAdi)}
                     ${index === 0 ? '<i class="fa-solid fa-check-circle"></i>' : ''}
@@ -645,26 +853,160 @@ function renderEmptyState() {
             <p>Henüz işletme eklenmemiş.<br>İlk işletmenizi ekleyerek başlayın.</p>
         </div>
     `;
+    
+    // Ana sayfada boş durum göster
+    document.getElementById('mainContent').innerHTML = `
+        <div class="welcome-section">
+            <i class="fa-solid fa-store"></i>
+            <h2>Hoş Geldiniz</h2>
+            <p>Sol menüden bir işletme seçin veya yeni işletme ekleyin.</p>
+        </div>
+    `;
 }
 
-function isletmeSec(element, isletmeId) {
+// ========================================
+// İŞLETME SEÇİMİ - ANA SAYFA GÜNCELLENİYOR
+// ========================================
+function isletmeSec(element, isletmeId, isletmeData) {
+    // Tüm kartlardan active sınıfını kaldır
     document.querySelectorAll('.isletme-card').forEach(card => {
         card.classList.remove('active');
         const icon = card.querySelector('.isletme-adi i');
         if (icon) icon.remove();
     });
     
+    // Tıklanan kartı aktif yap
     element.classList.add('active');
     
     const title = element.querySelector('.isletme-adi');
     title.innerHTML += ' <i class="fa-solid fa-check-circle"></i>';
     
+    // LocalStorage'a kaydet
     localStorage.setItem('seciliIsletmeId', isletmeId);
     
-    console.log("Seçilen işletme:", isletmeId);
+    // Aktif işletmeyi sakla
+    aktifIsletme = isletmeData;
     
+    // Ana sayfayı güncelle
+    renderIsletmeDetay(isletmeData);
+    
+    // Mobil'de sidebar'ı kapat
     if (window.innerWidth < 1024) {
         toggleSidebar();
+    }
+}
+
+// ========================================
+// İŞLETME DETAY SAYFASI (YENİ)
+// ========================================
+function renderIsletmeDetay(isletme) {
+    const mainContent = document.getElementById('mainContent');
+    
+    mainContent.innerHTML = `
+        <div class="isletme-detay">
+            <!-- Profil Bölümü -->
+            <div class="profil-section">
+                <!-- Yuvarlak Foto Alanı -->
+                <div class="foto-container">
+                    <div class="foto-yuvarlak" id="isletmeFoto">
+                        <i class="fa-solid fa-store"></i>
+                    </div>
+                    <button class="foto-ekle-btn" onclick="fotoEkle()" title="Fotoğraf Ekle">
+                        <i class="fa-solid fa-camera"></i>
+                    </button>
+                </div>
+                
+                <!-- İşletme Adı -->
+                <h1 class="isletme-baslik">${escapeHtml(isletme.isletmeAdi)}</h1>
+                <p class="isletme-altbaslik">
+                    <i class="fa-solid fa-location-dot" style="color: var(--primary);"></i>
+                    ${escapeHtml(isletme.il)}, ${escapeHtml(isletme.ilce)}, ${escapeHtml(isletme.mahalle)}
+                </p>
+                
+                <!-- Buton Grubu -->
+                <div class="buton-grup">
+                    <button class="btn btn-duzenle" onclick="isletmeDuzenle(${isletme.id})">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        Düzenle
+                    </button>
+                    <button class="btn btn-ana-sayfa" onclick="anaSayfa()">
+                        <i class="fa-solid fa-house"></i>
+                        Ana Sayfa
+                    </button>
+                </div>
+            </div>
+            
+            <!-- İstatistik Kartları -->
+            <div class="istatistik-grid">
+                <div class="istatistik-kart">
+                    <div class="istatistik-icon">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <div class="istatistik-bilgi">
+                        <h4>Bugünkü Randevular</h4>
+                        <p>0</p>
+                    </div>
+                </div>
+                
+                <div class="istatistik-kart">
+                    <div class="istatistik-icon turuncu">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div class="istatistik-bilgi">
+                        <h4>Toplam Müşteri</h4>
+                        <p>0</p>
+                    </div>
+                </div>
+                
+                <div class="istatistik-kart">
+                    <div class="istatistik-icon yesil">
+                        <i class="fa-solid fa-scissors"></i>
+                    </div>
+                    <div class="istatistik-bilgi">
+                        <h4>Hizmetler</h4>
+                        <p>0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// ========================================
+// BUTON FONKSİYONLARI
+// ========================================
+function fotoEkle() {
+    // Fotoğraf yükleme modalı veya input
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const fotoDiv = document.getElementById('isletmeFoto');
+                fotoDiv.innerHTML = `<img src="${event.target.result}" alt="İşletme Fotoğrafı">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+}
+
+function isletmeDuzenle(isletmeId) {
+    console.log("Düzenle:", isletmeId);
+    // Düzenleme sayfasına yönlendirme
+    // window.location.href = `isletme-duzenle.html?id=${isletmeId}`;
+    alert("Düzenleme özelliği yakında eklenecek!");
+}
+
+function anaSayfa() {
+    // Ana sayfaya yönlendirme veya dashboard
+    console.log("Ana Sayfa'ya dönülüyor");
+    // Şimdiki işletme detayını yeniden yükle
+    if (aktifIsletme) {
+        renderIsletmeDetay(aktifIsletme);
     }
 }
 
